@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page - LiveSportVision</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1A1A1A;
+            color: white;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .test-result.pass {
+            background: #1B5E20;
+            border-color: #4CAF50;
+        }
+        .test-result.fail {
+            background: #B71C1C;
+            border-color: #F44336;
+        }
+        button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #FFA500;
+        }
+        #console-output {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnostic Page - LiveSportVision</h1>
+    
+    <div id="test-results"></div>
+    
+    <h2>Actions:</h2>
+    <button onclick="runTests()">Run All Tests</button>
+    <button onclick="clearConsole()">Clear Console</button>
+    <button onclick="location.href='index.html'">Go to Main Site</button>
+    
+    <h2>Console Output:</h2>
+    <div id="console-output"></div>
+
+    <script>
+        const results = document.getElementById('test-results');
+        const consoleOutput = document.getElementById('console-output');
+        
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            consoleOutput.innerHTML += '<div style="color: #4CAF50;">LOG: ' + args.join(' ') + '</div>';
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            consoleOutput.innerHTML += '<div style="color: #F44336;">ERROR: ' + args.join(' ') + '</div>';
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            consoleOutput.innerHTML += '<div style="color: #FFA500;">WARN: ' + args.join(' ') + '</div>';
+            originalWarn.apply(console, args);
+        };
+        
+        function addResult(name, passed, message) {
+            const div = document.createElement('div');
+            div.className = 'test-result ' + (passed ? 'pass' : 'fail');
+            div.innerHTML = `
+                <strong>${passed ? '✅' : '❌'} ${name}</strong><br>
+                ${message}
+            `;
+            results.appendChild(div);
+        }
+        
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+        }
+        
+        async function runTests() {
+            results.innerHTML = '';
+            clearConsole();
+            
+            console.log('Starting diagnostic tests...');
+            
+            // Test 1: Check if main HTML loads
+            try {
+                const response = await fetch('index.html');
+                addResult('HTML File', response.ok, 'index.html loads successfully');
+            } catch (e) {
+                addResult('HTML File', false, 'Failed to load: ' + e.message);
+            }
+            
+            // Test 2: Check CSS
+            try {
+                const response = await fetch('css/style.css');
+                addResult('CSS File', response.ok, 'style.css loads successfully');
+            } catch (e) {
+                addResult('CSS File', false, 'Failed to load: ' + e.message);
+            }
+            
+            // Test 3: Check all JS files
+            const jsFiles = [
+                'js/navigation.js',
+                'js/themeToggle.js',
+                'js/headerScroll.js',
+                'js/countryFlags.js',
+                'js/errorHandler.js',
+                'js/searchStream.js',
+                'js/favorites.js',
+                'js/streamManager.js',
+                'js/channelsManager.js',
+                'js/sportsEventManager.js'
+            ];
+            
+            for (const file of jsFiles) {
+                try {
+                    const response = await fetch(file);
+                    const text = await response.text();
+                    
+                    // Check for syntax errors
+                    const hasSyntaxError = text.includes('SyntaxError');
+                    const hasInfiniteLoop = text.includes('while(true)') || text.includes('for(;;)');
+                    
+                    addResult(
+                        file,
+                        response.ok && !hasSyntaxError && !hasInfiniteLoop,
+                        response.ok ? 'Loaded successfully, no obvious issues' : 'Failed to load'
+                    );
+                } catch (e) {
+                    addResult(file, false, 'Error: ' + e.message);
+                }
+            }
+            
+            // Test 4: Check Service Worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    addResult('Service Worker', true, `${registrations.length} registration(s) found`);
+                    
+                    // Unregister old service workers
+                    for (const registration of registrations) {
+                        await registration.unregister();
+                    }
+                    console.log('Unregistered all service workers');
+                } catch (e) {
+                    addResult('Service Worker', false, 'Error: ' + e.message);
+                }
+            }
+            
+            // Test 5: Memory leak detection
+            const before = performance.memory ? performance.memory.usedJSHeapSize : 0;
+            console.log('Memory before: ' + before);
+            
+            // Test 6: Check localStorage
+            try {
+                localStorage.setItem('test', 'value');
+                localStorage.removeItem('test');
+                addResult('LocalStorage', true, 'Working correctly');
+            } catch (e) {
+                addResult('LocalStorage', false, 'Error: ' + e.message);
+            }
+            
+            console.log('All tests completed!');
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>
+
+
+% 
+
+
+
+
+

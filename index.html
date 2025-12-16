@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LIVE VISION - Your Ultimate Sports Streaming Platform</title>
+    <meta name="description" content="Watch live sports streams, events, and channels from around the world" />
+    <meta name="theme-color" content="#FFD700" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/180x180/FFD700/1A1A1A?text=SV" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome 6.5.1 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    
+    <!-- PWA Install Script -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then((reg) => console.log('Service Worker registered!', reg))
+            .catch((err) => console.log('Service Worker registration failed:', err));
+        });
+      }
+    </script>
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="nav-container">
+        <div class="tabs-container">
+          <div class="tabbed-menu">
+            <a
+              id="nav-stream"
+              class="tab active"
+              href="#"
+              onclick="navigateTo('page-stream')"
+              >STREAM PAGE</a
+            >
+            <a
+              id="nav-football"
+              class="tab"
+              href="#"
+              onclick="navigateTo('page-football')"
+              >ALL SPORTS EVENT</a
+            >
+            <a
+              id="nav-channels"
+              class="tab"
+              href="#"
+              onclick="navigateTo('page-channels')"
+              >ALL CHANNELS</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Bouton dark mode flottant -->
+    <theme-toggle class="floating">
+      <button class="theme-toggle" aria-label="Toggle theme" data-theme-toggle>
+        <i class="fas fa-sun sun"></i>
+        <i class="fas fa-moon moon"></i>
+      </button>
+    </theme-toggle>
+
+    <main>
+      <!-- STREAM PAGE -->
+      <section id="page-stream" class="page active">
+        <div class="hero-section">
+          <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-soccer-ball-on-a-field-4097-large.mp4" type="video/mp4">
+          </video>
+          <div class="hero-content">
+            <h1 class="hero-title">LIVE SPORTS VISION</h1>
+            <p class="hero-subtitle">Experience the thrill of live sports streaming - Anytime, Anywhere</p>
+          </div>
+        </div>
+        
+        <div class="stream-section">
+          <div class="stream-input-box">
+            <h3><i class="fas fa-play-circle"></i> ENTER STREAM URL OR SEARCH</h3>
+            <div class="input-container">
+              <div class="search-wrapper">
+                <input
+                  type="text"
+                  id="stream-url"
+                  class="input-field"
+                  placeholder="Paste URL or search for live events..."
+                  value=""
+                  autocomplete="off"
+                />
+                <div id="search-results" class="search-results hidden"></div>
+              </div>
+              <button id="load-stream" class="play-button">
+                <i class="fas fa-play"></i> PLAY
+              </button>
+            </div>
+          </div>
+          <iframe
+            id="live-stream"
+            width="100%"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+          <div class="more-links">
+            <button id="cinema-mode" class="more-button">
+              <i class="fas fa-expand"></i> CINEMA MODE
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALL SPORTS EVENT -->
+      <section id="page-football" class="page hidden">
+        <div class="hero-section">
+          <div class="hero-content">
+            <h1 class="hero-title">ALL SPORTS EVENTS</h1>
+            <p class="hero-subtitle">Discover upcoming matches and live sporting events worldwide</p>
+          </div>
+        </div>
+        
+        <div style="padding: 0 20px; max-width: 1400px; margin: 0 auto;">
+          <div class="loading-indicator" id="sports-loading">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <div class="loading-text">Loading sports events...</div>
+            </div>
+            <div class="skeleton-table">
+              <div class="skeleton-row">
+                <div class="skeleton skeleton-cell short"></div>
+                <div class="skeleton skeleton-cell short"></div>
+                <div class="skeleton skeleton-cell"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell"></div>
+              </div>
+              <div class="skeleton-row">
+                <div class="skeleton skeleton-cell short"></div>
+                <div class="skeleton skeleton-cell short"></div>
+                <div class="skeleton skeleton-cell"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell"></div>
+              </div>
+              <div class="skeleton-row">
+                <div class="skeleton skeleton-cell short"></div>
+                <div class="skeleton skeleton-cell short"></div>
+                <div class="skeleton skeleton-cell"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell"></div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="error-message"
+            id="sports-error"
+            style="display: none"
+          ></div>
+          <div class="event-filter-box">
+            <div class="filter-container">
+              <label for="sport-filter"><i class="fas fa-football-ball"></i> FILTER BY SPORT</label>
+              <select id="sport-filter" class="input-field">
+                <option value="">All Sports</option>
+              </select>
+            </div>
+            <div class="filter-container">
+              <label for="date-filter"><i class="fas fa-calendar-alt"></i> FILTER BY DATE</label>
+              <select id="date-filter" class="input-field">
+                <option value="">All Dates</option>
+              </select>
+            </div>
+            <div class="filter-container">
+              <label for="tournament-filter"><i class="fas fa-trophy"></i> FILTER BY TOURNAMENT</label>
+              <select id="tournament-filter" class="input-field">
+                <option value="">All Tournaments</option>
+              </select>
+            </div>
+            <div class="search-container">
+              <label for="event-search"><i class="fas fa-search"></i> SEARCH EVENTS</label>
+              <input
+                type="text"
+                id="event-search"
+                class="input-field"
+                placeholder="Search for events..."
+              />
+            </div>
+          </div>
+          <table id="event-table">
+            <thead>
+              <tr>
+                <th><i class="fas fa-calendar-alt"></i> DATE & TIME</th>
+                <th><i class="fas fa-futbol"></i> SPORT</th>
+                <th><i class="fas fa-trophy"></i> TOURNAMENT</th>
+                <th><i class="fas fa-users"></i> MATCH</th>
+                <th><i class="fas fa-play-circle"></i> STREAM LINK</th>
+              </tr>
+            </thead>
+            <tbody id="event-list">
+              <!-- Events will be populated dynamically by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ALL CHANNELS -->
+      <section id="page-channels" class="page hidden">
+        <div class="hero-section">
+          <div class="hero-content">
+            <h1 class="hero-title">ALL CHANNELS</h1>
+            <p class="hero-subtitle">Browse and access sports channels from around the globe</p>
+          </div>
+        </div>
+        
+        <div style="padding: 0 20px; max-width: 1400px; margin: 0 auto;">
+          <div class="loading-indicator" id="channels-loading">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <div class="loading-text">Loading channels...</div>
+            </div>
+            <div class="skeleton-table">
+              <div class="skeleton-row">
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell"></div>
+              </div>
+              <div class="skeleton-row">
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell"></div>
+              </div>
+              <div class="skeleton-row">
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell long"></div>
+                <div class="skeleton skeleton-cell"></div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="error-message"
+            id="channels-error"
+            style="display: none"
+          ></div>
+          <div class="channel-filter-box">
+            <div class="filter-container">
+              <label for="country-filter"><i class="fas fa-globe"></i> FILTER BY COUNTRY</label>
+              <select id="country-filter" class="input-field">
+                <option value="">All Countries</option>
+              </select>
+            </div>
+            <div class="search-container">
+              <label for="channel-search"><i class="fas fa-search"></i> SEARCH CHANNELS</label>
+              <input
+                type="text"
+                id="channel-search"
+                class="input-field"
+                placeholder="Search for channels..."
+              />
+            </div>
+          </div>
+          <table id="channel-table">
+            <thead>
+              <tr>
+                <th><i class="fas fa-tv"></i> CHANNEL NAME</th>
+                <th><i class="fas fa-link"></i> CHANNEL LINK</th>
+                <th><i class="fas fa-play-circle"></i> STREAM LINK</th>
+              </tr>
+            </thead>
+            <tbody id="channel-list">
+              <!-- Channels will be populated dynamically by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Made with <span class="heart">❤️</span> by <strong>BFMIX</strong>
+      </div>
+    </footer>
+
+    <script src="js/navigation.js"></script>
+    <script src="js/themeToggle.js"></script>
+    <script src="js/headerScroll.js"></script>
+    <script src="js/countryFlags.js"></script>
+    <script src="js/errorHandler.js"></script>
+    <script src="js/searchStream.js"></script>
+    <!-- Favorites feature removed -->
+    <script src="js/advancedFeatures.js"></script>
+    <script src="js/streammanager.js"></script>
+    <script src="js/channelsmanager.js"></script>
+    <script src="js/sportsEventManager.js"></script>
+    <!-- Script pour le mode cinéma -->
+    <script>
+      const cinemaButton = document.getElementById("cinema-mode");
+      const liveStream = document.getElementById("live-stream");
+      const body = document.body;
+      const moreLinks = document.querySelector(".more-links");
+      const streamInputBox = document.querySelector(".stream-input-box");
+      let isCinemaMode = false;
+
+      function toggleCinemaMode() {
+        console.log(`Toggling cinema mode. Current state: ${isCinemaMode}`);
+
+        if (window.innerWidth <= 768) {
+          if (!document.fullscreenElement) {
+            liveStream.requestFullscreen().catch((err) => {
+              console.error(
+                `Erreur lors du passage en plein écran: ${err.message}`
+              );
+            });
+          } else {
+            document.exitFullscreen().catch((err) => {
+              console.error(
+                `Erreur lors de la sortie du plein écran: ${err.message}`
+              );
+            });
+          }
+        } else {
+          isCinemaMode = !isCinemaMode;
+
+          if (isCinemaMode) {
+            console.log("Entering cinema mode");
+            liveStream.classList.add("cinema-mode");
+            moreLinks.classList.add("cinema-mode");
+            body.classList.add("cinema-background");
+            streamInputBox.classList.add("cinema-mode");
+            cinemaButton.innerHTML = '<i class="fas fa-compress"></i> EXIT CINEMA MODE';
+          } else {
+            console.log("Exiting cinema mode");
+            liveStream.classList.remove("cinema-mode");
+            moreLinks.classList.remove("cinema-mode");
+            body.classList.remove("cinema-background");
+            streamInputBox.classList.remove("cinema-mode");
+            cinemaButton.innerHTML = '<i class="fas fa-expand"></i> CINEMA MODE';
+          }
+        }
+      }
+
+      document.addEventListener("click", (e) => {
+        const target = e.target;
+
+        if (target === cinemaButton || target.closest("#cinema-mode")) {
+          console.log("Clicked on cinema button");
+          toggleCinemaMode();
+        } else if (
+          isCinemaMode &&
+          !liveStream.contains(target) &&
+          !moreLinks.contains(target)
+        ) {
+          console.log("Clicked outside to exit cinema mode");
+          toggleCinemaMode();
+        }
+      });
+
+      // ESC key support for cinema mode
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && isCinemaMode) {
+          console.log("ESC pressed - exiting cinema mode");
+          toggleCinemaMode();
+        }
+      });
+    </script>
+  </body>
+</html>

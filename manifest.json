@@ -1,0 +1,58 @@
+{
+  "name": "LIVE SPORTS VISION",
+  "short_name": "SportVision",
+  "description": "Your Ultimate Sports Streaming Platform - Watch live sports, events, and channels from around the world",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#1A1A1A",
+  "theme_color": "#FFD700",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/FFD700/1A1A1A?text=SV",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/FFD700/1A1A1A?text=SV",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "entertainment", "streaming"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Watch Live",
+      "short_name": "Live",
+      "description": "Start watching live sports",
+      "url": "/index.html#page-stream",
+      "icons": [{
+        "src": "https://via.placeholder.com/96x96/FFD700/1A1A1A?text=▶",
+        "sizes": "96x96"
+      }]
+    },
+    {
+      "name": "All Events",
+      "short_name": "Events",
+      "description": "Browse sports events",
+      "url": "/index.html#page-football",
+      "icons": [{
+        "src": "https://via.placeholder.com/96x96/FFD700/1A1A1A?text=⚽",
+        "sizes": "96x96"
+      }]
+    },
+    {
+      "name": "Channels",
+      "short_name": "Channels",
+      "description": "View all channels",
+      "url": "/index.html#page-channels",
+      "icons": [{
+        "src": "https://via.placeholder.com/96x96/FFD700/1A1A1A?text=📺",
+        "sizes": "96x96"
+      }]
+    }
+  ]
+}

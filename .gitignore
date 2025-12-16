@@ -1,0 +1,28 @@
+.qodo
+
+node_modules/
+.DS_Store
+.env
+dist/
+build/
+.vscode/
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
