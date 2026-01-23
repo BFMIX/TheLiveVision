@@ -1,5 +1,5 @@
 // searchStream.js
-// Real-time search for sports events ONLY
+// Real-time search for sports events ONLY - Using new beta.adstrim.ru API
 
 document.addEventListener("DOMContentLoaded", () => {
   const streamUrlInput = document.getElementById("stream-url");
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedIndex = -1;
   let isLoading = false;
 
-  // Load events data ONLY from API
+  // Load events data from new API
   async function loadSearchData() {
     if (isLoading) return;
     isLoading = true;
@@ -25,41 +25,48 @@ document.addEventListener("DOMContentLoaded", () => {
       const eventsTimeout = setTimeout(() => eventsController.abort(), 15000);
       
       try {
-        const eventsResponse = await fetch('https://topembed.pw/api.php?format=json', {
+        const eventsResponse = await fetch('https://beta.adstrim.ru/api/events', {
           signal: eventsController.signal
         });
         clearTimeout(eventsTimeout);
         
         if (eventsResponse.ok) {
-          const apiData = await eventsResponse.json();
+          const apiResponse = await eventsResponse.json();
           
-          // The API returns { events: { "date": [...events] } } structure
-          // Parse correctly based on the sportsEventManager.js logic
-          if (apiData && apiData.events) {
-            allEvents = [];
-            for (const dateKey in apiData.events) {
-              apiData.events[dateKey].forEach(event => {
-                // Each event has multiple channels, create one search entry per event
-                const date = new Date(event.unix_timestamp * 1000);
-                const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                
-                allEvents.push({
-                  type: 'event',
-                  title: event.match || 'Match',
-                  meta: `${event.sport || 'Sport'} • ${event.tournament || 'Tournament'} • ${dateKey} ${timeStr}`,
-                  url: event.channels && event.channels.length > 0 ? event.channels[0] : '',
-                  sport: event.sport || '',
-                  tournament: event.tournament || '',
-                  match: event.match || '',
-                  date: dateKey,
-                  time: timeStr,
-                  channels: event.channels || []
-                });
-              });
-            }
+          if (apiResponse.status === 'success' && apiResponse.data) {
+            allEvents = apiResponse.data.map(event => {
+              const dateObj = new Date(event.timestamp * 1000);
+              const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+              const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+              
+              // Build match name
+              const matchName = event.home_team && event.away_team 
+                ? `${event.home_team} vs ${event.away_team}`
+                : 'TBD';
+
+              // Get first channel URL
+              const channelUrl = event.channels && event.channels.length > 0 
+                ? `https://topembed.pw/channel/${event.channels[0].link || event.channels[0].name}`
+                : '';
+
+              return {
+                type: 'event',
+                title: matchName,
+                meta: `${event.sport || 'Sport'} • ${event.league || 'League'} • ${dateStr} ${timeStr}`,
+                url: channelUrl,
+                sport: event.sport || '',
+                tournament: event.league || '',
+                match: matchName,
+                home_team: event.home_team || '',
+                away_team: event.away_team || '',
+                date: dateStr,
+                time: timeStr,
+                channels: event.channels || []
+              };
+            });
             console.log(`✅ Loaded ${allEvents.length} sports events for search`);
           } else {
-            console.warn('⚠️ API returned unexpected format:', apiData);
+            console.warn('⚠️ API returned unexpected format:', apiResponse);
           }
         }
       } catch (error) {
@@ -85,14 +92,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const lowerQuery = query.toLowerCase();
     
-    // Search ONLY in events (matches, sports, tournaments)
+    // Search in events (matches, sports, tournaments, teams)
     const filtered = allEvents.filter(event => {
       const titleMatch = (event.title || '').toLowerCase().includes(lowerQuery);
       const sportMatch = (event.sport || '').toLowerCase().includes(lowerQuery);
       const tournamentMatch = (event.tournament || '').toLowerCase().includes(lowerQuery);
-      const matchMatch = (event.match || '').toLowerCase().includes(lowerQuery);
+      const homeTeamMatch = (event.home_team || '').toLowerCase().includes(lowerQuery);
+      const awayTeamMatch = (event.away_team || '').toLowerCase().includes(lowerQuery);
       
-      return titleMatch || sportMatch || tournamentMatch || matchMatch;
+      return titleMatch || sportMatch || tournamentMatch || homeTeamMatch || awayTeamMatch;
     }).slice(0, 10); // Show max 10 results
 
     console.log(`🔍 Search "${query}": found ${filtered.length} events`);
@@ -102,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Display search results - events only with sports icon
   function displayResults(results) {
     if (results.length === 0) {
-      searchResults.innerHTML = '<div class="search-no-results"><i class="fas fa-search"></i><br>Aucun résultat trouvé</div>';
+      searchResults.innerHTML = '<div class="search-no-results"><i class="fas fa-search"></i><br>No results found</div>';
       searchResults.classList.remove('hidden');
       return;
     }
@@ -135,61 +143,60 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Keyboard navigation
-  function navigateResults(direction) {
+  function handleKeyDown(e) {
     const items = document.querySelectorAll('.search-result-item');
     if (items.length === 0) return;
 
-    // Remove active class
-    items.forEach(item => item.classList.remove('active'));
-
-    // Update index
-    if (direction === 'down') {
-      selectedIndex = (selectedIndex + 1) % items.length;
-    } else if (direction === 'up') {
-      selectedIndex = selectedIndex <= 0 ? items.length - 1 : selectedIndex - 1;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+      updateSelection(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+      updateSelection(items);
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      items[selectedIndex].click();
+    } else if (e.key === 'Escape') {
+      searchResults.classList.add('hidden');
     }
-
-    // Add active class
-    items[selectedIndex].classList.add('active');
-    items[selectedIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  // Select active result
-  function selectActiveResult() {
-    const activeItem = document.querySelector('.search-result-item.active');
-    if (activeItem) {
-      activeItem.click();
-      return true;
-    }
-    return false;
+  function updateSelection(items) {
+    items.forEach((item, index) => {
+      if (index === selectedIndex) {
+        item.classList.add('selected');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('selected');
+      }
+    });
   }
 
   // Event listeners
+  let debounceTimer;
   streamUrlInput.addEventListener('input', (e) => {
-    performSearch(e.target.value);
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      performSearch(e.target.value);
+    }, 300);
   });
 
-  streamUrlInput.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      navigateResults('down');
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      navigateResults('up');
-    } else if (e.key === 'Enter') {
-      if (!selectActiveResult()) {
-        // If no search result selected, proceed with URL load
-        document.getElementById('load-stream').click();
-      }
-    } else if (e.key === 'Escape') {
-      searchResults.classList.add('hidden');
-      selectedIndex = -1;
+  streamUrlInput.addEventListener('keydown', handleKeyDown);
+
+  streamUrlInput.addEventListener('focus', () => {
+    if (allEvents.length === 0) {
+      loadSearchData();
+    }
+    if (streamUrlInput.value.length >= 2) {
+      performSearch(streamUrlInput.value);
     }
   });
 
-  // Close search results when clicking outside
+  // Hide results when clicking outside
   document.addEventListener('click', (e) => {
-    if (!streamUrlInput.contains(e.target) && !searchResults.contains(e.target)) {
+    if (!e.target.closest('.stream-input-box')) {
       searchResults.classList.add('hidden');
     }
   });

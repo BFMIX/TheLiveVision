@@ -146,16 +146,17 @@ body {
 .tab {
   text-decoration: none;
   color: var(--color-text-primary);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  padding: 8px 18px;
+  padding: 12px 28px;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: transparent;
   cursor: pointer;
   position: relative;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  margin: 0 8px;
 }
 
 [data-theme="light"] .tab {
@@ -377,6 +378,10 @@ main {
   text-shadow: var(--text-shadow-subtitle);
 }
 
+[data-theme="light"] .hero-subtitle {
+  color: var(--color-text-secondary);
+}
+
 /* Stream Section - Modern Card Design */
 .stream-section {
   display: flex;
@@ -385,7 +390,7 @@ main {
   gap: 25px;
   padding: 0 20px 40px;
   width: 100%;
-  max-width: 1000px;
+  max-width: 70%;
   margin: 0 auto;
 }
 
@@ -407,27 +412,51 @@ body.cinema-background .stream-input-box.cinema-mode {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 85vw;
-  max-width: 85vw;
+  transform: translate(-50%, -50%) scale(1);
+  width: 90vw;
+  max-width: 90vw;
   height: auto;
-  max-height: 85vh;
+  max-height: 90vh;
   aspect-ratio: 16 / 9;
   z-index: 1001;
-  transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  border-radius: 12px;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.92);
-  animation: cinemaEnter 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: transform 0.5s ease-in-out;
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.95),
+              0 40px 120px rgba(0, 0, 0, 0.8),
+              0 0 80px rgba(255, 215, 0, 0.3);
+  outline-width: 5px;
+  outline-color: var(--color-primary);
 }
 
-@keyframes cinemaEnter {
-  0% {
-    transform: translate(-50%, -50%) scale(0.5) rotateY(-90deg);
+/* Simple zoom animation on enter */
+#live-stream.cinema-mode.entering {
+  animation: simpleZoomIn 0.5s ease-out forwards;
+}
+
+@keyframes simpleZoomIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.8);
     opacity: 0;
   }
-  100% {
-    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+  to {
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
+  }
+}
+
+/* Simple zoom out animation on exit */
+#live-stream.cinema-mode.exiting {
+  animation: simpleZoomOut 0.4s ease-in forwards;
+}
+
+@keyframes simpleZoomOut {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
   }
 }
 
@@ -438,7 +467,6 @@ body.cinema-background .stream-input-box.cinema-mode {
   padding: 30px;
   box-shadow: var(--shadow-md);
   width: 100%;
-  max-width: 1000px;
   text-align: center;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -470,16 +498,123 @@ body.cinema-background .stream-input-box.cinema-mode {
   text-shadow: var(--text-shadow-subtitle);
 }
 
+/* Player Container */
+.player-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
 #live-stream {
   width: 100%;
-  max-width: 1000px;
   aspect-ratio: 16 / 9;
-  border-radius: 16px;
-  box-shadow: var(--shadow-lg);
-  border: 3px solid var(--color-accent);
-  background: var(--color-bg-secondary);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 
+              0 0 0 4px rgba(255, 215, 0, 0.15),
+              0 0 80px rgba(255, 215, 0, 0.3),
+              0 40px 120px rgba(0, 0, 0, 0.7);
+  border: 4px solid transparent;
+  background: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 100%);
+  background-clip: padding-box;
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Iframe Overlay - Anti-popup protection */
+.iframe-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Show overlay on first load to prevent initial popup */
+.iframe-overlay.active {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Hide overlay after user interaction */
+.iframe-overlay.hidden {
+  display: none;
+}
+
+/* Animated golden border effect using outline */
+#live-stream {
+  outline: 3px solid;
+  outline-color: var(--color-primary);
+  outline-offset: -7px;
+  animation: borderPulse 3s ease-in-out infinite;
+}
+
+@keyframes borderPulse {
+  0%, 100% {
+    outline-color: var(--color-primary);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 4px rgba(255, 215, 0, 0.15),
+                0 0 80px rgba(255, 215, 0, 0.3),
+                0 40px 120px rgba(0, 0, 0, 0.7),
+                inset 0 0 30px rgba(255, 215, 0, 0.1);
+  }
+  50% {
+    outline-color: #d4af37;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6),
+                0 0 0 4px rgba(255, 215, 0, 0.3),
+                0 0 100px rgba(255, 215, 0, 0.4),
+                0 50px 140px rgba(0, 0, 0, 0.8),
+                inset 0 0 40px rgba(255, 215, 0, 0.15);
+  }
+}
+
+/* Light mode: Blue border instead of golden */
+[data-theme="light"] #live-stream {
+  outline-color: #2196F3;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+              0 0 0 4px rgba(33, 150, 243, 0.15),
+              0 0 80px rgba(33, 150, 243, 0.2),
+              0 40px 120px rgba(0, 0, 0, 0.1);
+  animation: borderPulseLight 3s ease-in-out infinite;
+}
+
+@keyframes borderPulseLight {
+  0%, 100% {
+    outline-color: #2196F3;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+                0 0 0 4px rgba(33, 150, 243, 0.15),
+                0 0 80px rgba(33, 150, 243, 0.2),
+                0 40px 120px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    outline-color: #1976D2;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2),
+                0 0 0 4px rgba(33, 150, 243, 0.3),
+                0 0 100px rgba(33, 150, 243, 0.3),
+                0 50px 140px rgba(0, 0, 0, 0.15);
+  }
+}
+
+#live-stream:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
+              0 0 0 4px rgba(255, 215, 0, 0.4),
+              0 0 120px rgba(255, 215, 0, 0.4),
+              0 60px 160px rgba(0, 0, 0, 0.8);
+  outline-color: #d4af37;
+  outline-width: 4px;
+}
+
+[data-theme="light"] #live-stream:hover {
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2),
+              0 0 0 4px rgba(33, 150, 243, 0.4),
+              0 0 120px rgba(33, 150, 243, 0.3),
+              0 60px 160px rgba(0, 0, 0, 0.15);
+  outline-color: #1565C0;
 }
 
 #live-stream.cinema-mode:hover {
@@ -497,7 +632,7 @@ body.cinema-background .stream-input-box.cinema-mode {
 /* Input and Buttons - DAZN Style */
 .input-container {
   display: flex;
-  gap: 15px;
+  gap: 20px;
   justify-content: center;
   flex-wrap: wrap;
   width: 100%;
@@ -656,10 +791,23 @@ body.cinema-background .stream-input-box.cinema-mode {
 [data-theme="light"] .play-button {
   background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  animation: none;
 }
 
 [data-theme="light"] .play-button:hover {
   background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Remove orange shadow in light mode - use black instead */
+@keyframes subtlePulseLight {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
 }
 
 @keyframes subtlePulse {
@@ -706,6 +854,12 @@ body.cinema-background .stream-input-box.cinema-mode {
     left: 50%;
     transform: translateX(-50%);
     margin-top: 0;
+  }
+
+  /* Desktop: Ensure CHANNEL LINK column is visible */
+  #channel-table th:nth-child(2),
+  #channel-table td:nth-child(2) {
+    display: table-cell;
   }
 }
 
@@ -804,8 +958,6 @@ body.cinema-background .more-button:hover {
   box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto 30px;
   box-sizing: border-box;
   flex-wrap: wrap;
   gap: 20px;
@@ -861,16 +1013,29 @@ body.cinema-background .more-button:hover {
   box-sizing: border-box;
 }
 
+/* Table Container - Full Width */
+.table-container {
+  width: 100%;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+/* Reduce padding for better full-width display */
+@media (min-width: 769px) {
+  .table-container {
+    padding: 0 40px;
+  }
+}
+
 /* Event Table Styles - Modern Card Design */
 #event-table {
-  width: 100%;
+  width: 100% !important;
   border-collapse: separate;
   border-spacing: 0 12px;
-  max-width: 1400px;
-  margin: 0 auto;
+  margin: 0;
   background-color: transparent;
   box-sizing: border-box;
-  table-layout: auto; /* Fluid column widths */
+  table-layout: fixed; /* Fixed column widths */
 }
 
 #event-table thead {
@@ -882,24 +1047,42 @@ body.cinema-background .more-button:hover {
 #event-table th {
   background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-secondary) 100%);
   color: var(--color-primary);
-  font-weight: 700;
-  padding: 16px 12px;
-  text-align: left;
+  font-weight: 800;
+  padding: 18px 12px;
+  text-align: center;
   border: none;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 13px;
+  letter-spacing: 1.2px;
+  font-size: 17px;
   box-shadow: var(--shadow-sm);
   text-shadow: var(--text-shadow-subtitle);
   white-space: nowrap;
 }
 
-/* Fluid column widths for events table */
-#event-table th:nth-child(1) { width: auto; min-width: 140px; } /* DATE & TIME */
-#event-table th:nth-child(2) { width: auto; min-width: 80px; }  /* SPORT */
-#event-table th:nth-child(3) { width: auto; min-width: 120px; } /* TOURNAMENT */
-#event-table th:nth-child(4) { width: auto; min-width: 180px; } /* MATCH */
-#event-table th:nth-child(5) { width: auto; min-width: 100px; } /* STREAM LINK */
+/* Responsive headers on mobile */
+@media (max-width: 768px) {
+  #event-table th {
+    font-size: 12px;
+    padding: 14px 8px;
+    letter-spacing: 0.8px;
+  }
+}
+
+/* Fixed column widths for events table - 4 columns */
+#event-table th:nth-child(1),
+#event-table td:nth-child(1) { width: 15%; }  /* DATE & TIME */
+#event-table th:nth-child(2),
+#event-table td:nth-child(2) { width: 11%; }  /* SPORT */
+#event-table th:nth-child(3),
+#event-table td:nth-child(3) { width: 34%; }  /* MATCH & TOURNAMENT */
+#event-table th:nth-child(4),
+#event-table td:nth-child(4) { width: 40%; }  /* STREAM LINK */
+
+/* Exception: DATE & TIME column aligned to the left */
+#event-table td:nth-child(1) {
+  text-align: left;
+  padding-left: 24px;
+}
 
 [data-theme="light"] #event-table th {
   background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
@@ -935,7 +1118,7 @@ body.cinema-background .more-button:hover {
 
 #event-table td {
   padding: 16px 20px;
-  text-align: left;
+  text-align: center;
   border: none;
   color: var(--color-text-primary);
   font-weight: 500;
@@ -981,29 +1164,64 @@ body.cinema-background .more-button:hover {
 .stream-buttons {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 8px;
-  align-items: flex-start;
-  align-content: flex-start;
-  justify-content: flex-start;
-  text-align: left;
+  gap: 10px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
   max-width: 100%;
 }
 
 .stream-buttons .stream-btn {
   margin: 0;
   flex-shrink: 0;
+  min-width: 100px;
+  height: 42px;
+  padding: 10px 22px;
+  font-size: 14px;
 }
 
-#event-table td:nth-child(5) {
+/* Match cell with tournament info - always visible */
+.match-cell .match-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.match-cell .match-name i {
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+.match-cell .match-tournament {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.match-cell .match-tournament i {
+  margin-right: 6px;
+  opacity: 0.7;
+
+/* Flag emoji styling - Larger flags */
+.flag-emoji {
+  font-size: 22px;
+  display: inline-block;
+  margin-right: 6px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+}
+
+#event-table td:nth-child(4) {
   font-size: 14px;
   font-weight: 500;
-  text-align: left;
-  vertical-align: top;
+  text-align: center;
+  vertical-align: middle;
 }
 
 #event-table td:last-child {
   border-radius: 0 12px 12px 0;
-  text-align: left;
+  text-align: center;
   padding: 12px 16px;
 }
 
@@ -1092,7 +1310,6 @@ body.cinema-background .more-button:hover {
   box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
   width: 100%;
-  max-width: 1400px;
   margin: 0 auto 30px;
   box-sizing: border-box;
   gap: 20px;
@@ -1146,14 +1363,13 @@ body.cinema-background .more-button:hover {
 
 /* Channel Table Styles - Modern Card Design */
 #channel-table {
-  width: 100%;
+  width: 100% !important;
   border-collapse: separate;
   border-spacing: 0 12px;
-  max-width: 1400px;
-  margin: 0 auto;
+  margin: 0;
   background-color: transparent;
   box-sizing: border-box;
-  table-layout: auto; /* Fluid column widths */
+  table-layout: fixed; /* Fixed column widths */
 }
 
 #channel-table thead {
@@ -1165,22 +1381,34 @@ body.cinema-background .more-button:hover {
 #channel-table th {
   background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-secondary) 100%);
   color: var(--color-primary);
-  font-weight: 700;
-  padding: 16px 12px;
-  text-align: left;
+  font-weight: 800;
+  padding: 18px 12px;
+  text-align: center;
   border: none;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 13px;
+  letter-spacing: 1.2px;
+  font-size: 17px;
   box-shadow: var(--shadow-sm);
   text-shadow: var(--text-shadow-subtitle);
   white-space: nowrap;
 }
 
-/* Fluid column widths for channels table */
-#channel-table th:nth-child(1) { width: 35%; min-width: 150px; }  /* CHANNEL NAME */
-#channel-table th:nth-child(2) { width: 45%; min-width: 200px; }  /* CHANNEL LINK */
-#channel-table th:nth-child(3) { width: 20%; min-width: 100px; }  /* STREAM LINK */
+/* Responsive headers on mobile */
+@media (max-width: 768px) {
+  #channel-table th {
+    font-size: 12px;
+    padding: 14px 8px;
+    letter-spacing: 0.8px;
+  }
+}
+
+/* Fixed column widths for channels table */
+#channel-table th:nth-child(1),
+#channel-table td:nth-child(1) { width: 21%; }  /* CHANNEL NAME */
+#channel-table th:nth-child(2),
+#channel-table td:nth-child(2) { width: 44%; }  /* CHANNEL LINK */
+#channel-table th:nth-child(3),
+#channel-table td:nth-child(3) { width: 35%; }  /* STREAM LINK */
 
 [data-theme="light"] #channel-table th {
   background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
@@ -1216,12 +1444,13 @@ body.cinema-background .more-button:hover {
 
 #channel-table td {
   padding: 20px;
-  text-align: left;
+  text-align: center;
   border: none;
   color: var(--color-text-primary);
   font-weight: 500;
   background: var(--color-bg-card);
   font-size: 15px;
+  vertical-align: middle;
 }
 
 #channel-table td:first-child {
@@ -1248,10 +1477,11 @@ body.cinema-background .more-button:hover {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
 
 #channel-table .channel-link-input {
-  flex-grow: 1;
+  flex: 1;
   padding: 10px 14px;
   font-size: 14px;
   border: 2px solid var(--color-accent);
@@ -1263,7 +1493,9 @@ body.cinema-background .more-button:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 250px;
+  height: 40px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 #channel-table .channel-link-input:focus {
@@ -1271,30 +1503,37 @@ body.cinema-background .more-button:hover {
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
 }
 
+/* COPY button - neutral style, same height as input, compact width */
 #channel-table .channel-link-copy {
-  padding: 10px 18px;
-  font-size: 14px;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  color: var(--color-bg-dark);
-  border: none;
+  padding: 10px 16px;
+  font-size: 12px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 2px solid var(--color-accent);
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  min-width: 80px;
-  height: 42px;
+  height: 40px;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#channel-table .channel-link-copy:hover {
+  background: var(--color-accent);
+  color: var(--color-text-primary);
 }
 
 /* Uniform button sizes for channel table */
 .channel-btn {
   min-width: 80px;
-  height: 42px;
+  height: 40px;
   padding: 10px 18px;
   font-size: 14px;
   font-weight: 700;
@@ -1305,14 +1544,33 @@ body.cinema-background .more-button:hover {
   justify-content: center;
 }
 
+/* Larger PLAY button for channels table (doubled size) */
 #channel-table .play-button.channel-btn {
-  min-width: 80px;
-  height: 42px;
+  min-width: 160px;
+  height: 50px;
+  padding: 14px 36px;
+  font-size: 16px;
+}
+
+/* Responsive PLAY button on mobile */
+@media (max-width: 768px) {
+  #channel-table .play-button.channel-btn {
+    min-width: 100px;
+    height: 40px;
+    padding: 10px 20px;
+    font-size: 13px;
+  }
 }
 
 [data-theme="light"] #channel-table .channel-link-copy {
-  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-  color: white;
+  border-color: var(--light-border);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="light"] #channel-table .channel-link-copy:hover {
+  background: var(--light-accent-blue);
+  color: var(--light-accent-blue-dark);
+  border-color: var(--light-accent-blue-dark);
 }
 
 [data-theme="light"] #channel-table .channel-link-copy:hover {
@@ -1349,8 +1607,8 @@ body.cinema-background .more-button:hover {
   /* Reduce minimum widths on tablet */
   #event-table th:nth-child(1) { min-width: 120px; }
   #event-table th:nth-child(2) { min-width: 70px; }
-  #event-table th:nth-child(3) { min-width: 100px; }
-  #event-table th:nth-child(4) { min-width: 150px; }
+  #event-table th:nth-child(3) { min-width: 200px; }
+  #event-table th:nth-child(4) { min-width: 100px; }
 }
 
 @media (max-width: 768px) {
@@ -1368,11 +1626,11 @@ body.cinema-background .more-button:hover {
     margin-bottom: 20px;
   }
 
-  /* Hide non-essential columns on mobile */
+  /* Mobile: Hide DATE/TIME and SPORT columns - keep MATCH/TOURNAMENT and STREAM LINK */
+  #event-table th:nth-child(1),
+  #event-table td:nth-child(1),
   #event-table th:nth-child(2),
-  #event-table td:nth-child(2),
-  #event-table th:nth-child(3),
-  #event-table td:nth-child(3) {
+  #event-table td:nth-child(2) {
     display: none;
   }
 
@@ -1384,39 +1642,33 @@ body.cinema-background .more-button:hover {
 
   #event-table th,
   #event-table td {
-    padding: 10px 6px;
+    padding: 10px 8px;
   }
 
-  /* Date-time column on mobile */
-  #event-table td:first-child {
-    font-size: 10px;
-    min-width: 110px;
-    max-width: 130px;
+  /* Match cell on mobile - 2 lines */
+  .match-cell {
+    min-width: 150px;
   }
 
-  .date-time-cell {
-    min-width: 110px;
-  }
-
-  .date-time-cell .date-line {
-    font-size: 10px;
-    margin-bottom: 2px;
-    white-space: nowrap;
-  }
-
-  .date-time-cell .time-line {
-    font-size: 9px;
-    white-space: nowrap;
-  }
-
-  .date-time-cell .date-line,
-  .date-time-cell .time-line {
+  .match-cell .match-name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
     color: var(--color-text-primary);
   }
 
-  .date-time-cell .date-line i,
-  .date-time-cell .time-line i {
-    margin-right: 3px;
+  .match-cell .match-name i {
+    margin-right: 6px;
+    color: var(--color-primary);
+  }
+
+  .match-cell .match-tournament {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+  }
+
+  .match-cell .match-tournament i {
+    margin-right: 4px;
     font-size: 9px;
   }
 
@@ -1434,12 +1686,11 @@ body.cinema-background .more-button:hover {
   }
 
   /* Match column can wrap on mobile */
-  #event-table td:nth-child(4) {
+  #event-table td:nth-child(3) {
     word-break: break-word;
-    max-width: 120px;
   }
 
-  /* Hide CHANNEL LINK on mobile */
+  /* Hide CHANNEL LINK on mobile only */
   #channel-table th:nth-child(2),
   #channel-table td:nth-child(2) {
     display: none;
@@ -1894,6 +2145,286 @@ body.cinema-background .more-button:hover {
   color: var(--color-text-primary);
 }
 
+
+
+/* ============================================
+   PWA INSTALL BANNER
+   ============================================ */
+
+.pwa-install-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  max-width: 400px;
+  width: calc(100% - 40px);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.98), rgba(10, 10, 10, 0.98));
+  backdrop-filter: blur(20px);
+  border: 2px solid var(--color-primary);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+              0 0 40px rgba(255, 215, 0, 0.2);
+  z-index: 10000;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: bannerGlow 3s ease-in-out infinite;
+}
+
+.pwa-install-banner.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+@keyframes bannerGlow {
+  0%, 100% {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 60px rgba(255, 215, 0, 0.4);
+  }
+}
+
+.pwa-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.pwa-banner-icon {
+  flex-shrink: 0;
+}
+
+.pwa-banner-icon svg {
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.3));
+}
+
+.pwa-banner-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-banner-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.pwa-banner-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.pwa-banner-close {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 12px;
+}
+
+.pwa-banner-close:hover {
+  background: var(--color-primary);
+  color: var(--color-bg-primary);
+  transform: scale(1.1);
+}
+
+.pwa-banner-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pwa-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pwa-btn-primary {
+  background: linear-gradient(135deg, var(--color-primary), #d4af37);
+  color: var(--color-bg-primary);
+  border-color: var(--color-primary);
+}
+
+.pwa-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+}
+
+.pwa-btn-secondary {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.pwa-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   MODERN ANIMATIONS & ENHANCEMENTS
+   ============================================ */
+
+/* Smooth page transitions */
+.page {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card hover effects */
+.stream-input-box {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stream-input-box:hover {
+  transform: translateY(-4px);
+}
+
+/* Button ripple effect */
+.play-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.play-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.play-button:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Table row hover with slide effect */
+table tbody tr {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+table tbody tr::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--color-primary);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+table tbody tr:hover::before {
+  transform: scaleY(1);
+}
+
+/* Skeleton loading animation for tables */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 0%,
+    var(--color-bg-card) 50%,
+    var(--color-bg-secondary) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Floating animation for icons */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.hero-subtitle {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Pulse animation for live indicators */
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+/* Scroll reveal animation */
+@keyframes scrollReveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.table-container {
+  animation: scrollReveal 0.6s ease-out;
+}
+
 .error-modal-body p {
   margin: 0;
   line-height: 1.6;
@@ -1996,6 +2527,15 @@ body.cinema-background .more-button:hover {
   color: var(--color-text-primary);
   font-size: 16px;
   font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.footer-disclaimer {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  margin: 0 auto;
+  opacity: 0.7;
+  white-space: nowrap;
 }
 
 .footer .heart {
@@ -2015,3 +2555,271 @@ body.cinema-background .more-button:hover {
     transform: scale(1);
   }
 }
+
+
+/* Toast Notification Styles */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10000;
+  border: 2px solid var(--color-accent);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-success {
+  border-color: #4CAF50;
+}
+
+.toast-success i {
+  color: #4CAF50;
+  font-size: 20px;
+}
+
+.toast-error {
+  border-color: #f44336;
+}
+
+.toast-error i {
+  color: #f44336;
+  font-size: 20px;
+}
+
+.toast-info {
+  border-color: var(--color-accent);
+}
+
+.toast-info i {
+  color: var(--color-accent);
+  font-size: 20px;
+}
+
+/* Desktop override: Force CHANNEL LINK column to be visible */
+@media (min-width: 769px) {
+  #channel-table th:nth-child(2),
+  #channel-table td:nth-child(2) {
+    display: table-cell !important;
+  }
+}
+/* =========================================================
+   TABLE FIX V6 — lock columns + keep full width (desktop + iOS)
+
+   Root cause of your new “tiny / floating headers” bug:
+   When you switch to the grid-based lock, if ANY older rule forces table parts
+   back to table-row/table-cell (or if widths/min-widths are missing), browsers
+   end up computing a weird intrinsic width, so the grid tracks collapse.
+
+   Fix strategy:
+   - Force table + header/body wrappers to be block-level and full width.
+   - Force rows to be grid with MIN widths (minmax) so columns can't collapse.
+   - Force cells to be block-level grid items.
+   - Keep your card-row look (spacing + radius) without relying on border-spacing.
+   ========================================================= */
+
+/* 0) Safety: make sure the outer container is the layout reference */
+.table-container {
+  width: 100% !important;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* 1) EVENTS TABLE — 4 columns */
+#event-table {
+  display: block !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important; /* we simulate spacing with row margin */
+  table-layout: auto !important; /* grid handles sizing */
+}
+
+#event-table thead,
+#event-table tbody {
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Sticky header as a whole (more stable than sticky on each TH) */
+#event-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* Grid rows: use minmax to prevent column collapse */
+#event-table thead tr,
+#event-table tbody tr {
+  display: grid !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  grid-template-columns:
+    minmax(190px, 1.05fr)  /* DATE & TIME */
+    minmax(120px, 0.70fr)  /* SPORT */
+    minmax(360px, 2.05fr)  /* MATCH & TOURNAMENT */
+    minmax(320px, 2.20fr); /* STREAM LINK */
+  align-items: center;
+}
+
+/* Cells must behave as grid items (not table-cells) */
+#event-table th,
+#event-table td {
+  display: block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Keep your card-row spacing */
+#event-table tbody tr {
+  margin-bottom: 12px;
+}
+
+/* Preserve rounded corners per row */
+#event-table tbody td:first-child,
+#event-table thead th:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+#event-table tbody td:last-child,
+#event-table thead th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* IMPORTANT: allow your two-line layouts */
+#event-table td:nth-child(1),
+#event-table td:nth-child(3) {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* DATE & TIME: enforce 2 lines */
+.date-time-cell .date-line,
+.date-time-cell .time-line {
+  display: block !important;
+}
+
+/* MATCH & TOURNAMENT: enforce 2 lines */
+.match-cell .match-name,
+.match-cell .match-tournament {
+  display: block !important;
+}
+
+/* 2) CHANNELS TABLE — 3 columns */
+#channel-table {
+  display: block !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  table-layout: auto !important;
+}
+
+#channel-table thead,
+#channel-table tbody {
+  display: block !important;
+  width: 100% !important;
+}
+
+#channel-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+#channel-table thead tr,
+#channel-table tbody tr {
+  display: grid !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  grid-template-columns:
+    minmax(220px, 1.10fr)  /* CHANNEL NAME */
+    minmax(420px, 2.10fr)  /* CHANNEL LINK */
+    minmax(260px, 1.20fr); /* STREAM LINK */
+  align-items: center;
+}
+
+#channel-table th,
+#channel-table td {
+  display: block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#channel-table tbody tr {
+  margin-bottom: 12px;
+}
+
+#channel-table tbody td:first-child,
+#channel-table thead th:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+#channel-table tbody td:last-child,
+#channel-table thead th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* 3) MOBILE behavior — keep your hide-columns behavior */
+@media (max-width: 768px) {
+  /* Events: hide col 1 & 2 (DATE/TIME + SPORT) -> 2 columns */
+  #event-table thead tr,
+  #event-table tbody tr {
+    grid-template-columns: 1.6fr 1fr !important;
+  }
+
+  #event-table th:nth-child(1),
+  #event-table td:nth-child(1),
+  #event-table th:nth-child(2),
+  #event-table td:nth-child(2) {
+    display: none !important;
+  }
+
+  /* Channels: hide col 2 (LINK) -> 2 columns */
+  #channel-table thead tr,
+  #channel-table tbody tr {
+    grid-template-columns: 1.4fr 1fr !important;
+  }
+
+  #channel-table th:nth-child(2),
+  #channel-table td:nth-child(2) {
+    display: none !important;
+  }
+}
+
+/* 4) Header icon spacing: always add a gap */
+#event-table th i,
+#channel-table th i {
+  margin-right: 8px !important;
+}
+

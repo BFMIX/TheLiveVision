@@ -1,5 +1,5 @@
 // channelsManager.js
-// Gestion des chaînes et filtres à partir du fichier CSV
+// Gestion des chaînes via la nouvelle API beta.adstrim.ru
 
 document.addEventListener('DOMContentLoaded', () => {
   const channelList = document.getElementById('channel-list');
@@ -9,25 +9,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage = document.getElementById('channels-error');
   let channelsData = [];
 
-  // Fonction pour charger les chaînes depuis le fichier CSV
+  // Function to extract country from channel name (e.g., "SkySportsNews[UK]" -> "UK")
+  function extractCountry(channelName) {
+    const match = channelName.match(/\[([^\]]+)\]$/);
+    return match ? match[1] : 'International';
+  }
+
+  // Function to clean channel name (remove country tag)
+  function cleanChannelName(channelName) {
+    return channelName.replace(/\[[^\]]+\]$/, '').trim();
+  }
+
+  // Load channels from new API
   async function loadChannels() {
     try {
       loadingIndicator.style.display = 'block';
       errorMessage.style.display = 'none';
 
-      // Charger le fichier CSV
-      const response = await fetch('files/allchannels.csv'); // Ajustez le chemin selon l'emplacement de votre fichier
+      const response = await fetch('https://beta.adstrim.ru/api/channels');
       if (!response.ok) {
-        throw new Error('Erreur lors de la récupération du fichier allchannels.csv.');
+        throw new Error('Network error while fetching channels.');
       }
-      const csvText = await response.text();
+      const apiResponse = await response.json();
 
-      // Parser le CSV
-      channelsData = parseCSV(csvText);
+      if (apiResponse.status !== 'success' || !apiResponse.channels) {
+        throw new Error('Invalid API response.');
+      }
 
+      // Transform API data - only show channels with show_on_livetv = true and hide = false
+      channelsData = apiResponse.channels
+        .filter(ch => ch.show_on_livetv === true && ch.hide === false)
+        .map(ch => {
+          const country = extractCountry(ch.name);
+          return {
+            name: cleanChannelName(ch.name),
+            fullName: ch.name,
+            url: `https://topembed.pw/channel/${encodeURIComponent(ch.name)}`,
+            country: country,
+            image: ch.image || ''
+          };
+        });
 
-      // Remplir le filtre de pays
-      const countries = [...new Set(channelsData.map(channel => channel.country))].sort();
+      console.log(`✅ Loaded ${channelsData.length} channels from new API`);
+
+      // Populate country filter
+      const countries = [...new Set(channelsData.map(ch => ch.country))].sort();
       countries.forEach(country => {
         const option = document.createElement('option');
         option.value = country;
@@ -35,49 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
         countryFilter.appendChild(option);
       });
 
-      // Afficher toutes les chaînes au départ
+      // Display all channels
       displayChannels(channelsData);
     } catch (error) {
-      console.error('Erreur lors du chargement des chaînes :', error);
+      console.error('Error loading channels:', error);
       channelList.innerHTML = '<tr><td colspan="3">Unable to load channels. Please try again later.</td></tr>';
-      errorMessage.textContent = 'Unable to load channels from CSV. Please check your connection and try again.';
+      errorMessage.textContent = 'Unable to load channels from API. Please check your connection and try again.';
       errorMessage.style.display = 'block';
     } finally {
       loadingIndicator.style.display = 'none';
     }
   }
 
-  // Fonction pour parser le CSV avec détection automatique du séparateur
-  function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
-    if (lines.length === 0) return [];
-
-    // Détecter le séparateur en comptant les occurrences dans la première ligne
-    const firstLine = lines[0];
-    const commaCount = (firstLine.match(/,/g) || []).length;
-    const semicolonCount = (firstLine.match(/;/g) || []).length;
-    const separator = semicolonCount > commaCount ? ';' : ',';
-
-    // Parser les en-têtes
-    const headers = firstLine.split(separator).map(header => header.trim());
-    const result = [];
-
-    // Parser les lignes suivantes
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].split(separator).map(item => item.trim());
-      if (line.length === headers.length) {
-        const channel = {};
-        headers.forEach((header, index) => {
-          channel[header] = line[index];
-        });
-        result.push(channel);
-      }
-    }
-
-    return result;
-  }
-
-  // Fonction pour afficher les chaînes dans le tableau
+  // Display channels in table
   function displayChannels(channels) {
     channelList.innerHTML = '';
     channels.forEach(channel => {
@@ -99,53 +95,53 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="play-button channel-btn" onclick="loadStream('${channel.url}')">Play</button>
         </td>
       `;
+      // Data-labels for mobile card layout (CSS uses td[data-label])
+      const labels = ['CHANNEL NAME', 'CHANNEL LINK', 'STREAM LINK'];
+      row.querySelectorAll('td').forEach((td, i) => {
+        td.setAttribute('data-label', labels[i] || '');
+      });
+
       channelList.appendChild(row);
     });
 
-    // Ajouter les gestionnaires d'événements pour les boutons "Copy"
+    // Add copy functionality
     document.querySelectorAll('.channel-link-copy').forEach(button => {
-      button.addEventListener('click', async (e) => {
-        const input = e.target.previousElementSibling;
-        try {
-          await navigator.clipboard.writeText(input.value);
-          const originalText = e.target.textContent;
-          e.target.textContent = 'Copied!';
-          setTimeout(() => {
-            e.target.textContent = originalText;
-          }, 2000);
-        } catch (err) {
-          console.error('Failed to copy:', err);
-          alert('Failed to copy link');
-        }
+      button.addEventListener('click', function() {
+        const input = this.parentElement.querySelector('.channel-link-input');
+        input.select();
+        document.execCommand('copy');
+        
+        const originalText = this.textContent;
+        this.textContent = 'Copied!';
+        this.classList.add('copied');
+        
+        setTimeout(() => {
+          this.textContent = originalText;
+          this.classList.remove('copied');
+        }, 2000);
       });
     });
   }
 
-  // Fonction pour filtrer les chaînes
+  // Filter channels
   function filterChannels() {
     const selectedCountry = countryFilter.value;
     const searchQuery = channelSearch.value.toLowerCase();
 
     const filteredChannels = channelsData.filter(channel => {
       const matchesCountry = selectedCountry ? channel.country === selectedCountry : true;
-      const matchesSearch = channel.name.toLowerCase().includes(searchQuery);
+      const matchesSearch = channel.name.toLowerCase().includes(searchQuery) ||
+                           channel.fullName.toLowerCase().includes(searchQuery);
       return matchesCountry && matchesSearch;
     });
 
     displayChannels(filteredChannels);
   }
 
-  // Gestionnaires d'événements pour les filtres
-  countryFilter.addEventListener('change', filterChannels);
-  channelSearch.addEventListener('input', filterChannels);
+  // Event listeners
+  if (countryFilter) countryFilter.addEventListener('change', filterChannels);
+  if (channelSearch) channelSearch.addEventListener('input', filterChannels);
 
-  // Charger les chaînes au démarrage
+  // Load channels on page load
   loadChannels();
 });
-
-// Fonction pour charger un stream
-function loadStream(url) {
-  const liveStreamIframe = document.getElementById('live-stream');
-  liveStreamIframe.src = url;
-  navigateTo('page-stream');
-}

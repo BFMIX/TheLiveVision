@@ -1,122 +1,150 @@
 // streamManager.js
-// Gestion du chargement des streams avec auto-play
+// Gestion du chargement des streams avec auto-play + UX mobile améliorée
+
+// Utils
+function isMobile() {
+  return window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
+}
+
+function scrollToPlayerWithOffset() {
+  const iframe = document.getElementById("live-stream");
+  if (!iframe) return;
+
+  // Si ton player est dans un conteneur, scroll dessus plutôt que sur l'iframe (souvent mieux)
+  const target = iframe.closest(".player-container") || iframe;
+
+  const header = document.querySelector(".header");
+  const headerOffset = header ? header.offsetHeight + 12 : 12;
+
+  const rect = target.getBoundingClientRect();
+  const top = rect.top + window.pageYOffset - headerOffset;
+
+  window.scrollTo({ top, behavior: "smooth" });
+
+  // Feedback visuel léger (pulse) pour que l'utilisateur "comprenne" où il est
+  target.classList.add("player-focus-pulse");
+  setTimeout(() => target.classList.remove("player-focus-pulse"), 900);
+}
+
+// Global function to load stream - accessible from onclick handlers
+// Backward compatible: loadStream(url, autoScrollBoolean)
+function loadStream(url, autoScroll = true) {
+  const liveStreamIframe = document.getElementById("live-stream");
+  if (!liveStreamIframe) {
+    console.error("Iframe not found");
+    return;
+  }
+
+  try {
+    liveStreamIframe.src = url;
+
+    // Save last watched stream to localStorage
+    localStorage.setItem("lastStream", url);
+    console.log(`✅ Stream loaded: ${url}`);
+
+    // Navigate to stream page if not already there
+    if (typeof navigateTo === "function") {
+      navigateTo("page-stream");
+    }
+
+    // Scroll to player only if autoScroll is true
+    if (autoScroll) {
+      // Sur mobile, scroll "propre" avec offset du header
+      // Sur desktop, on garde un scroll normal
+      setTimeout(() => {
+        if (isMobile()) {
+          scrollToPlayerWithOffset();
+        } else {
+          liveStreamIframe.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 350);
+    }
+  } catch (error) {
+    console.error("Error loading stream:", error);
+    alert("Error loading stream. Please check the URL and try again.");
+  }
+}
+
+// Make loadStream globally available
+window.loadStream = loadStream;
 
 document.addEventListener("DOMContentLoaded", () => {
   const streamUrlInput = document.getElementById("stream-url");
-  const liveStreamIframe = document.getElementById("live-stream");
   const loadStreamButton = document.getElementById("load-stream");
 
-  // Fonction pour vérifier si une URL est valide
+  // Function to validate URL
   function isValidUrl(url) {
-    // Vérifie si l'URL commence par http:// ou https://
     const urlPattern = /^(https?:\/\/)/i;
     return urlPattern.test(url);
   }
 
-  // Fonction pour charger le stream dans l'iframe
-  function loadStream(url) {
+  // Function to load random channel from API
+  async function loadRandomChannel() {
     try {
-      liveStreamIframe.src = url;
-      // Save last watched stream to localStorage
-      localStorage.setItem('lastStream', url);
-      console.log(`Stream chargé avec succès : ${url}`);
-    } catch (error) {
-      console.error("Erreur lors du chargement du stream :", error);
-      alert(
-        "Erreur lors du chargement du stream. Veuillez vérifier l’URL et réessayer."
-      );
-    }
-  }
-
-  // Fonction pour obtenir le pays de l'utilisateur
-  async function getUserCountry() {
-    try {
-      const response = await fetch('https://ipapi.co/json/');
-      const data = await response.json();
-      return data.country_name || 'Unknown';
-    } catch (error) {
-      console.error('Could not detect user country:', error);
-      return 'Unknown';
-    }
-  }
-
-  // Fonction pour charger un canal aléatoire du pays de l'utilisateur
-  async function loadRandomChannelFromCountry() {
-    try {
-      const userCountry = await getUserCountry();
-      console.log('User country detected:', userCountry);
-      
-      // Load channels from CSV
-      const response = await fetch('files/allchannels.csv');
+      const response = await fetch("https://beta.adstrim.ru/api/channels");
       if (!response.ok) return;
-      
-      const csvText = await response.text();
-      const lines = csvText.split('\n').filter(line => line.trim());
-      
-      // Skip header and parse channels
-      const channels = lines.slice(1).map(line => {
-        const [name, url, country] = line.split(';');
-        return { name, url, country };
-      }).filter(ch => ch.url && ch.url.startsWith('http'));
-      
-      // Filter by user country or fallback to all channels
-      let countryChannels = channels.filter(ch => 
-        ch.country && ch.country.toLowerCase().includes(userCountry.toLowerCase())
-      );
-      
-      if (countryChannels.length === 0) {
-        countryChannels = channels; // Use all if no country match
-      }
-      
-      // Pick random channel
-      if (countryChannels.length > 0) {
-        const randomChannel = countryChannels[Math.floor(Math.random() * countryChannels.length)];
-        // Don't show URL in input, just load it
-        loadStream(randomChannel.url);
-        console.log('Auto-loaded random channel:', randomChannel.name);
+
+      const apiResponse = await response.json();
+      if (apiResponse.status !== "success" || !apiResponse.channels) return;
+
+      // Filter visible channels
+      const channels = apiResponse.channels.filter((ch) => ch.show_on_livetv && !ch.hide);
+
+      if (channels.length > 0) {
+        const randomChannel = channels[Math.floor(Math.random() * channels.length)];
+        const streamUrl = `https://topembed.pw/channel/${encodeURIComponent(randomChannel.name)}`;
+        console.log("Auto-loaded random channel:", randomChannel.name);
+
+        // IMPORTANT: pas d'auto-scroll au premier chargement auto
+        loadStream(streamUrl, false);
       }
     } catch (error) {
-      console.error('Error auto-loading channel:', error);
+      console.error("Could not load random channel:", error);
     }
   }
 
-  // Auto-play logic on page load
-  const lastStream = localStorage.getItem('lastStream');
-  
-  if (lastStream && isValidUrl(lastStream)) {
-    // Returning visitor - load last watched stream (but don't show in input)
-    loadStream(lastStream);
-    console.log('Returning visitor - loaded last stream');
+  // Check if there's a last stream in localStorage
+  const lastStream = localStorage.getItem("lastStream");
+  const hasVisitedBefore = localStorage.getItem("hasVisited");
+
+  // Only auto-load on first visit
+  if (!hasVisitedBefore) {
+    if (lastStream) {
+      console.log("First visit - Loading last watched stream:", lastStream);
+      loadStream(lastStream, false); // no auto-scroll
+    } else {
+      loadRandomChannel();
+    }
+    localStorage.setItem("hasVisited", "true");
   } else {
-    // New visitor - load random channel from their country
-    loadRandomChannelFromCountry();
-    console.log('New visitor - loading random channel');
+    console.log("Returning visitor - Stream not auto-loaded");
   }
 
-  // Gestionnaire d'événement pour le bouton "PLAY"
-  loadStreamButton.addEventListener("click", () => {
-    const url = streamUrlInput.value.trim();
+  // Button click handler
+  if (loadStreamButton) {
+    loadStreamButton.addEventListener("click", () => {
+      const url = (streamUrlInput?.value || "").trim();
 
-    // Vérifier si l'URL est vide
-    if (!url) {
-      alert("Veuillez entrer une URL de stream valide.");
-      return;
-    }
+      if (!url) {
+        alert("Please enter a stream URL.");
+        return;
+      }
 
-    // Vérifier si l'URL est valide (commence par http:// ou https://)
-    if (!isValidUrl(url)) {
-      alert("L’URL doit commencer par http:// ou https://.");
-      return;
-    }
+      if (!isValidUrl(url)) {
+        alert("Please enter a valid URL (starting with http:// or https://).");
+        return;
+      }
 
-    // Charger le stream dans l'iframe
-    loadStream(url);
-  });
+      loadStream(url, true);
+    });
+  }
 
-  // Gestionnaire pour la touche "Enter" dans le champ de saisie
-  streamUrlInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      loadStreamButton.click();
-    }
-  });
+  // Enter key handler
+  if (streamUrlInput && loadStreamButton) {
+    streamUrlInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        loadStreamButton.click();
+      }
+    });
+  }
 });
