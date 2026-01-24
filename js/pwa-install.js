@@ -36,7 +36,7 @@
     banner.innerHTML = `
       <div class="pwa-banner-content">
         <div class="pwa-banner-icon" aria-hidden="true">
-          <img src="/icon-192.png" alt="" style="width:48px;height:48px;border-radius:12px;" />
+          <img src="/assets/icons/icon-192.png" alt="" style="width:48px;height:48px;border-radius:12px;" />
         </div>
         <div class="pwa-banner-text">
           <div class="pwa-banner-title">Installer TheLiveVision</div>

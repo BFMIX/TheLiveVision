@@ -1172,13 +1172,20 @@ body.cinema-background .more-button:hover {
   max-width: 100%;
 }
 
+/* Uniform button sizes - with or without flag */
 .stream-buttons .stream-btn {
   margin: 0;
   flex-shrink: 0;
-  min-width: 100px;
-  height: 42px;
-  padding: 10px 22px;
-  font-size: 14px;
+  min-width: 95px;
+  width: 95px;
+  height: 38px;
+  padding: 8px 12px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
 }
 
 /* Match cell with tournament info - always visible */
@@ -1200,16 +1207,17 @@ body.cinema-background .more-button:hover {
 .match-cell .match-tournament i {
   margin-right: 6px;
   opacity: 0.7;
-
-/* Flag emoji styling - Larger flags */
-.flag-emoji {
-  font-size: 22px;
-  display: inline-block;
-  margin-right: 6px;
-  line-height: 1;
-  vertical-align: middle;
 }
 
+/* Flag emoji styling - Fixed width for uniform button sizes */
+.flag-emoji {
+  font-size: 18px;
+  display: inline-block;
+  width: 1.4em;
+  text-align: center;
+  line-height: 1;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 #event-table td:nth-child(4) {
@@ -2383,18 +2391,20 @@ table tbody tr:hover::before {
   animation: shimmer 2s infinite linear;
 }
 
-/* Floating animation for icons */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+/* Floating animation for icons - ONE TIME on load */
+@keyframes floatOnce {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  50% {
-    transform: translateY(-10px);
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .hero-subtitle {
-  animation: float 3s ease-in-out infinite;
+  animation: floatOnce 0.8s ease-out forwards;
 }
 
 /* Pulse animation for live indicators */

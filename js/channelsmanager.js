@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </td>
         <td>
-          <button class="play-button channel-btn" onclick="loadStream('${channel.url}')">Play</button>
+          <button class="play-button channel-btn" onclick="loadStream('${channel.url}')"><i class="fas fa-play"></i> Play</button>
         </td>
       `;
       // Data-labels for mobile card layout (CSS uses td[data-label])
