@@ -130,13 +130,14 @@ document.addEventListener('DOMContentLoaded', () => {
         'SAUDI ARABIA': '🇸🇦', 'QATAR': '🇶🇦', 'EGYPT': '🇪🇬', 'SOUTH AFRICA': '🇿🇦', 'NIGERIA': '🇳🇬',
         'ALGERIA': '🇩🇿', 'MOROCCO': '🇲🇦', 'TUNISIA': '🇹🇳', 'ISRAEL': '🇮🇱', 'CZECH': '🇨🇿',
         'SLOVAKIA': '🇸🇰', 'HUNGARY': '🇭🇺', 'AUSTRIA': '🇦🇹', 'SWITZERLAND': '🇨🇭', 'ALBANIA': '🇦🇱',
-        'CANADA': '🇨🇦', 'CHILE': '🇨🇱', 'COLOMBIA': '🇨🇴', 'PERU': '🇵🇪', 'VENEZUELA': '🇻🇪',
+        'CHILE': '🇨🇱', 'COLOMBIA': '🇨🇴', 'PERU': '🇵🇪', 'VENEZUELA': '🇻🇪',
         'URUGUAY': '🇺🇾', 'ECUADOR': '🇪🇨', 'BOLIVIA': '🇧🇴', 'PARAGUAY': '🇵🇾', 'COSTA RICA': '🇨🇷',
         'PANAMA': '🇵🇦', 'JAMAICA': '🇯🇲', 'HONDURAS': '🇭🇳', 'EL SALVADOR': '🇸🇻', 'GUATEMALA': '🇬🇹',
         'INTERNATIONAL': '🌍', 'WORLD': '🌎', 'GLOBAL': '🌏'
       };
       
-      return countryFlags[countryCode] || '🌐';
+      // Return flag if found, otherwise empty string (no globe fallback)
+      return countryFlags[countryCode] || '';
     }
     
     events.forEach(event => {
