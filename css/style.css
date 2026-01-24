@@ -2954,21 +2954,44 @@ table tbody tr:hover::before {
     font-size: 14px;
   }
   
-  /* SPORT - Badge style, centered */
+  /* SPORT - Badge style, TOP LEFT corner */
   #event-table tbody td:nth-child(2) {
-    order: 2;
+    order: 1;
     display: inline-block !important;
     width: auto !important;
     background: var(--color-primary) !important;
     color: #000 !important;
-    padding: 6px 14px !important;
-    border-radius: 20px;
-    font-size: 11px;
+    padding: 5px 12px !important;
+    border-radius: 16px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    align-self: center;
-    margin: 10px auto;
+    align-self: flex-start;
+    margin: 0 0 8px 0;
+  }
+  
+  /* DATE & TIME - Second row, centered */
+  #event-table tbody td:nth-child(1) {
+    order: 2;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+  
+  /* Neutral icon before date */
+  #event-table tbody td:nth-child(1)::before {
+    content: '\f073';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    opacity: 0.7;
   }
   
   /* MATCH & TOURNAMENT - Main content, centered */
@@ -2980,6 +3003,11 @@ table tbody tr:hover::before {
   #event-table tbody td:nth-child(3) .match-cell {
     min-width: unset;
     text-align: center;
+  }
+  
+  /* Hide icons inside match cell on mobile */
+  #event-table tbody td:nth-child(3) .match-cell i {
+    display: none !important;
   }
   
   #event-table tbody td:nth-child(3) .match-name {
