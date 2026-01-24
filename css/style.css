@@ -3088,24 +3088,6 @@ table tbody tr:hover::before {
     width: 28px;
   }
   
-  /* Channel name text - allow wrap */
-  #channel-table tbody td:nth-child(1) .channel-name-with-flag::after {
-    content: none;
-  }
-  
-  #channel-table tbody tr {
-    display: flex !important;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 14px 12px;
-    gap: 10px;
-    min-height: 56px;
-  }
-  
   /* Hide channel link on mobile cards */
   #channel-table tbody td:nth-child(2) {
     display: none !important;
