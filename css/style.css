@@ -3045,9 +3045,9 @@ table tbody tr:hover::before {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 12px;
-    padding: 12px 16px;
-    gap: 12px;
-    min-height: 60px;
+    padding: 14px 12px;
+    gap: 10px;
+    min-height: 56px;
   }
   
   #channel-table tbody tr:hover {
