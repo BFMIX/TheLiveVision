@@ -3401,3 +3401,10 @@ table tbody tr:hover::before {
   margin-right: 8px !important;
 }
 
+/* 5) Desktop: Force CHANNEL LINK column visible (override mobile hide) */
+@media (min-width: 769px) {
+  #channel-table tbody td:nth-child(2) {
+    display: block !important;
+  }
+}
+
