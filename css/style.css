@@ -3095,7 +3095,6 @@ table tbody tr:hover::before {
     flex: 1;
     min-width: 0;
     order: 1;
-    overflow: hidden;
   }
   
   #channel-table tbody td:nth-child(1) .channel-name-with-flag {
@@ -3103,11 +3102,10 @@ table tbody tr:hover::before {
     align-items: center;
     gap: 8px;
     width: 100%;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  }
   }
   
   #channel-table tbody td:nth-child(1) .country-flag {
