@@ -3223,19 +3223,19 @@ table tbody tr:hover::before {
   }
 
   /* ============================================
-     DARK MODE - BETTER CARD CONTRAST
+     DARK MODE - CARDS CONTRAST SAME AS FILTERS
      ============================================ */
   [data-theme="dark"] #event-table tbody tr,
   [data-theme="dark"] #channel-table tbody tr {
-    background: rgba(30, 30, 30, 0.95);
-    border: 1px solid rgba(255, 215, 0, 0.15);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    box-shadow: var(--shadow-md);
   }
   
   [data-theme="dark"] #event-table tbody tr:hover,
   [data-theme="dark"] #channel-table tbody tr:hover {
     border-color: var(--color-primary);
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
+    box-shadow: var(--shadow-gold);
   }
 
   /* ============================================
