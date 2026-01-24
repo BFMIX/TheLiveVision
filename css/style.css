@@ -2802,6 +2802,11 @@ table tbody tr:hover::before {
   border-bottom-right-radius: 12px;
 }
 
+/* Hide mobile filter toggle on desktop */
+.mobile-filter-toggle {
+  display: none;
+}
+
 /* 3) MOBILE behavior — Cards layout for app-like experience */
 @media (max-width: 768px) {
   
