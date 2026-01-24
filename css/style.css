@@ -3066,20 +3066,17 @@ table tbody tr:hover::before {
     background: transparent !important;
   }
   
-  /* Channel name - Left side, wrap allowed */
+  /* Channel name - Left side, full width available */
   #channel-table tbody td:nth-child(1) {
     flex: 1;
     min-width: 0;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    line-height: 1.4;
-    max-height: 2.8em;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     order: 1;
+    padding-right: 10px !important;
   }
   
   /* Hide channel link on mobile cards */
@@ -3087,18 +3084,19 @@ table tbody tr:hover::before {
     display: none !important;
   }
   
-  /* Play button - Right side */
+  /* Play button - Right side, compact */
   #channel-table tbody td:nth-child(3) {
     flex-shrink: 0;
     order: 2;
   }
   
   #channel-table tbody td:nth-child(3) .play-button {
-    min-width: 90px !important;
-    height: 44px !important;
-    padding: 10px 16px !important;
-    font-size: 13px !important;
-    border-radius: 10px;
+    min-width: 80px !important;
+    width: 80px !important;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    border-radius: 8px;
   }
 
   /* ============================================
