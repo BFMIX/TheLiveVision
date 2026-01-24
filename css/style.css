@@ -2548,22 +2548,18 @@ table tbody tr:hover::before {
   margin: 0 auto;
   opacity: 0.7;
   max-width: 600px;
-  line-height: 1.5;
-}
-
-/* Mobile footer - 2 lines adaptive */
-@media (max-width: 768px) {
-  .footer-disclaimer {
-    white-space: normal;
-    text-align: center;
-    padding: 0 15px;
-  }
+  line-height: 1.6;
+  text-align: center;
 }
 
 /* Desktop footer - single line if space */
 @media (min-width: 769px) {
   .footer-disclaimer {
     white-space: nowrap;
+  }
+  
+  .footer-disclaimer br {
+    display: none;
   }
 }
 
