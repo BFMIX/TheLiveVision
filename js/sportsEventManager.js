@@ -166,7 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="stream-buttons">
             ${event.channels.map(channel => {
               const flag = getCountryFlag(channel);
-              return `<button class="play-button stream-btn" onclick="loadStream('${channel}')" oncontextmenu="copyStreamLink(event, '${channel}')" data-stream-url="${channel}" title="Right-click to copy link"><span class="flag-emoji">${flag}</span> Play</button>`;
+              const flagHtml = flag ? `<span class="flag-emoji">${flag}</span> ` : '';
+              return `<button class="play-button stream-btn" onclick="loadStream('${channel}')" oncontextmenu="copyStreamLink(event, '${channel}')" data-stream-url="${channel}" title="Right-click to copy link">${flagHtml}Play</button>`;
       // Data-labels for mobile card layout (CSS uses td[data-label])
       const labels = ['DATE & TIME', 'SPORT', 'MATCH & TOURNAMENT', 'STREAM LINK'];
       row.querySelectorAll('td').forEach((td, i) => {
