@@ -859,7 +859,7 @@ body.cinema-background .stream-input-box.cinema-mode {
   /* Desktop: Ensure CHANNEL LINK column is visible */
   #channel-table th:nth-child(2),
   #channel-table td:nth-child(2) {
-    display: table-cell;
+    display: block !important;
   }
 }
 
