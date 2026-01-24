@@ -2642,6 +2642,10 @@ table tbody tr:hover::before {
   #channel-table td:nth-child(2) {
     display: block !important;
   }
+  
+  #channel-table .channel-link-container {
+    display: flex !important;
+  }
 }
 /* =========================================================
    TABLE FIX V6 — lock columns + keep full width (desktop + iOS)
