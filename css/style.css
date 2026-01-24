@@ -3078,6 +3078,8 @@ table tbody tr:hover::before {
     align-items: center;
     gap: 8px;
     width: 100%;
+    font-size: 13px;
+    font-weight: 600;
   }
   
   #channel-table tbody td:nth-child(1) .country-flag {
@@ -3086,12 +3088,22 @@ table tbody tr:hover::before {
     width: 28px;
   }
   
-  #channel-table tbody td:nth-child(1) .channel-name-with-flag {
-    font-size: 13px;
-    font-weight: 600;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  /* Channel name text - allow wrap */
+  #channel-table tbody td:nth-child(1) .channel-name-with-flag::after {
+    content: none;
+  }
+  
+  #channel-table tbody tr {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    gap: 10px;
+    min-height: 56px;
   }
   
   /* Hide channel link on mobile cards */
@@ -3106,12 +3118,13 @@ table tbody tr:hover::before {
   }
   
   #channel-table tbody td:nth-child(3) .play-button {
-    min-width: 75px !important;
-    width: 75px !important;
-    height: 40px !important;
-    padding: 8px 10px !important;
+    min-width: 70px !important;
+    width: 70px !important;
+    height: 38px !important;
+    padding: 6px 8px !important;
     font-size: 11px !important;
     border-radius: 8px;
+    gap: 4px !important;
   }
 
   /* ============================================
