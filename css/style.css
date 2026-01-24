@@ -1172,19 +1172,18 @@ body.cinema-background .more-button:hover {
   max-width: 100%;
 }
 
-/* Uniform button sizes - with or without flag */
+/* Uniform button sizes - auto width, centered content */
 .stream-buttons .stream-btn {
   margin: 0;
   flex-shrink: 0;
-  min-width: 95px;
-  width: 95px;
+  min-width: 70px;
   height: 38px;
-  padding: 8px 12px;
+  padding: 8px 16px;
   font-size: 13px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   box-sizing: border-box;
 }
 
@@ -1209,15 +1208,17 @@ body.cinema-background .more-button:hover {
   opacity: 0.7;
 }
 
-/* Flag emoji styling - Fixed width for uniform button sizes */
+/* Flag emoji styling - natural size, hidden when empty */
 .flag-emoji {
   font-size: 18px;
   display: inline-block;
-  width: 1.4em;
-  text-align: center;
   line-height: 1;
   vertical-align: middle;
-  flex-shrink: 0;
+}
+
+/* Hide empty flag spans */
+.flag-emoji:empty {
+  display: none;
 }
 
 #event-table td:nth-child(4) {
