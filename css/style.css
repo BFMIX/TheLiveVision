@@ -2639,7 +2639,8 @@ table tbody tr:hover::before {
 /* Desktop override: Force CHANNEL LINK column to be visible */
 @media (min-width: 769px) {
   #channel-table th:nth-child(2),
-  #channel-table td:nth-child(2) {
+  #channel-table td:nth-child(2),
+  #channel-table tbody td:nth-child(2) {
     display: block !important;
   }
   
