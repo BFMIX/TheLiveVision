@@ -1,131 +1,175 @@
-# 🏆 LIVE SPORTS VISION
+# TheLiveVision
 
 Your Ultimate Sports Streaming Platform - Watch live sports, events, and channels from around the world.
 
-## 📺 Features
+## Features
 
 - **Live Streaming**: Watch sports streams from various sources
-- **Sports Events**: Browse upcoming and live sports events
-- **TV Channels**: Access to multiple sports channels
-- **Search**: Quick search for streams and channels
-- **Dark/Light Mode**: Switch between themes
-- **Cinema Mode**: Immersive viewing experience
-- **PWA Support**: Install as an app on your device
-- **Responsive**: Works on desktop, tablet, and mobile
+- **Sports Events**: Browse upcoming and live sports events with country flags
+- **TV Channels**: Access to multiple sports channels worldwide
+- **Search**: Quick search for streams, events, and channels
+- **Dark/Light Mode**: Switch between themes with floating toggle button
+- **Cinema Mode**: Immersive full-screen viewing experience
+- **PWA Support**: Install as an app on your device (iOS & Android)
+- **Mobile-First Design**: App-like experience on mobile devices
 
-## 🚀 Tech Stack
+## What's New (v3.0)
 
-- **Frontend**: Vanilla JavaScript, HTML5, CSS3
+### Mobile App-Like Experience
+- **Cards Layout**: Events and Channels display as modern cards on mobile
+- **Accordion Filters**: Collapsible filters to save screen space
+- **Compact Hero**: Reduced hero section height on mobile
+- **Scrollable Header**: Horizontal scrolling tabs without cutoff
+- **Touch-Friendly**: All tap targets >= 44px
+
+### UI/UX Improvements
+- **Centered Content**: All card content is centered (date, match, buttons)
+- **Uniform Buttons**: Play buttons have consistent sizing with/without flags
+- **Dark Mode Contrast**: Better card visibility with golden borders
+- **Search & Player Cards**: Styled as cards on mobile for cleaner look
+
+### Features
+- **Country Flags**: Display country flags on stream buttons
+- **Copy Stream Link**: Right-click to copy stream URL
+- **Anti-Popup Protection**: Blocks ads and redirects from iframe players
+- **PWA Install Banner**: Prompts users to install the app
+
+## Tech Stack
+
+- **Frontend**: Vanilla JavaScript (ES6+), HTML5, CSS3
+- **Styling**: CSS Variables, CSS Grid, Flexbox
 - **API**: Beta AdsTrim API for events and channels
 - **Streaming**: Embedded iframe players
-- **PWA**: Progressive Web App with Service Worker
+- **PWA**: Service Worker + Web App Manifest
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 /app/
+├── assets/
+│   └── icons/              # Favicons, PWA icons, splash screens
 ├── css/
-│   ├── style.css           # Main stylesheet
-│   └── style.backup.css    # Backup
+│   └── style.css           # Main stylesheet (responsive)
 ├── js/
 │   ├── navigation.js       # Page navigation
-│   ├── streammanager.js    # Stream management
-│   ├── channelsmanager.js  # Channels display
-│   ├── sportsEventManager.js # Events display
-│   ├── themeToggle.js      # Dark/light theme
-│   ├── anti-popup.js       # Ad/popup blocker
+│   ├── streammanager.js    # Stream player management
+│   ├── channelsmanager.js  # Channels table/cards
+│   ├── sportsEventManager.js # Events table/cards + flags
+│   ├── themeToggle.js      # Dark/light theme toggle
+│   ├── mobileFilters.js    # Accordion filters for mobile
+│   ├── anti-popup.js       # Ad/popup blocker overlay
+│   ├── pwa-install.js      # PWA install banner
+│   ├── favorites.js        # Favorites management
 │   └── ...
-├── index.html              # Main page
+├── index.html              # Single-page application
 ├── manifest.json           # PWA manifest
 └── service-worker.js       # PWA service worker
 ```
 
-## 🎨 Features Details
+## Pages
 
-### Anti-Popup Protection
-The player includes protection against ads and popups from iframe embeds with:
-- Overlay protection
-- Click-through detection
-- Window.open blocking
+### Stream Page
+- URL input for custom streams
+- Search functionality
+- Embedded video player with cinema mode
 
-### Cinema Mode
-Simple zoom animation for immersive viewing:
-- Zoom in: Scale from 0.8 to 1
-- Zoom out: Scale from 1 to 0.8
-- Escape key support
-- Click outside to exit
+### All Sports Events
+- Live and upcoming sports events
+- Filter by: Sport, Date, Tournament
+- Search events
+- Play buttons with country flags
+- Mobile: Card layout with centered content
 
-### Responsive Design
-- Desktop: Full features
-- Mobile: Optimized layout
-- Tablet: Adaptive interface
+### All Channels
+- TV channels from around the world
+- Filter by country
+- Search channels
+- Copy channel link feature
+- Mobile: Compact card layout
 
-## 🔧 Configuration
+## Mobile Features
 
-### API Integration
+### Responsive Breakpoints
+- **Desktop**: >= 1024px - Full table layout
+- **Tablet**: 768px - 1023px - Adapted layout
+- **Mobile**: <= 768px - Card-based UI
+
+### Mobile-Specific UI
+- Cards instead of tables
+- Accordion filters (tap to expand)
+- Horizontal scrolling header tabs
+- Compact hero section
+- Touch-friendly buttons (44px minimum)
+
+## API Integration
+
 The app uses the Beta AdsTrim API:
-- Events: `https://beta.adstrim.ru/api/events`
-- Channels: `https://beta.adstrim.ru/api/channels`
+- **Events**: `https://beta.adstrim.ru/api/events`
+- **Channels**: `https://beta.adstrim.ru/api/channels`
 
-### PWA Configuration
-Edit `manifest.json` to customize:
-- App name
-- Icons
-- Theme colors
-- Shortcuts
+## Local Development
 
-## 🌐 Browser Support
-
-- Chrome/Edge: ✅ Full support
-- Firefox: ✅ Full support
-- Safari: ✅ Full support
-- Mobile browsers: ✅ Optimized
-
-## 📝 Development
-
-### Local Development
-Simply open `index.html` in a browser or use a local server:
 ```bash
+# Clone the repository
+git clone https://github.com/BFMIX/TheLiveVision.git
+cd TheLiveVision
+
+# Start local server
 python3 -m http.server 3000
+
+# Open in browser
+open http://localhost:3000
 ```
 
-### PWA Testing
-For PWA features, you need HTTPS or localhost.
+## PWA Installation
 
-## 🔐 Security Features
+### On Mobile (iOS/Android)
+1. Open the site in Safari/Chrome
+2. Tap "Add to Home Screen" or use the install banner
+3. App icon appears on home screen
 
-- Anti-popup protection
-- Iframe sandbox attributes
-- Content Security Policy headers (recommended)
-- No user authentication required
+### On Desktop (Chrome/Edge)
+1. Click the install icon in the address bar
+2. Click "Install"
+3. App opens in its own window
 
-## 📱 Progressive Web App
+## Browser Support
 
-Install the app on your device:
-1. Open in Chrome/Edge
-2. Click "Install" icon in address bar
-3. App will be added to home screen
+| Browser | Support |
+|---------|---------|
+| Chrome | Full |
+| Firefox | Full |
+| Safari | Full |
+| Edge | Full |
+| Mobile Chrome | Full |
+| Mobile Safari | Full |
 
-## 🎯 Future Enhancements
+## Git Branches
 
-- [ ] User favorites
+- **AI-(Emergent)**: AI/Emergent development branch (default)
+- **OwnDev**: Manual development branch
+
+## Future Enhancements
+
+- [ ] User favorites persistence
 - [ ] Watch history
-- [ ] Multi-language support
+- [ ] Multi-language support (FR, EN, ES)
 - [ ] Custom themes
 - [ ] Picture-in-Picture mode
 - [ ] Chromecast support
+- [ ] Push notifications for live events
 
-## 📄 License
+## License
 
 This project is for educational and personal use.
 
-## 🙏 Credits
+## Credits
 
 - **API**: Beta AdsTrim
 - **Fonts**: Google Fonts (Orbitron, Roboto)
-- **Icons**: Font Awesome
+- **Icons**: Font Awesome 6
 
 ---
 
-**Version**: 2.0.0  
-**Last Updated**: January 2026
+**Version**: 3.0.0  
+**Last Updated**: January 2025
