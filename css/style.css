@@ -2640,7 +2640,7 @@ table tbody tr:hover::before {
 @media (min-width: 769px) {
   #channel-table th:nth-child(2),
   #channel-table td:nth-child(2) {
-    display: table-cell !important;
+    display: block !important;
   }
 }
 /* =========================================================
