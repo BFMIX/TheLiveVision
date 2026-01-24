@@ -3203,6 +3203,104 @@ table tbody tr:hover::before {
     padding: 0 10px;
     overflow-x: visible;
   }
+
+  /* ============================================
+     DARK MODE - BETTER CARD CONTRAST
+     ============================================ */
+  [data-theme="dark"] #event-table tbody tr,
+  [data-theme="dark"] #channel-table tbody tr {
+    background: rgba(30, 30, 30, 0.95);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  [data-theme="dark"] #event-table tbody tr:hover,
+  [data-theme="dark"] #channel-table tbody tr:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
+  }
+
+  /* ============================================
+     SEARCH BOX & PLAYER - CARD STYLE ON MOBILE
+     ============================================ */
+  .stream-input-box {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 0 10px 15px 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  [data-theme="dark"] .stream-input-box {
+    background: rgba(30, 30, 30, 0.95);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Player container as card */
+  #live-stream {
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 0 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  [data-theme="dark"] #live-stream {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+
+  /* ============================================
+     HEADER MOBILE - FIX MENU CUTOFF
+     ============================================ */
+  .header {
+    padding: 8px 0;
+  }
+  
+  .nav-container {
+    padding: 0 8px;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .tabs-container {
+    width: 100%;
+    overflow: visible;
+  }
+  
+  .tabbed-menu {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 4px;
+    padding: 4px 0;
+  }
+  
+  .tabbed-menu::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tabbed-menu .tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 10px 12px;
+    font-size: 10px;
+    min-height: 40px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  
+  /* Theme toggle on mobile */
+  .theme-toggle {
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
 }
 
 /* 4) Header icon spacing: always add a gap */
