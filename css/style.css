@@ -2956,7 +2956,7 @@ table tbody tr:hover::before {
 @media (max-width: 768px) {
   
   /* ============================================
-     MOBILE FILTER TOGGLE (ACCORDION)
+     MOBILE FILTER TOGGLE (ACCORDION) - CTA Style
      ============================================ */
   .mobile-filter-toggle {
     display: flex;
@@ -2966,9 +2966,9 @@ table tbody tr:hover::before {
     width: 100%;
     padding: 14px 20px;
     margin-bottom: 12px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    border-radius: 14px;
     color: var(--color-text-primary);
     font-size: 14px;
     font-weight: 600;
@@ -2976,7 +2976,22 @@ table tbody tr:hover::before {
     letter-spacing: 0.5px;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-height: 48px;
+    min-height: 52px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Dark mode style */
+  [data-theme="dark"] .mobile-filter-toggle {
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* Light mode style */
+  [data-theme="light"] .mobile-filter-toggle {
+    background: #FFFFFF;
+    border: 2px solid var(--light-border);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   }
   
   .mobile-filter-toggle:hover,
@@ -2984,6 +2999,8 @@ table tbody tr:hover::before {
     background: var(--color-primary);
     color: #000;
     border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-gold);
   }
   
   .mobile-filter-toggle .toggle-icon {
@@ -2993,6 +3010,11 @@ table tbody tr:hover::before {
   
   .mobile-filter-toggle.active .toggle-icon {
     transform: rotate(180deg);
+  }
+  
+  .mobile-filter-toggle.active {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-gold);
   }
   
   /* Filter boxes - hidden by default on mobile */
