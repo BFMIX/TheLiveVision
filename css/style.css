@@ -3408,3 +3408,499 @@ table tbody tr:hover::before {
   }
 }
 
+
+/* ============================================
+   UX ENHANCEMENTS - Bottom Nav, Skeletons, 
+   Pull-to-Refresh, Micro-animations
+   ============================================ */
+
+/* ============================================
+   BOTTOM NAVIGATION (Mobile Only)
+   ============================================ */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-secondary);
+    border-top: 1px solid var(--color-accent);
+    padding: 8px 0;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="light"] .bottom-nav {
+    background: #FFFFFF;
+    border-top: 1px solid var(--light-border);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 16px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    min-width: 60px;
+  }
+
+  .bottom-nav-item i {
+    font-size: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--color-primary);
+  }
+
+  .bottom-nav-item.active i {
+    transform: scale(1.1);
+  }
+
+  [data-theme="light"] .bottom-nav-item.active {
+    color: var(--light-accent-blue-dark);
+  }
+
+  .bottom-nav-item:active {
+    transform: scale(0.95);
+    background: rgba(255, 215, 0, 0.1);
+  }
+
+  /* Body padding when bottom nav is present */
+  body.has-bottom-nav {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.has-bottom-nav main {
+    padding-bottom: 20px;
+  }
+
+  /* Hide header tabs on mobile when bottom nav is active */
+  body.has-bottom-nav .tabbed-menu {
+    display: none;
+  }
+
+  body.has-bottom-nav .header {
+    padding: 10px 15px;
+  }
+
+  body.has-bottom-nav .nav-container {
+    justify-content: center;
+  }
+
+  /* Add a logo/title in header when tabs are hidden */
+  body.has-bottom-nav .header::before {
+    content: 'THE LIVE VISION';
+    font-size: 16px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+  }
+}
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.skeleton-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-accent);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+[data-theme="light"] .skeleton-card {
+  background: #FFFFFF;
+  border-color: var(--light-border);
+}
+
+.skeleton-animate {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 0%,
+    var(--color-accent) 50%,
+    var(--color-bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+[data-theme="light"] .skeleton-animate {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e0e0e0 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Event skeleton */
+.skeleton-event .skeleton-badge {
+  width: 80px;
+  height: 24px;
+  border-radius: 12px;
+  align-self: flex-start;
+}
+
+.skeleton-event .skeleton-date {
+  width: 60%;
+  height: 16px;
+  align-self: center;
+}
+
+.skeleton-event .skeleton-title {
+  width: 90%;
+  height: 20px;
+  align-self: center;
+}
+
+.skeleton-event .skeleton-subtitle {
+  width: 70%;
+  height: 14px;
+  align-self: center;
+}
+
+.skeleton-event .skeleton-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-accent);
+}
+
+.skeleton-event .skeleton-btn {
+  width: 80px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+/* Channel skeleton */
+.skeleton-channel {
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 14px;
+}
+
+.skeleton-channel .skeleton-flag {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.skeleton-channel .skeleton-name {
+  flex: 1;
+  height: 18px;
+  margin: 0 12px;
+}
+
+.skeleton-channel .skeleton-btn {
+  width: 70px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* Desktop skeleton adjustments */
+@media (min-width: 769px) {
+  .skeleton-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .skeleton-card {
+    padding: 20px;
+  }
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+.empty-state-row td {
+  background: transparent !important;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.error-state i {
+  font-size: 40px;
+  color: #FF6B6B;
+  margin-bottom: 16px;
+}
+
+.error-state p {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  margin: 0 0 20px 0;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+.retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d4af37 100%);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.retry-btn:active {
+  transform: translateY(0);
+}
+
+[data-theme="light"] .retry-btn {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+}
+
+/* ============================================
+   PULL TO REFRESH (Mobile Only)
+   ============================================ */
+.pull-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(0);
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.pull-indicator i {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.pull-indicator.ready {
+  color: var(--color-primary);
+}
+
+.pull-indicator.ready i {
+  animation: pulse-rotate 0.5s ease;
+}
+
+@keyframes pulse-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(180deg); }
+}
+
+.pull-indicator.refreshing {
+  color: var(--color-primary);
+}
+
+/* ============================================
+   MICRO-ANIMATIONS
+   ============================================ */
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Entrance animations for cards/rows */
+body.animations-enabled #event-table tbody tr,
+body.animations-enabled #channel-table tbody tr {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+body.animations-enabled #event-table tbody tr.animate-in,
+body.animations-enabled #channel-table tbody tr.animate-in {
+  animation: card-entrance 0.4s ease forwards;
+}
+
+@keyframes card-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation for multiple items */
+body.animations-enabled #event-table tbody tr:nth-child(1) { animation-delay: 0ms; }
+body.animations-enabled #event-table tbody tr:nth-child(2) { animation-delay: 50ms; }
+body.animations-enabled #event-table tbody tr:nth-child(3) { animation-delay: 100ms; }
+body.animations-enabled #event-table tbody tr:nth-child(4) { animation-delay: 150ms; }
+body.animations-enabled #event-table tbody tr:nth-child(5) { animation-delay: 200ms; }
+body.animations-enabled #event-table tbody tr:nth-child(n+6) { animation-delay: 250ms; }
+
+body.animations-enabled #channel-table tbody tr:nth-child(1) { animation-delay: 0ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(2) { animation-delay: 30ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(3) { animation-delay: 60ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(4) { animation-delay: 90ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(5) { animation-delay: 120ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(n+6) { animation-delay: 150ms; }
+
+/* Tap/click feedback on buttons and cards */
+body.animations-enabled .play-button,
+body.animations-enabled .stream-btn,
+body.animations-enabled .more-button,
+body.animations-enabled .retry-btn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+body.animations-enabled .play-button:active,
+body.animations-enabled .stream-btn:active,
+body.animations-enabled .more-button:active,
+body.animations-enabled .retry-btn:active {
+  transform: scale(0.95) !important;
+}
+
+/* Card hover effect (desktop) */
+@media (min-width: 769px) {
+  body.animations-enabled #event-table tbody tr,
+  body.animations-enabled #channel-table tbody tr {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  body.animations-enabled #event-table tbody tr:hover,
+  body.animations-enabled #channel-table tbody tr:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Card tap effect (mobile) */
+@media (max-width: 768px) {
+  body.animations-enabled #event-table tbody tr:active,
+  body.animations-enabled #channel-table tbody tr:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Bottom nav item tap animation */
+body.animations-enabled .bottom-nav-item {
+  transition: transform 0.15s ease, color 0.2s ease, background 0.2s ease;
+}
+
+body.animations-enabled .bottom-nav-item:active {
+  transform: scale(0.9);
+}
+
+/* Skeleton card entrance */
+body.animations-enabled .skeleton-card {
+  animation: skeleton-entrance 0.3s ease forwards;
+}
+
+@keyframes skeleton-entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
