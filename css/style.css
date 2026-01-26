@@ -3721,19 +3721,12 @@ table tbody tr:hover::before {
   }
 
   body.has-bottom-nav .nav-container {
-    justify-content: center;
+    justify-content: space-between;
   }
 
-  /* Add a logo/title in header when tabs are hidden */
+  /* Remove the text "THE LIVE VISION" since we have the logo */
   body.has-bottom-nav .header::before {
-    content: 'THE LIVE VISION';
-    font-size: 16px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 1px;
+    display: none;
   }
 }
 
