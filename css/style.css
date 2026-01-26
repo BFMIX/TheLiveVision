@@ -3540,16 +3540,17 @@ table tbody tr:hover::before {
   /* Mobile Theme Toggle - Pill shape in header */
   .header-theme-toggle {
     order: 2;
-    width: auto !important;
+    width: 42px !important;
     height: 36px !important;
-    padding: 8px 14px !important;
-    border-radius: 20px !important;
+    padding: 8px 10px !important;
+    border-radius: 18px !important;
     display: flex !important;
     align-items: center;
     justify-content: center;
     background: var(--color-bg-card) !important;
     border: 1px solid var(--color-accent) !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    flex-shrink: 0;
   }
   
   .header-theme-toggle i {
