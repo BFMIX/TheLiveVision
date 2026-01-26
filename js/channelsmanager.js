@@ -80,9 +80,20 @@ document.addEventListener('DOMContentLoaded', () => {
       displayChannels(channelsData);
     } catch (error) {
       console.error('Error loading channels:', error);
-      channelList.innerHTML = '<tr><td colspan="3">Unable to load channels. Please try again later.</td></tr>';
-      errorMessage.textContent = 'Unable to load channels from API. Please check your connection and try again.';
-      errorMessage.style.display = 'block';
+      
+      // Use enhanced error state with retry button
+      if (window.UXEnhancements) {
+        channelList.innerHTML = '';
+        window.UXEnhancements.ErrorState.show(
+          errorMessage,
+          'Unable to load channels. Please check your connection and try again.',
+          () => { loadChannels(true); }
+        );
+      } else {
+        channelList.innerHTML = '<tr><td colspan="3">Unable to load channels. Please try again later.</td></tr>';
+        errorMessage.textContent = 'Unable to load channels from API. Please check your connection and try again.';
+        errorMessage.style.display = 'block';
+      }
     } finally {
       loadingIndicator.style.display = 'none';
       isLoading = false;
@@ -92,6 +103,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // Display channels in table
   function displayChannels(channels) {
     channelList.innerHTML = '';
+    
+    // Show empty state if no channels
+    if (channels.length === 0) {
+      if (window.UXEnhancements) {
+        window.UXEnhancements.EmptyState.showInTable(
+          channelList,
+          'No channels found. Try adjusting your search.',
+          3
+        );
+      } else {
+        channelList.innerHTML = '<tr><td colspan="3">No channels found.</td></tr>';
+      }
+      return;
+    }
+    
     channels.forEach(channel => {
       const row = document.createElement('tr');
       row.innerHTML = `
