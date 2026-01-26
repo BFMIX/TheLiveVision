@@ -243,6 +243,51 @@
   };
 
   // ============================================
+  // HAPTIC FEEDBACK
+  // ============================================
+  const HapticFeedback = {
+    /**
+     * Trigger a light haptic feedback (10-20ms vibration)
+     * Safe fallback if not supported
+     */
+    light() {
+      try {
+        if ('vibrate' in navigator) {
+          navigator.vibrate(15);
+        }
+      } catch (e) {
+        // Silently fail if not supported
+      }
+    },
+    
+    /**
+     * Trigger a medium haptic feedback
+     */
+    medium() {
+      try {
+        if ('vibrate' in navigator) {
+          navigator.vibrate(25);
+        }
+      } catch (e) {
+        // Silently fail
+      }
+    },
+    
+    /**
+     * Trigger a success pattern
+     */
+    success() {
+      try {
+        if ('vibrate' in navigator) {
+          navigator.vibrate([10, 50, 10]);
+        }
+      } catch (e) {
+        // Silently fail
+      }
+    }
+  };
+
+  // ============================================
   // BOTTOM NAVIGATION
   // ============================================
   const BottomNav = {
