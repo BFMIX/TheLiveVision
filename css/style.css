@@ -393,6 +393,14 @@ main {
   background: transparent;
 }
 
+/* Desktop Hero - Larger Typography */
+@media (min-width: 1024px) {
+  .hero-section {
+    padding: 50px 40px 30px;
+    margin-bottom: 30px;
+  }
+}
+
 .hero-video {
   position: absolute;
   top: 0;
