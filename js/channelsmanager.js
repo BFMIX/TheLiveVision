@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
       errorMessage.style.display = 'block';
     } finally {
       loadingIndicator.style.display = 'none';
+      isLoading = false;
     }
   }
 
