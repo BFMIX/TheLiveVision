@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loadingIndicator = document.getElementById('channels-loading');
   const errorMessage = document.getElementById('channels-error');
   let channelsData = [];
+  let isLoading = false;
 
   // Function to extract country from channel name (e.g., "SkySportsNews[UK]" -> "UK")
   function extractCountry(channelName) {
@@ -21,10 +22,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Load channels from new API
-  async function loadChannels() {
+  async function loadChannels(showSkeleton = true) {
+    if (isLoading) return;
+    isLoading = true;
+    
     try {
-      loadingIndicator.style.display = 'block';
-      errorMessage.style.display = 'none';
+      // Show skeleton loader
+      if (showSkeleton && window.UXEnhancements) {
+        loadingIndicator.style.display = 'none';
+        window.UXEnhancements.SkeletonLoader.show(channelList, 'channels');
+      } else {
+        loadingIndicator.style.display = 'block';
+      }
+      
+      if (window.UXEnhancements) {
+        window.UXEnhancements.ErrorState.hide(errorMessage);
+      } else {
+        errorMessage.style.display = 'none';
+      }
 
       const response = await fetch('https://beta.adstrim.ru/api/channels');
       if (!response.ok) {
