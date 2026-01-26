@@ -451,6 +451,7 @@
     PullToRefresh,
     BottomNav,
     MicroAnimations,
+    HapticFeedback,
     isMobile
   };
 
