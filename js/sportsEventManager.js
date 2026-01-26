@@ -249,6 +249,16 @@ document.addEventListener('DOMContentLoaded', () => {
   if (tournamentFilter) tournamentFilter.addEventListener('change', filterEvents);
   if (eventSearch) eventSearch.addEventListener('input', filterEvents);
 
+  // Initialize Pull-to-Refresh (mobile only)
+  if (window.UXEnhancements && window.UXEnhancements.isMobile()) {
+    setTimeout(() => {
+      window.UXEnhancements.PullToRefresh.init('page-football', async () => {
+        await loadEvents(false);
+        filterEvents(); // Re-apply current filters
+      });
+    }, 500);
+  }
+
   // Load events on page load
   loadEvents();
 });
