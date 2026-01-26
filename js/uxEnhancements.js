@@ -343,6 +343,9 @@
   window.navigateToWithBottomNav = function(pageId, event) {
     if (event) event.preventDefault();
     
+    // Haptic feedback on navigation
+    HapticFeedback.light();
+    
     // Call original navigateTo
     if (typeof window.navigateTo === 'function') {
       window.navigateTo(pageId);
