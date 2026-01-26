@@ -448,12 +448,41 @@ main {
   text-shadow: var(--text-shadow-hero);
 }
 
+/* Desktop Hero Title - Larger */
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: 64px;
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hero-title {
+    font-size: 72px;
+  }
+}
+
 .hero-subtitle {
   font-size: 16px;
   color: var(--color-text-secondary);
   margin: 0;
   font-weight: 400;
   text-shadow: var(--text-shadow-subtitle);
+}
+
+/* Desktop Subtitle - Larger */
+@media (min-width: 1024px) {
+  .hero-subtitle {
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hero-subtitle {
+    font-size: 22px;
+  }
 }
 
 [data-theme="light"] .hero-subtitle {
