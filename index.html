@@ -100,6 +100,11 @@
   <body>
     <header class="header">
       <div class="nav-container">
+        <!-- Logo -->
+        <a href="#" class="header-logo" onclick="navigateTo('page-stream')">
+          <img src="assets/icons/TheliveVision(NB-Logo).png" alt="TheLiveVision" class="header-logo-img">
+        </a>
+        
         <div class="tabs-container">
           <div class="tabbed-menu">
             <a
@@ -125,6 +130,12 @@
             >
           </div>
         </div>
+        
+        <!-- Theme Toggle in header -->
+        <button class="theme-toggle header-theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-sun sun"></i>
+          <i class="fas fa-moon moon"></i>
+        </button>
       </div>
     </header>
 
