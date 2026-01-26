@@ -91,7 +91,7 @@ body {
 /* Desktop Premium Header */
 @media (min-width: 1024px) {
   .header {
-    padding: 16px 60px;
+    padding: 16px 40px;
   }
   
   .nav-container {
