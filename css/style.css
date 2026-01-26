@@ -3491,7 +3491,7 @@ table tbody tr:hover::before {
      HEADER MOBILE - CENTERED & COMPACT
      ============================================ */
   .header {
-    padding: 6px 0;
+    padding: 10px 12px;
   }
   
   .nav-container {
@@ -3499,13 +3499,68 @@ table tbody tr:hover::before {
     width: 100%;
     max-width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Mobile Logo */
+  .header-logo {
+    order: 1;
+  }
+  
+  .header-logo-img {
+    height: 32px;
   }
   
   .tabs-container {
-    width: auto;
-    display: flex;
+    display: none; /* Hidden on mobile, use bottom nav */
+  }
+  
+  /* Mobile Theme Toggle - Pill shape in header */
+  .header-theme-toggle {
+    order: 2;
+    width: auto !important;
+    height: 36px !important;
+    padding: 8px 14px !important;
+    border-radius: 20px !important;
+    display: flex !important;
+    align-items: center;
     justify-content: center;
+    background: var(--color-bg-card) !important;
+    border: 1px solid var(--color-accent) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .header-theme-toggle i {
+    font-size: 16px;
+  }
+  
+  [data-theme="light"] .header-theme-toggle {
+    background: #F0F4F8 !important;
+    border-color: var(--light-border) !important;
+  }
+  
+  /* When bottom nav present, still show theme toggle in header */
+  body.has-bottom-nav .header-theme-toggle {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    z-index: auto !important;
+  }
+  
+  /* Hide the old floating toggle override */
+  body.has-bottom-nav .theme-toggle:not(.header-theme-toggle) {
+    display: none !important;
+  }
+  
+  /* Mobile header title (when no tabs) */
+  body.has-bottom-nav .header::after {
+    display: none;
+  }
+  
+  body.has-bottom-nav .header::before {
+    display: none;
   }
   
   .tabbed-menu {
@@ -3536,18 +3591,6 @@ table tbody tr:hover::before {
     letter-spacing: 0.3px;
     margin: 0;
   }
-  
-  /* Theme toggle on mobile - hide when bottom nav is present */
-  body.has-bottom-nav .theme-toggle {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1001;
-    margin: 0;
-    padding: 8px;
-    background: var(--color-bg-secondary);
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 }
 
