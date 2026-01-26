@@ -184,6 +184,16 @@ document.addEventListener('DOMContentLoaded', () => {
   if (countryFilter) countryFilter.addEventListener('change', filterChannels);
   if (channelSearch) channelSearch.addEventListener('input', filterChannels);
 
+  // Initialize Pull-to-Refresh (mobile only)
+  if (window.UXEnhancements && window.UXEnhancements.isMobile()) {
+    setTimeout(() => {
+      window.UXEnhancements.PullToRefresh.init('page-channels', async () => {
+        await loadChannels(false);
+        filterChannels(); // Re-apply current filters
+      });
+    }, 500);
+  }
+
   // Load channels on page load
   loadChannels();
 });
