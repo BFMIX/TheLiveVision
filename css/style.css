@@ -126,6 +126,54 @@ body {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  gap: 20px;
+}
+
+/* Header Logo */
+.header-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.header-logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.1);
+  transition: transform 0.2s ease;
+}
+
+.header-logo:hover .header-logo-img {
+  transform: scale(1.05);
+}
+
+[data-theme="light"] .header-logo-img {
+  filter: invert(1) brightness(0.2);
+}
+
+/* Header Theme Toggle (integrated) */
+.header-theme-toggle {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+/* Desktop Premium Header Adjustments */
+@media (min-width: 1024px) {
+  .header-logo-img {
+    height: 48px;
+  }
+  
+  .header-theme-toggle {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .tabs-container {
