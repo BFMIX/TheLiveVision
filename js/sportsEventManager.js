@@ -107,17 +107,43 @@ document.addEventListener('DOMContentLoaded', () => {
       displayEvents(eventsData);
     } catch (error) {
       console.error('Error loading events:', error);
-      eventList.innerHTML = '<tr><td colspan="5">Unable to load events. Please try again later.</td></tr>';
-      errorMessage.textContent = 'Unable to load events from API. Please check your connection and try again.';
-      errorMessage.style.display = 'block';
+      
+      // Use enhanced error state with retry button
+      if (window.UXEnhancements) {
+        eventList.innerHTML = '';
+        window.UXEnhancements.ErrorState.show(
+          errorMessage, 
+          'Unable to load events. Please check your connection and try again.',
+          () => { loadEvents(true); }
+        );
+      } else {
+        eventList.innerHTML = '<tr><td colspan="5">Unable to load events. Please try again later.</td></tr>';
+        errorMessage.textContent = 'Unable to load events from API. Please check your connection and try again.';
+        errorMessage.style.display = 'block';
+      }
     } finally {
       loadingIndicator.style.display = 'none';
+      isLoading = false;
     }
   }
 
   // Display events in table
   function displayEvents(events) {
     eventList.innerHTML = '';
+    
+    // Show empty state if no events
+    if (events.length === 0) {
+      if (window.UXEnhancements) {
+        window.UXEnhancements.EmptyState.showInTable(
+          eventList, 
+          'No events found. Try adjusting your filters.',
+          4
+        );
+      } else {
+        eventList.innerHTML = '<tr><td colspan="4">No events found.</td></tr>';
+      }
+      return;
+    }
     
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                         'July', 'August', 'September', 'October', 'November', 'December'];
