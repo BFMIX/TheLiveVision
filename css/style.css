@@ -3717,11 +3717,12 @@ table tbody tr:hover::before {
   }
 
   body.has-bottom-nav .header {
-    padding: 10px 15px;
+    padding: 10px 12px;
   }
 
   body.has-bottom-nav .nav-container {
     justify-content: space-between;
+    padding: 0 3px;
   }
 
   /* Remove the text "THE LIVE VISION" since we have the logo */
