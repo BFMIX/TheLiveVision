@@ -10,12 +10,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const loadingIndicator = document.getElementById('sports-loading');
   const errorMessage = document.getElementById('sports-error');
   let eventsData = [];
+  let isLoading = false;
 
   // Fonction pour charger les événements depuis la nouvelle API
-  async function loadEvents() {
+  async function loadEvents(showSkeleton = true) {
+    if (isLoading) return;
+    isLoading = true;
+    
     try {
-      loadingIndicator.style.display = 'block';
-      errorMessage.style.display = 'none';
+      // Show skeleton loader instead of old loading indicator
+      if (showSkeleton && window.UXEnhancements) {
+        loadingIndicator.style.display = 'none';
+        window.UXEnhancements.SkeletonLoader.show(eventList, 'events');
+      } else {
+        loadingIndicator.style.display = 'block';
+      }
+      
+      if (window.UXEnhancements) {
+        window.UXEnhancements.ErrorState.hide(errorMessage);
+      } else {
+        errorMessage.style.display = 'none';
+      }
 
       const response = await fetch('https://beta.adstrim.ru/api/events');
       if (!response.ok) {
