@@ -3388,10 +3388,17 @@ table tbody tr:hover::before {
     margin: 0;
   }
   
-  /* Theme toggle on mobile */
-  .theme-toggle {
-    flex-shrink: 0;
-    margin-left: 8px;
+  /* Theme toggle on mobile - hide when bottom nav is present */
+  body.has-bottom-nav .theme-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1001;
+    margin: 0;
+    padding: 8px;
+    background: var(--color-bg-secondary);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 }
 
