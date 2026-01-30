@@ -1,4 +1,4 @@
-# TheLiveVision
+# The Live Vision
 
 Your Ultimate Sports Streaming Platform - Watch live sports, events, and channels from around the world.
 
@@ -172,4 +172,4 @@ This project is for educational and personal use.
 ---
 
 **Version**: 3.0.0  
-**Last Updated**: January 2025
+**Last Updated**: January 2026
