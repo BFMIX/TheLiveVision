@@ -1,76 +1,123 @@
 // streamManager.js
-// Gestion du chargement des streams avec auto-play + UX mobile améliorée
+// Stream loading with auto-play and mobile-friendly UX
 
-// Utils
-function isMobile() {
-  return window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-}
+(function () {
+  'use strict';
 
-function scrollToPlayerWithOffset() {
-  const iframe = document.getElementById("live-stream");
-  if (!iframe) return;
+  const API_BASE = window.API_BASE || 'https://beta.adstrim.ru';
+  const EMBED_BASE = window.EMBED_BASE || 'https://viewembed.ru';
 
-  // Si ton player est dans un conteneur, scroll dessus plutôt que sur l'iframe (souvent mieux)
-  const target = iframe.closest(".player-container") || iframe;
+  window.API_BASE = API_BASE;
+  window.EMBED_BASE = EMBED_BASE;
 
-  const header = document.querySelector(".header");
-  const headerOffset = header ? header.offsetHeight + 12 : 12;
-
-  const rect = target.getBoundingClientRect();
-  const top = rect.top + window.pageYOffset - headerOffset;
-
-  window.scrollTo({ top, behavior: "smooth" });
-
-  // Feedback visuel léger (pulse) pour que l'utilisateur "comprenne" où il est
-  target.classList.add("player-focus-pulse");
-  setTimeout(() => target.classList.remove("player-focus-pulse"), 900);
-}
-
-// Global function to load stream - accessible from onclick handlers
-// Backward compatible: loadStream(url, autoScrollBoolean)
-function loadStream(url, autoScroll = true) {
-  const liveStreamIframe = document.getElementById("live-stream");
-  if (!liveStreamIframe) {
-    console.error("Iframe not found");
-    return;
+  // Utils
+  function isMobile() {
+    return window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
   }
 
-  try {
-    liveStreamIframe.src = url;
+  function scrollToPlayerWithOffset() {
+    const iframe = document.getElementById("live-stream");
+    if (!iframe) return;
 
-    // Save last watched stream to localStorage
-    localStorage.setItem("lastStream", url);
-    console.log(`✅ Stream loaded: ${url}`);
+    // Prefer scrolling to the container instead of the iframe for better UX
+    const target = iframe.closest(".player-container") || iframe;
 
-    // Navigate to stream page if not already there
-    if (typeof navigateTo === "function") {
-      navigateTo("page-stream");
-    }
+    const header = document.querySelector(".header");
+    const headerOffset = header ? header.offsetHeight + 12 : 12;
 
-    // Scroll to player only if autoScroll is true
-    if (autoScroll) {
-      // Sur mobile, scroll "propre" avec offset du header
-      // Sur desktop, on garde un scroll normal
-      setTimeout(() => {
-        if (isMobile()) {
-          scrollToPlayerWithOffset();
-        } else {
-          liveStreamIframe.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }, 350);
-    }
-  } catch (error) {
-    console.error("Error loading stream:", error);
-    alert("Error loading stream. Please check the URL and try again.");
+    const rect = target.getBoundingClientRect();
+    const top = rect.top + window.pageYOffset - headerOffset;
+
+    window.scrollTo({ top, behavior: "smooth" });
+
+    // Subtle visual feedback so the user sees where the player is
+    target.classList.add("player-focus-pulse");
+    setTimeout(() => target.classList.remove("player-focus-pulse"), 900);
   }
-}
 
-// Make loadStream globally available
-window.loadStream = loadStream;
+  function setPlayerEmptyState(isEmpty) {
+    const container = document.getElementById("player-container");
+    const placeholder = document.getElementById("player-empty-state");
+    if (!container || !placeholder) return;
 
-document.addEventListener("DOMContentLoaded", () => {
+    if (isEmpty) {
+      container.classList.remove("has-stream");
+      placeholder.setAttribute("aria-hidden", "false");
+    } else {
+      container.classList.add("has-stream");
+      placeholder.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function normalizeChannelValue(value) {
+    if (!value) return '';
+    return String(value).trim();
+  }
+
+  function buildChannelUrl(value) {
+    const cleaned = normalizeChannelValue(value);
+    if (!cleaned) return '';
+    if (/^https?:\/\//i.test(cleaned)) {
+      if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
+        return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, '$1viewembed.ru');
+      }
+      return cleaned;
+    }
+    const path = cleaned.replace(/^\/+/, '');
+    if (path.toLowerCase().startsWith('channel/')) {
+      const slug = path.slice('channel/'.length);
+      return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
+    }
+    return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
+  }
+
+  // Global function to load stream - accessible from onclick handlers
+  // Backward compatible: loadStream(url, autoScrollBoolean)
+  function loadStream(url, autoScroll = true) {
+    const liveStreamIframe = document.getElementById("live-stream");
+    if (!liveStreamIframe) {
+      console.error("Iframe not found");
+      return;
+    }
+
+    try {
+      setPlayerEmptyState(false);
+      liveStreamIframe.src = url;
+
+      // Save last watched stream to localStorage
+      localStorage.setItem("lastStream", url);
+      console.log(`Stream loaded: ${url}`);
+
+      // Navigate to stream page if not already there
+      if (typeof navigateTo === "function") {
+        navigateTo("page-stream");
+      }
+
+      // Scroll to player only if autoScroll is true
+      if (autoScroll) {
+        // On mobile, scroll with a header offset
+        // On desktop, keep the default scroll behavior
+        setTimeout(() => {
+          if (isMobile()) {
+            scrollToPlayerWithOffset();
+          } else {
+            liveStreamIframe.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 350);
+      }
+    } catch (error) {
+      console.error("Error loading stream:", error);
+      alert("Error loading stream. Please check the URL and try again.");
+    }
+  }
+
+  // Make loadStream globally available
+  window.loadStream = loadStream;
+
+  document.addEventListener("DOMContentLoaded", () => {
   const streamUrlInput = document.getElementById("stream-url");
   const loadStreamButton = document.getElementById("load-stream");
+  setPlayerEmptyState(true);
 
   // Function to validate URL
   function isValidUrl(url) {
@@ -81,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Function to load random channel from API
   async function loadRandomChannel() {
     try {
-      const response = await fetch("https://beta.adstrim.ru/api/channels");
+      const response = await fetch(`${API_BASE}/api/channels`);
       if (!response.ok) return;
 
       const apiResponse = await response.json();
@@ -92,10 +139,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (channels.length > 0) {
         const randomChannel = channels[Math.floor(Math.random() * channels.length)];
-        const streamUrl = `https://topembed.pw/channel/${encodeURIComponent(randomChannel.name)}`;
+        const canonicalName = randomChannel.name || randomChannel.title || randomChannel.link || '';
+        const streamUrl = buildChannelUrl(canonicalName);
         console.log("Auto-loaded random channel:", randomChannel.name);
 
-        // IMPORTANT: pas d'auto-scroll au premier chargement auto
+        // Important: avoid auto-scroll on the initial auto-load
         loadStream(streamUrl, false);
       }
     } catch (error) {
@@ -147,4 +195,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
+  });
+})();

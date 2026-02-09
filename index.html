@@ -1,13 +1,16 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
 
-    <title>TheLiveVision - Your Ultimate Sports Streaming Platform</title>
+    <title>The Live Vision - Sports Streaming Hub</title>
     <meta
       name="description"
-      content="Watch live sports streams, events, and channels from around the world"
+      content="Watch live sports streams, events, and channels in one place."
     />
 
     <meta name="theme-color" content="#FFD700" />
@@ -100,45 +103,65 @@
   <body>
     <header class="header">
       <div class="nav-container">
+        <!-- Logo -->
+        <a href="#stream" class="header-logo">
+          <img
+            src="assets/icons/TheliveVision(NB-Logo).png"
+            alt="The Live Vision"
+            class="header-logo-img"
+          />
+        </a>
+
         <div class="tabs-container">
           <div class="tabbed-menu">
             <a
               id="nav-stream"
               class="tab active"
-              href="#"
-              onclick="navigateTo('page-stream')"
-              >STREAM PAGE</a
+              data-page="page-stream"
+              href="#stream"
+              >STREAM</a
             >
             <a
               id="nav-football"
               class="tab"
-              href="#"
-              onclick="navigateTo('page-football')"
-              >ALL SPORTS EVENT</a
+              data-page="page-football"
+              href="#events"
+              >SPORTS EVENTS</a
             >
             <a
               id="nav-channels"
               class="tab"
-              href="#"
-              onclick="navigateTo('page-channels')"
-              >ALL CHANNELS</a
+              data-page="page-channels"
+              href="#channels"
+              >TV CHANNELS</a
             >
           </div>
         </div>
+
+        <div class="mobile-header-title" id="mobile-header-title" aria-live="polite">
+          STREAM
+        </div>
+
+        <!-- Theme Toggle in header -->
+        <button
+          class="theme-toggle header-theme-toggle"
+          id="header-theme-toggle"
+          aria-label="Toggle theme"
+        >
+          <i class="fas fa-sun sun"></i>
+          <i class="fas fa-moon moon"></i>
+        </button>
       </div>
     </header>
 
-    <!-- Bouton dark mode flottant -->
-    <theme-toggle class="floating">
-      <button class="theme-toggle" aria-label="Toggle theme" data-theme-toggle>
-        <i class="fas fa-sun sun"></i>
-        <i class="fas fa-moon moon"></i>
-      </button>
-    </theme-toggle>
-
     <main>
       <!-- STREAM PAGE -->
-      <section id="page-stream" class="page active">
+      <section
+        id="page-stream"
+        class="page active"
+        data-title="STREAM"
+        data-hash="stream"
+      >
         <div class="hero-section">
           <video class="hero-video" autoplay muted loop playsinline>
             <source
@@ -147,7 +170,7 @@
             />
           </video>
           <div class="hero-content">
-            <h1 class="hero-title">THE LIVE SPORT VISION</h1>
+            <h1 class="hero-title">THE LIVE VISION</h1>
             <p class="hero-subtitle">
               Experience the thrill of live sports streaming - Anytime, Anywhere
             </p>
@@ -177,7 +200,7 @@
               </button>
             </div>
           </div>
-          <div class="player-container">
+          <div class="player-container" id="player-container">
             <iframe
               id="live-stream"
               width="100%"
@@ -186,6 +209,15 @@
               sandbox="allow-same-origin allow-scripts allow-presentation"
               allow="autoplay; fullscreen; picture-in-picture"
             ></iframe>
+            <div class="player-empty-state" id="player-empty-state" aria-hidden="false">
+              <div class="player-empty-icon">
+                <i class="fas fa-play-circle"></i>
+              </div>
+              <div class="player-empty-content">
+                <h3 class="player-empty-title">Ready to Play</h3>
+                <p class="player-empty-subtitle">Select an event or channel to start playback.</p>
+              </div>
+            </div>
             <div id="iframe-overlay" class="iframe-overlay"></div>
           </div>
           <div class="more-links">
@@ -196,11 +228,16 @@
         </div>
       </section>
 
-      <!-- ALL SPORTS EVENT -->
-      <section id="page-football" class="page hidden">
+      <!-- ALL SPORTS EVENTS -->
+      <section
+        id="page-football"
+        class="page hidden"
+        data-title="SPORTS EVENTS"
+        data-hash="events"
+      >
         <div class="hero-section">
           <div class="hero-content">
-            <h1 class="hero-title">ALL SPORTS EVENTS</h1>
+            <h1 class="hero-title">SPORTS EVENTS</h1>
             <p class="hero-subtitle">
               Discover upcoming matches and live sporting events worldwide
             </p>
@@ -246,21 +283,27 @@
             style="display: none"
           ></div>
 
-          <div class="event-filter-box">
+          <!-- Mobile Filter Toggle Button -->
+          <button class="mobile-filter-toggle" id="event-filter-toggle">
+            <i class="fas fa-filter"></i> Filters
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </button>
+
+          <div class="event-filter-box" id="event-filter-box">
             <div class="filter-container">
               <label for="sport-filter"
-                ><i class="fas fa-football-ball"></i> FILTER BY SPORT</label
+                ><i class="fas fa-futbol"></i> FILTER BY SPORT</label
               >
               <select id="sport-filter" class="input-field">
                 <option value="">All Sports</option>
               </select>
             </div>
             <div class="filter-container">
-              <label for="date-filter"
-                ><i class="fas fa-calendar-alt"></i> FILTER BY DATE</label
+              <label for="league-filter"
+                ><i class="fas fa-shield"></i> FILTER BY LEAGUE</label
               >
-              <select id="date-filter" class="input-field">
-                <option value="">All Dates</option>
+              <select id="league-filter" class="input-field">
+                <option value="">All Leagues</option>
               </select>
             </div>
             <div class="filter-container">
@@ -286,10 +329,10 @@
 
           <table id="event-table">
             <colgroup>
-              <col style="width: 15%;" />
-              <col style="width: 11%;" />
-              <col style="width: 34%;" />
-              <col style="width: 40%;" />
+              <col style="width: 15%" />
+              <col style="width: 11%" />
+              <col style="width: 34%" />
+              <col style="width: 40%" />
             </colgroup>
 
             <thead>
@@ -306,10 +349,15 @@
       </section>
 
       <!-- ALL CHANNELS -->
-      <section id="page-channels" class="page hidden">
+      <section
+        id="page-channels"
+        class="page hidden"
+        data-title="TV CHANNELS"
+        data-hash="channels"
+      >
         <div class="hero-section">
           <div class="hero-content">
-            <h1 class="hero-title">ALL CHANNELS</h1>
+            <h1 class="hero-title">TV CHANNELS</h1>
             <p class="hero-subtitle">
               Browse and access sports channels from around the globe
             </p>
@@ -346,7 +394,13 @@
             style="display: none"
           ></div>
 
-          <div class="channel-filter-box">
+          <!-- Mobile Filter Toggle Button -->
+          <button class="mobile-filter-toggle" id="channel-filter-toggle">
+            <i class="fas fa-filter"></i> Filters
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </button>
+
+          <div class="channel-filter-box" id="channel-filter-box">
             <div class="filter-container">
               <label for="country-filter"
                 ><i class="fas fa-globe"></i> FILTER BY COUNTRY</label
@@ -370,9 +424,9 @@
 
           <table id="channel-table">
             <colgroup>
-              <col style="width: 21%;" />
-              <col style="width: 44%;" />
-              <col style="width: 35%;" />
+              <col style="width: 21%" />
+              <col style="width: 44%" />
+              <col style="width: 35%" />
             </colgroup>
 
             <thead>
@@ -390,22 +444,23 @@
 
     <footer class="footer">
       <div class="footer-content">
-        Made with <span class="heart">❤️</span> by <strong>BFMIX</strong>
+        Made with <span class="heart"><i class="fas fa-heart"></i></span> by <strong>BFMIX</strong>
       </div>
       <div class="footer-disclaimer">
-        This website does not host or broadcast any content. It only provides
-        access to streams hosted by third-party services.
+        This website does not host or broadcast any content.<br />
+        It only provides access to streams hosted by third-party services.
       </div>
     </footer>
 
     <script src="js/navigation.js"></script>
+    <script src="js/uxEnhancements.js"></script>
     <script src="js/themeToggle.js"></script>
     <script src="js/headerScroll.js"></script>
     <script src="js/countryFlags.js"></script>
     <script src="js/errorHandler.js"></script>
     <script src="js/searchStream.js"></script>
     <script src="js/advancedFeatures.js"></script>
-    <script src="js/streammanager.js"></script>
+    <script src="js/streammanager.js?v=7"></script>
     <script src="js/channelsmanager.js"></script>
     <script src="js/sportsEventManager.js"></script>
     <script src="js/anti-popup.js"></script>
@@ -423,11 +478,11 @@
         if (window.innerWidth <= 768) {
           if (!document.fullscreenElement) {
             liveStream.requestFullscreen().catch((err) => {
-              console.error(`Erreur plein écran: ${err.message}`);
+              console.error(`Fullscreen error: ${err.message}`);
             });
           } else {
             document.exitFullscreen().catch((err) => {
-              console.error(`Erreur sortie plein écran: ${err.message}`);
+              console.error(`Exit fullscreen error: ${err.message}`);
             });
           }
         } else {
@@ -458,6 +513,14 @@
         }
       }
 
+      window.isCinemaMode = isCinemaMode;
+
+      const originalToggleCinemaMode = toggleCinemaMode;
+      window.toggleCinemaMode = function () {
+        originalToggleCinemaMode();
+        window.isCinemaMode = isCinemaMode;
+      };
+
       document.addEventListener("click", (e) => {
         const target = e.target;
 
@@ -478,5 +541,6 @@
         }
       });
     </script>
+    <script src="js/mobileFilters.js"></script>
   </body>
 </html>

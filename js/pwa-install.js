@@ -16,9 +16,7 @@
   };
 
   const isStandalone = () => {
-    // iOS Safari
     if (window.navigator.standalone) return true;
-    // Other browsers
     return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
   };
 
@@ -36,17 +34,17 @@
     banner.innerHTML = `
       <div class="pwa-banner-content">
         <div class="pwa-banner-icon" aria-hidden="true">
-          <img src="/icon-192.png" alt="" style="width:48px;height:48px;border-radius:12px;" />
+          <img src="/assets/icons/icon-192.png" alt="" style="width:48px;height:48px;border-radius:12px;" />
         </div>
         <div class="pwa-banner-text">
-          <div class="pwa-banner-title">Installer TheLiveVision</div>
+          <div class="pwa-banner-title">Install The Live Vision</div>
           <div class="pwa-banner-subtitle" id="pwa-banner-subtitle"></div>
         </div>
-        <button class="pwa-banner-close" aria-label="Fermer">✕</button>
+        <button class="pwa-banner-close" aria-label="Close">&times;</button>
       </div>
       <div class="pwa-banner-actions">
-        <button class="pwa-btn pwa-btn-primary" id="pwa-install-btn">Installer</button>
-        <button class="pwa-btn pwa-btn-secondary" id="pwa-later-btn">Plus tard</button>
+        <button class="pwa-btn pwa-btn-primary" id="pwa-install-btn">Install</button>
+        <button class="pwa-btn pwa-btn-secondary" id="pwa-later-btn">Later</button>
       </div>
     `;
 
@@ -63,7 +61,6 @@
     closeBtn.addEventListener('click', () => { dismissPermanently(); hide(); });
     laterBtn.addEventListener('click', () => { dismissPermanently(); hide(); });
 
-    // show with a tiny delay for smoother UI
     setTimeout(() => banner.classList.add('show'), 250);
 
     return banner;
@@ -71,7 +68,6 @@
 
   let deferredPrompt = null;
 
-  // Capture Android install prompt
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
@@ -85,24 +81,20 @@
     const subtitle = banner.querySelector('#pwa-banner-subtitle');
 
     if (isIOS()) {
-      // iOS: no prompt available
-      subtitle.textContent = "Sur iPhone/iPad : touche Partager puis Sur l’écran d’accueil.";
-      installBtn.textContent = 'Voir comment';
+      subtitle.textContent = 'On iPhone/iPad: tap Share, then Add to Home Screen.';
+      installBtn.textContent = 'How to install';
       installBtn.addEventListener('click', () => {
-        // Simple helper: highlight instructions (still requires user action)
-        alert("Pour installer :\n1) Appuie sur le bouton Partager (carré + flèche)\n2) Choisis ‘Sur l’écran d’accueil’\n3) Valide ‘Ajouter’");
+        alert('To install:\n1) Tap the Share button (square + arrow)\n2) Choose \"Add to Home Screen\"\n3) Tap \"Add\"');
       });
       return;
     }
 
-    // Android/Chromium
     if (deferredPrompt) {
-      subtitle.textContent = "Installation en 1 clic pour une expérience plus fluide.";
+      subtitle.textContent = 'One-click install for a smoother experience.';
       installBtn.addEventListener('click', async () => {
         try {
           deferredPrompt.prompt();
-          const choice = await deferredPrompt.userChoice;
-          // choice.outcome is 'accepted' or 'dismissed'
+          await deferredPrompt.userChoice;
           deferredPrompt = null;
           dismissPermanently();
           banner.classList.remove('show');
@@ -112,16 +104,13 @@
         }
       });
     } else {
-      // Not installable yet (missing https / SW / criteria)
-      subtitle.textContent = "Installation disponible une fois les conditions PWA remplies (HTTPS + cache).";
+      subtitle.textContent = 'Install available once PWA requirements are met (HTTPS + service worker).';
       installBtn.disabled = true;
       installBtn.style.opacity = '0.6';
     }
   };
 
-  // Show banner shortly after load
   window.addEventListener('load', () => {
-    // Avoid flashing banner too early
     setTimeout(showInstallUI, 1200);
   });
 })();

@@ -1,7 +1,38 @@
 // searchStream.js
-// Real-time search for sports events ONLY - Using new beta.adstrim.ru API
+// Real-time search for sports events using beta.adstrim.ru (API) and viewembed.ru (player)
 
-document.addEventListener("DOMContentLoaded", () => {
+(function () {
+  'use strict';
+
+  const API_BASE = window.API_BASE || "https://beta.adstrim.ru";
+  const EMBED_BASE = window.EMBED_BASE || "https://viewembed.ru";
+
+  window.API_BASE = API_BASE;
+  window.EMBED_BASE = EMBED_BASE;
+
+  function normalizeChannelValue(value) {
+    if (!value) return "";
+    return String(value).trim();
+  }
+
+  function buildChannelUrl(value) {
+    const cleaned = normalizeChannelValue(value);
+    if (!cleaned) return "";
+    if (/^https?:\/\//i.test(cleaned)) {
+      if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
+        return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, "$1viewembed.ru");
+      }
+      return cleaned;
+    }
+    const path = cleaned.replace(/^\/+/, "");
+    if (path.toLowerCase().startsWith("channel/")) {
+      const slug = path.slice("channel/".length);
+      return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
+    }
+    return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
   const streamUrlInput = document.getElementById("stream-url");
   const searchResults = document.getElementById("search-results");
   
@@ -25,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const eventsTimeout = setTimeout(() => eventsController.abort(), 15000);
       
       try {
-        const eventsResponse = await fetch('https://beta.adstrim.ru/api/events', {
+        const eventsResponse = await fetch(`${API_BASE}/api/events`, {
           signal: eventsController.signal
         });
         clearTimeout(eventsTimeout);
@@ -39,38 +70,44 @@ document.addEventListener("DOMContentLoaded", () => {
               const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
               const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
               
+              const sportName = event.sport || event.sport_name || event.sportName || 'Sport';
+              const leagueName = event.league || event.tournament || event.league_name || event.leagueName || 'League';
+              const homeTeam = event.home_team || event.homeTeam || event.home || '';
+              const awayTeam = event.away_team || event.awayTeam || event.away || '';
+
               // Build match name
-              const matchName = event.home_team && event.away_team 
-                ? `${event.home_team} vs ${event.away_team}`
-                : 'TBD';
+              const matchName = homeTeam && awayTeam
+                ? `${homeTeam} vs ${awayTeam}`
+                : event.match || event.name || event.title || 'TBD';
 
               // Get first channel URL
-              const channelUrl = event.channels && event.channels.length > 0 
-                ? `https://topembed.pw/channel/${event.channels[0].link || event.channels[0].name}`
+              const channelValue = event.channels && event.channels.length > 0
+                ? (event.channels[0].name || event.channels[0].link)
                 : '';
+              const channelUrl = buildChannelUrl(channelValue);
 
               return {
                 type: 'event',
                 title: matchName,
-                meta: `${event.sport || 'Sport'} • ${event.league || 'League'} • ${dateStr} ${timeStr}`,
+                meta: `${sportName} - ${leagueName} - ${dateStr} ${timeStr}`,
                 url: channelUrl,
-                sport: event.sport || '',
-                tournament: event.league || '',
+                sport: sportName,
+                tournament: leagueName,
                 match: matchName,
-                home_team: event.home_team || '',
-                away_team: event.away_team || '',
+                home_team: homeTeam,
+                away_team: awayTeam,
                 date: dateStr,
                 time: timeStr,
                 channels: event.channels || []
               };
             });
-            console.log(`✅ Loaded ${allEvents.length} sports events for search`);
+            console.log(`Loaded ${allEvents.length} sports events for search`);
           } else {
-            console.warn('⚠️ API returned unexpected format:', apiResponse);
+            console.warn('API returned unexpected format:', apiResponse);
           }
         }
       } catch (error) {
-        console.warn('⚠️ Could not load events for search:', error.message);
+        console.warn('Could not load events for search:', error.message);
       }
     } finally {
       isLoading = false;
@@ -103,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return titleMatch || sportMatch || tournamentMatch || homeTeamMatch || awayTeamMatch;
     }).slice(0, 10); // Show max 10 results
 
-    console.log(`🔍 Search "${query}": found ${filtered.length} events`);
+    console.log(`Search "${query}": found ${filtered.length} events`);
     displayResults(filtered);
   }
 
@@ -203,4 +240,105 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load data on page load
   loadSearchData();
-});
+  });
+})();
+
+/* =========================================================
+   PATCH: Position dropdown above the player (mobile)
+   ========================================================= */
+(function() {
+  function positionSearchDropdown() {
+    if (window.innerWidth > 768) return;
+    
+    const input = document.getElementById('stream-url');
+    const dropdown = document.getElementById('search-results');
+    if (!input || !dropdown) return;
+    
+    const rect = input.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 4) + 'px';
+    dropdown.style.left = '12px';
+    dropdown.style.right = '12px';
+    dropdown.style.width = 'auto';
+  }
+
+  const input = document.getElementById('stream-url');
+  if (input) {
+    input.addEventListener('focus', positionSearchDropdown);
+  }
+  
+  window.addEventListener('scroll', positionSearchDropdown, { passive: true });
+  window.addEventListener('resize', positionSearchDropdown);
+})();
+
+/* =========================================================
+   PATCH: Fixed dropdown (portal) above the player
+   ========================================================= */
+(function() {
+  function positionSearchDropdown() {
+    const input = document.getElementById('stream-url');
+    const dropdown = document.getElementById('search-results');
+    if (!input || !dropdown) return;
+    
+    // Only position when the dropdown is visible
+    if (dropdown.classList.contains('hidden')) return;
+    
+    const rect = input.getBoundingClientRect();
+    const isMobile = window.innerWidth <= 768;
+    
+    // Fixed position relative to the viewport (portal)
+    dropdown.style.position = 'fixed';
+    dropdown.style.top = (rect.bottom + 4) + 'px';
+    dropdown.style.zIndex = '2147483647';
+    
+    if (isMobile) {
+      dropdown.style.left = '12px';
+      dropdown.style.right = '12px';
+      dropdown.style.width = 'auto';
+    } else {
+      // Desktop: align with the input
+      dropdown.style.left = rect.left + 'px';
+      dropdown.style.width = rect.width + 'px';
+      dropdown.style.right = 'auto';
+    }
+    
+    // Ensure the dropdown is attached to the body (portal)
+    if (dropdown.parentElement !== document.body) {
+      document.body.appendChild(dropdown);
+    }
+  }
+
+  function showDropdown() {
+    const dropdown = document.getElementById('search-results');
+    if (!dropdown) return;
+    dropdown.classList.remove('hidden');
+    positionSearchDropdown();
+  }
+
+  // Event delegation
+  document.addEventListener('focus', function(e) {
+    if (e.target && e.target.id === 'stream-url') {
+      showDropdown();
+    }
+  }, true);
+  
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'stream-url') {
+      setTimeout(showDropdown, 10);
+    }
+  });
+  
+  // Reposition on scroll/resize
+  window.addEventListener('scroll', positionSearchDropdown, { passive: true });
+  window.addEventListener('resize', positionSearchDropdown);
+  
+  // Click outside to close
+  document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('search-results');
+    const input = document.getElementById('stream-url');
+    if (!dropdown || !input) return;
+    
+    if (!dropdown.contains(e.target) && e.target !== input) {
+      dropdown.classList.add('hidden');
+    }
+  });
+})();

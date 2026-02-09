@@ -19,6 +19,7 @@ body {
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #B0B0B0;
   --color-accent: #333333;
+  --font-title: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", "Arial Narrow", Arial, sans-serif;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -63,6 +64,17 @@ body {
   --text-shadow-subtitle: none;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--color-bg-dark);
   color: var(--color-text-primary);
@@ -71,6 +83,7 @@ body {
   transition: all 0.3s ease;
   position: relative;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Header Styles - DAZN Inspired */
@@ -86,6 +99,49 @@ body {
   top: 0;
   transition: all 0.3s ease;
   border-bottom: 1px solid var(--color-accent);
+}
+
+/* Desktop Premium Header */
+@media (min-width: 1024px) {
+  .header {
+    padding: 14px 20px;
+  }
+  
+  .nav-container {
+    max-width: 100%;
+    gap: 20px;
+    padding: 0;
+  }
+  
+  .tabbed-menu {
+    gap: 6px;
+  }
+  
+  .tab {
+    font-size: 13px;
+    padding: 12px 20px;
+    letter-spacing: 0.6px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .header {
+    padding: 16px 40px;
+  }
+  
+  .nav-container {
+    gap: 30px;
+  }
+  
+  .tabbed-menu {
+    gap: 10px;
+  }
+  
+  .tab {
+    font-size: 15px;
+    padding: 14px 28px;
+    letter-spacing: 0.8px;
+  }
 }
 
 /* Add shadow on scroll */
@@ -104,6 +160,67 @@ body {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  gap: 20px;
+}
+
+.mobile-header-title {
+  display: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--color-text-primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Header Logo */
+.header-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.header-logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.1);
+  transition: transform 0.2s ease;
+}
+
+.header-logo:hover .header-logo-img {
+  transform: scale(1.05);
+}
+
+[data-theme="light"] .header-logo-img {
+  filter: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Header Theme Toggle (integrated) */
+.header-theme-toggle {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+/* Desktop Premium Header Adjustments */
+@media (min-width: 1024px) {
+  .header-logo-img {
+    height: 48px;
+  }
+  
+  .header-theme-toggle {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .tabs-container {
@@ -205,19 +322,6 @@ body {
 }
 
 /* Theme Toggle - Modern Design */
-theme-toggle.floating {
-  position: fixed;
-  bottom: 30px;
-  left: 30px;
-  z-index: 1001;
-  background: none;
-  border: none;
-  box-shadow: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .theme-toggle {
   background: var(--color-bg-card);
   border: 2px solid var(--color-primary);
@@ -323,6 +427,14 @@ main {
   background: transparent;
 }
 
+/* Desktop Hero - Larger Typography */
+@media (min-width: 1024px) {
+  .hero-section {
+    padding: 50px 40px 30px;
+    margin-bottom: 30px;
+  }
+}
+
 .hero-video {
   position: absolute;
   top: 0;
@@ -357,17 +469,33 @@ main {
 }
 
 .hero-title {
+  font-family: var(--font-title);
   font-size: 42px;
   font-weight: 800;
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
   text-transform: uppercase;
   letter-spacing: 2px;
-  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-text-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: var(--text-shadow-hero);
+}
+
+/* Desktop Hero Title - Larger */
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: 64px;
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hero-title {
+    font-size: 72px;
+  }
 }
 
 .hero-subtitle {
@@ -376,6 +504,28 @@ main {
   margin: 0;
   font-weight: 400;
   text-shadow: var(--text-shadow-subtitle);
+}
+
+h1,
+h2,
+h3,
+.stream-input-box h3,
+.player-empty-title {
+  font-family: var(--font-title);
+}
+
+/* Desktop Subtitle - Larger */
+@media (min-width: 1024px) {
+  .hero-subtitle {
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hero-subtitle {
+    font-size: 22px;
+  }
 }
 
 [data-theme="light"] .hero-subtitle {
@@ -390,8 +540,28 @@ main {
   gap: 25px;
   padding: 0 20px 40px;
   width: 100%;
-  max-width: 70%;
+  max-width: 100%;
   margin: 0 auto;
+}
+
+/* Desktop Stream Section - Contained width */
+@media (min-width: 1024px) {
+  .stream-section {
+    max-width: 900px;
+    padding: 0 40px 60px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .stream-section {
+    max-width: 1000px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .stream-section {
+    max-width: 1100px;
+  }
 }
 
 body.cinema-background {
@@ -406,6 +576,11 @@ body.cinema-background .header {
 
 body.cinema-background .stream-input-box.cinema-mode {
   display: none;
+}
+
+/* Hide footer in cinema mode (desktop) */
+body.cinema-background .footer {
+  display: none !important;
 }
 
 #live-stream.cinema-mode {
@@ -509,17 +684,86 @@ body.cinema-background .stream-input-box.cinema-mode {
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 20px;
+  /* Subtle shadow without a permanent yellow frame */
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 
-              0 0 0 4px rgba(255, 215, 0, 0.15),
-              0 0 80px rgba(255, 215, 0, 0.3),
+              0 0 0 1px rgba(255, 255, 255, 0.1),
               0 40px 120px rgba(0, 0, 0, 0.7);
-  border: 4px solid transparent;
+  border: 1px solid rgba(255, 215, 0, 0.2);
   background: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 100%);
   background-clip: padding-box;
   position: relative;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
   box-sizing: border-box;
   overflow: hidden;
+  /* No permanent outline */
+  outline: none;
+}
+
+.player-empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  color: var(--color-text-primary);
+  background:
+    radial-gradient(circle at center, rgba(255, 215, 0, 0.08), rgba(0, 0, 0, 0.75)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.75));
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 1;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+  padding: 24px;
+  backdrop-filter: blur(6px);
+}
+
+.player-empty-icon {
+  width: clamp(68px, 12vw, 110px);
+  height: clamp(68px, 12vw, 110px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.08);
+  border: 2px solid rgba(255, 215, 0, 0.25);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.player-empty-icon i {
+  font-size: clamp(40px, 7vw, 70px);
+  color: var(--color-primary);
+}
+
+.player-empty-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 480px;
+}
+
+.player-empty-title {
+  margin: 0;
+  font-size: clamp(22px, 4vw, 34px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-primary);
+  text-shadow: var(--text-shadow-subtitle);
+}
+
+.player-empty-subtitle {
+  margin: 0;
+  font-size: clamp(14px, 2.2vw, 18px);
+  color: var(--color-text-secondary);
+}
+
+.player-container.has-stream .player-empty-state {
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* Iframe Overlay - Anti-popup protection */
@@ -545,12 +789,13 @@ body.cinema-background .stream-input-box.cinema-mode {
   display: none;
 }
 
-/* Animated golden border effect using outline */
-#live-stream {
-  outline: 3px solid;
-  outline-color: var(--color-primary);
-  outline-offset: -7px;
-  animation: borderPulse 3s ease-in-out infinite;
+/* Subtle glow on hover only */
+#live-stream:hover {
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6),
+              0 0 0 2px rgba(255, 215, 0, 0.3),
+              0 0 60px rgba(255, 215, 0, 0.2),
+              0 50px 140px rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 215, 0, 0.4);
 }
 
 @keyframes borderPulse {
@@ -572,14 +817,20 @@ body.cinema-background .stream-input-box.cinema-mode {
   }
 }
 
-/* Light mode: Blue border instead of golden */
+/* Light mode: subtle blue border */
 [data-theme="light"] #live-stream {
-  outline-color: #2196F3;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
-              0 0 0 4px rgba(33, 150, 243, 0.15),
-              0 0 80px rgba(33, 150, 243, 0.2),
+              0 0 0 1px rgba(0, 0, 0, 0.1),
               0 40px 120px rgba(0, 0, 0, 0.1);
-  animation: borderPulseLight 3s ease-in-out infinite;
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+[data-theme="light"] #live-stream:hover {
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2),
+              0 0 0 2px rgba(33, 150, 243, 0.4),
+              0 0 60px rgba(33, 150, 243, 0.2),
+              0 50px 140px rgba(0, 0, 0, 0.15);
+  border-color: rgba(33, 150, 243, 0.5);
 }
 
 @keyframes borderPulseLight {
@@ -601,20 +852,10 @@ body.cinema-background .stream-input-box.cinema-mode {
 
 #live-stream:hover {
   transform: translateY(-5px) scale(1.01);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
-              0 0 0 4px rgba(255, 215, 0, 0.4),
-              0 0 120px rgba(255, 215, 0, 0.4),
-              0 60px 160px rgba(0, 0, 0, 0.8);
-  outline-color: #d4af37;
-  outline-width: 4px;
 }
 
 [data-theme="light"] #live-stream:hover {
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2),
-              0 0 0 4px rgba(33, 150, 243, 0.4),
-              0 0 120px rgba(33, 150, 243, 0.3),
-              0 60px 160px rgba(0, 0, 0, 0.15);
-  outline-color: #1565C0;
+  transform: translateY(-5px) scale(1.01);
 }
 
 #live-stream.cinema-mode:hover {
@@ -655,6 +896,144 @@ body.cinema-background .stream-input-box.cinema-mode {
   color: var(--color-text-primary);
   transition: all 0.3s ease;
   font-weight: 500;
+}
+
+.select-hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-accent);
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-select-trigger:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.2);
+}
+
+.custom-select-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+}
+
+.custom-select-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-accent);
+  border-radius: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 4000;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  padding: 6px 0;
+}
+
+.custom-select.open .custom-select-menu {
+  display: block;
+}
+
+.custom-select-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  min-height: 44px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.custom-select-option:hover {
+  background: rgba(255, 215, 0, 0.08);
+}
+
+[data-theme="light"] .custom-select-trigger {
+  background: #FFFFFF;
+  border-color: var(--light-border);
+}
+
+[data-theme="light"] .custom-select-menu {
+  background: #FFFFFF;
+  border-color: var(--light-border);
+}
+
+[data-theme="light"] .custom-select-option:hover {
+  background: rgba(33, 150, 243, 0.08);
+}
+
+.custom-select-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.select-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+}
+
+.select-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.select-fallback {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+[data-theme="light"] .select-fallback {
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .input-field::placeholder {
@@ -859,7 +1238,7 @@ body.cinema-background .stream-input-box.cinema-mode {
   /* Desktop: Ensure CHANNEL LINK column is visible */
   #channel-table th:nth-child(2),
   #channel-table td:nth-child(2) {
-    display: table-cell;
+    display: block !important;
   }
 }
 
@@ -962,6 +1341,9 @@ body.cinema-background .more-button:hover {
   flex-wrap: wrap;
   gap: 20px;
   border: 2px solid var(--color-accent);
+  position: relative;
+  overflow: visible;
+  z-index: 200;
 }
 
 [data-theme="light"] .event-filter-box,
@@ -1041,11 +1423,11 @@ body.cinema-background .more-button:hover {
 #event-table thead {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 5;
 }
 
 #event-table th {
-  background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-secondary) 100%);
+  background: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-card) 100%);
   color: var(--color-primary);
   font-weight: 800;
   padding: 18px 12px;
@@ -1127,6 +1509,52 @@ body.cinema-background .more-button:hover {
   vertical-align: middle;
 }
 
+.sport-cell {
+  white-space: nowrap;
+}
+
+.sport-cell-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sport-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+.sport-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.sport-icon-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.sport-icon-fallback {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.sport-icon-fallback.is-hidden {
+  display: none;
+}
+
 #event-table td:first-child {
   border-radius: 12px 0 0 12px;
   font-size: 14px;
@@ -1172,44 +1600,144 @@ body.cinema-background .more-button:hover {
   max-width: 100%;
 }
 
+/* Uniform button sizes - auto width, centered content */
 .stream-buttons .stream-btn {
   margin: 0;
   flex-shrink: 0;
-  min-width: 100px;
-  height: 42px;
-  padding: 10px 22px;
-  font-size: 14px;
-}
-
-/* Match cell with tournament info - always visible */
-.match-cell .match-name {
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
-.match-cell .match-name i {
-  margin-right: 8px;
-  opacity: 0.7;
-}
-
-.match-cell .match-tournament {
+  min-width: 70px;
+  height: 38px;
+  padding: 8px 16px;
   font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+/* Match cell with official logos */
+.match-cell .match-logos {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.match-cell .team-logo-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.match-cell .match-vs {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
   color: var(--color-text-secondary);
 }
 
-.match-cell .match-tournament i {
-  margin-right: 6px;
-  opacity: 0.7;
+.match-cell .match-name {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  width: 100%;
+  line-height: 1.25;
+  text-align: center;
+}
 
-/* Flag emoji styling - Larger flags */
+.match-cell .match-name.single {
+  grid-template-columns: 1fr;
+}
+
+.match-cell .team-name-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-cell .match-text {
+  white-space: normal;
+  text-align: center;
+}
+
+.match-cell .match-tournament {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  row-gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  width: 100%;
+  line-height: 1.2;
+}
+
+.match-cell .match-tournament .logo-wrap {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+}
+
+.match-cell .match-tournament .league-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+}
+
+.team-logo,
+.league-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+}
+
+.logo-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+[data-theme="light"] .logo-fallback {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.logo-fallback.is-hidden {
+  display: none;
+}
+
+/* Flag emoji styling - natural size, hidden when empty */
 .flag-emoji {
-  font-size: 22px;
+  font-size: 18px;
   display: inline-block;
-  margin-right: 6px;
   line-height: 1;
   vertical-align: middle;
 }
 
+/* Hide empty flag spans */
+.flag-emoji:empty {
+  display: none;
 }
 
 #event-table td:nth-child(4) {
@@ -1285,6 +1813,12 @@ body.cinema-background .more-button:hover {
   transform: translateX(-50%) scale(1);
   opacity: 1;
 }
+
+.play-button.show-tooltip::before,
+.play-button.show-tooltip::after {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
 #event-table .play-button,
 #channel-table .play-button {
   padding: 8px 20px;
@@ -1315,6 +1849,9 @@ body.cinema-background .more-button:hover {
   gap: 20px;
   flex-wrap: wrap;
   border: 2px solid var(--color-accent);
+  position: relative;
+  overflow: visible;
+  z-index: 200;
 }
 
 .channel-filter-box:hover {
@@ -1379,7 +1916,7 @@ body.cinema-background .more-button:hover {
 }
 
 #channel-table th {
-  background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-secondary) 100%);
+  background: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-card) 100%);
   color: var(--color-primary);
   font-weight: 800;
   padding: 18px 12px;
@@ -1550,6 +2087,7 @@ body.cinema-background .more-button:hover {
   height: 50px;
   padding: 14px 36px;
   font-size: 16px;
+  gap: 8px;
 }
 
 /* Responsive PLAY button on mobile */
@@ -1650,16 +2188,20 @@ body.cinema-background .more-button:hover {
     min-width: 150px;
   }
 
+  .match-cell .match-logos {
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+
+  .match-cell .match-vs {
+    font-size: 10px;
+  }
+
   .match-cell .match-name {
     font-size: 12px;
     font-weight: 600;
     margin-bottom: 4px;
     color: var(--color-text-primary);
-  }
-
-  .match-cell .match-name i {
-    margin-right: 6px;
-    color: var(--color-primary);
   }
 
   .match-cell .match-tournament {
@@ -1815,9 +2357,17 @@ body.cinema-background .more-button:hover {
   }
 
   body.cinema-background .more-links.cinema-mode {
-    position: static;
-    transform: none;
-    margin-top: 20px;
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0;
+    z-index: 1002;
+  }
+  
+  /* Hide footer in cinema mode */
+  body.cinema-background .footer {
+    display: none !important;
   }
 
   body.cinema-background .stream-input-box.cinema-mode {
@@ -1844,11 +2394,6 @@ body.cinema-background .more-button:hover {
 
   .header {
     padding: 15px 20px;
-  }
-
-  theme-toggle.floating {
-    bottom: 20px;
-    left: 20px;
   }
 
   .theme-toggle {
@@ -2344,6 +2889,7 @@ body.cinema-background .more-button:hover {
 table tbody tr {
   transition: all 0.3s ease;
   position: relative;
+  overflow: hidden;
 }
 
 table tbody tr::before {
@@ -2356,6 +2902,8 @@ table tbody tr::before {
   background: var(--color-primary);
   transform: scaleY(0);
   transition: transform 0.3s ease;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 
 table tbody tr:hover::before {
@@ -2383,18 +2931,20 @@ table tbody tr:hover::before {
   animation: shimmer 2s infinite linear;
 }
 
-/* Floating animation for icons */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+/* Floating animation for icons - ONE TIME on load */
+@keyframes floatOnce {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  50% {
-    transform: translateY(-10px);
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .hero-subtitle {
-  animation: float 3s ease-in-out infinite;
+  animation: floatOnce 0.8s ease-out forwards;
 }
 
 /* Pulse animation for live indicators */
@@ -2535,7 +3085,20 @@ table tbody tr:hover::before {
   font-size: 11px;
   margin: 0 auto;
   opacity: 0.7;
-  white-space: nowrap;
+  max-width: 600px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Desktop footer - single line if space */
+@media (min-width: 769px) {
+  .footer-disclaimer {
+    white-space: nowrap;
+  }
+  
+  .footer-disclaimer br {
+    display: none;
+  }
 }
 
 .footer .heart {
@@ -2614,14 +3177,19 @@ table tbody tr:hover::before {
 /* Desktop override: Force CHANNEL LINK column to be visible */
 @media (min-width: 769px) {
   #channel-table th:nth-child(2),
-  #channel-table td:nth-child(2) {
-    display: table-cell !important;
+  #channel-table td:nth-child(2),
+  #channel-table tbody td:nth-child(2) {
+    display: block !important;
+  }
+  
+  #channel-table .channel-link-container {
+    display: flex !important;
   }
 }
 /* =========================================================
-   TABLE FIX V6 — lock columns + keep full width (desktop + iOS)
+   TABLE FIX V6 - lock columns + keep full width (desktop + iOS)
 
-   Root cause of your new “tiny / floating headers” bug:
+   Root cause of your new "tiny / floating headers" bug:
    When you switch to the grid-based lock, if ANY older rule forces table parts
    back to table-row/table-cell (or if widths/min-widths are missing), browsers
    end up computing a weird intrinsic width, so the grid tracks collapse.
@@ -2648,7 +3216,7 @@ table tbody tr:hover::before {
   }
 }
 
-/* 1) EVENTS TABLE — 4 columns */
+/* 1) EVENTS TABLE - 4 columns */
 #event-table {
   display: block !important;
   width: 100% !important;
@@ -2668,7 +3236,7 @@ table tbody tr:hover::before {
 #event-table thead {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 5;
 }
 
 /* Grid rows: use minmax to prevent column collapse */
@@ -2727,12 +3295,20 @@ table tbody tr:hover::before {
 }
 
 /* MATCH & TOURNAMENT: enforce 2 lines */
-.match-cell .match-name,
-.match-cell .match-tournament {
-  display: block !important;
+.match-cell .match-name {
+  display: grid !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* 2) CHANNELS TABLE — 3 columns */
+.match-cell .match-tournament {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+}
+
+/* 2) CHANNELS TABLE - 3 columns */
 #channel-table {
   display: block !important;
   width: 100% !important;
@@ -2790,30 +3366,797 @@ table tbody tr:hover::before {
   border-bottom-right-radius: 12px;
 }
 
-/* 3) MOBILE behavior — keep your hide-columns behavior */
+/* Hide mobile filter toggle on desktop */
+.mobile-filter-toggle {
+  display: none;
+}
+
+/* 3) MOBILE behavior - Cards layout for app-like experience */
 @media (max-width: 768px) {
-  /* Events: hide col 1 & 2 (DATE/TIME + SPORT) -> 2 columns */
-  #event-table thead tr,
-  #event-table tbody tr {
-    grid-template-columns: 1.6fr 1fr !important;
+  
+  /* ============================================
+     MOBILE FILTER TOGGLE (ACCORDION) - CTA Style
+     ============================================ */
+  .mobile-filter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    margin-bottom: 12px;
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    border-radius: 14px;
+    color: var(--color-text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 52px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Dark mode style */
+  [data-theme="dark"] .mobile-filter-toggle {
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* Light mode style */
+  [data-theme="light"] .mobile-filter-toggle {
+    background: #FFFFFF;
+    border: 2px solid var(--light-border);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .mobile-filter-toggle:hover,
+  .mobile-filter-toggle:active {
+    background: var(--color-bg-card);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-gold);
+  }
+  
+  .mobile-filter-toggle .toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: 12px;
+  }
+  
+  .mobile-filter-toggle.active .toggle-icon {
+    transform: rotate(180deg);
+  }
+  
+  .mobile-filter-toggle.active {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-gold);
+  }
+  
+  /* Filter boxes - hidden by default on mobile */
+  .event-filter-box,
+  .channel-filter-box {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    margin-bottom: 0;
+  }
+  
+  .event-filter-box.expanded,
+  .channel-filter-box.expanded {
+    max-height: 500px;
+    opacity: 1;
+    overflow: visible;
+    margin-bottom: 20px;
   }
 
+  /* ============================================
+     EVENTS - CARDS LAYOUT
+     ============================================ */
+  #event-table {
+    display: block !important;
+  }
+  
+  #event-table colgroup,
+  #event-table thead {
+    display: none !important;
+  }
+  
+  #event-table tbody {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  #event-table tbody tr {
+    display: flex !important;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 16px;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  #event-table tbody tr:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.15);
+  }
+  
+  /* Show ALL columns in cards */
   #event-table th:nth-child(1),
   #event-table td:nth-child(1),
   #event-table th:nth-child(2),
-  #event-table td:nth-child(2) {
-    display: none !important;
+  #event-table td:nth-child(2),
+  #event-table th:nth-child(3),
+  #event-table td:nth-child(3),
+  #event-table th:nth-child(4),
+  #event-table td:nth-child(4) {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  
+  /* Card row layout */
+  #event-table tbody td {
+    position: relative;
+    text-align: center;
+  }
+  
+  /* Hide table header icons in cards */
+  #event-table tbody td i.fas,
+  #event-table tbody td i.far {
+    display: none;
+  }
+  
+  /* But keep sport emoji/icons in match cell */
+  #event-table tbody td .match-cell i {
+    display: inline;
+  }
+  
+  /* ============================================
+     TOP ROW: SPORT + DATE/TIME on one line
+     ============================================ */
+
+  /* Card container - use CSS grid for top row layout */
+  #event-table tbody tr {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "sport datetime"
+      "match match"
+      "buttons buttons";
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    border-radius: 16px;
+    padding: 16px;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+    align-items: center;
   }
 
-  /* Channels: hide col 2 (LINK) -> 2 columns */
-  #channel-table thead tr,
+  #event-table tbody tr:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-gold);
+  }
+
+  /* Sport badge on the left */
+  #event-table tbody td:nth-child(2) {
+    grid-area: sport;
+    display: inline-flex !important;
+    width: auto !important;
+    background: var(--color-primary) !important;
+    color: #000 !important;
+    padding: 6px 14px !important;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    justify-self: start;
+    align-self: center;
+    margin: 0;
+    line-height: 1;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  /* Date & time on the right, same row as sport */
+  #event-table tbody td:nth-child(1) {
+    grid-area: datetime;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 0 !important;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Date-time cell structure - flex for perfect alignment */
+  #event-table tbody td:nth-child(1) .date-time-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1;
+  }
+
+  /* Date with calendar icon */
+  #event-table tbody td:nth-child(1) .date-line {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  #event-table tbody td:nth-child(1) .date-line::before {
+    content: '\f073';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    opacity: 0.7;
+  }
+
+  /* Time with clock icon */
+  #event-table tbody td:nth-child(1) .time-line {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  #event-table tbody td:nth-child(1) .time-line::before {
+    content: '\f017';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    opacity: 0.7;
+  }
+
+  /* Separator between date and time */
+  #event-table tbody td:nth-child(1) .date-line::after {
+    content: '|';
+    margin-left: 6px;
+    margin-right: 2px;
+    opacity: 0.4;
+    font-weight: 300;
+  }
+
+  /* Match & tournament - main content */
+  #event-table tbody td:nth-child(3) {
+    grid-area: match;
+    text-align: center;
+    border-top: 1px solid var(--color-accent);
+    border-bottom: none !important;
+    padding: 12px 0 !important;
+  }
+  
+  #event-table tbody td:nth-child(3) .match-cell {
+    min-width: unset;
+    text-align: center;
+  }
+  
+  #event-table tbody td:nth-child(3) .match-logos {
+    gap: 18px;
+    margin-bottom: 10px;
+  }
+
+  #event-table tbody td:nth-child(3) .match-vs {
+    font-size: 12px;
+  }
+
+  #event-table tbody td:nth-child(3) .match-name {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  #event-table tbody td:nth-child(3) .match-name.single {
+    grid-template-columns: 1fr;
+  }
+  
+  #event-table tbody td:nth-child(3) .match-tournament {
+    font-size: 12px !important;
+    color: var(--color-text-secondary);
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    row-gap: 6px;
+  }
+
+  #event-table tbody td:nth-child(3) .match-text {
+    white-space: normal;
+  }
+
+  #event-table tbody td:nth-child(3) .logo-wrap {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+  }
+  
+  #event-table tbody td:nth-child(3) .team-logo,
+  #event-table tbody td:nth-child(3) .league-logo {
+    width: 56px;
+    height: 56px;
+  }
+  
+  #event-table tbody td:nth-child(3) .match-tournament .logo-wrap {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+  }
+  
+  #event-table tbody td:nth-child(3) .match-tournament .league-logo {
+    width: 28px;
+    height: 28px;
+  }
+  
+  /* STREAM BUTTONS - Full width at bottom, centered */
+  #event-table tbody td:nth-child(4) {
+    grid-area: buttons;
+    padding: 0 !important;
+  }
+  
+  #event-table tbody td:nth-child(4) .stream-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  #event-table tbody td:nth-child(4) .stream-btn {
+    flex: 0 1 auto;
+    min-width: 85px;
+    height: 44px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+
+  /* ============================================
+     CHANNELS - CARDS LAYOUT
+     ============================================ */
+  #channel-table {
+    display: block !important;
+  }
+  
+  #channel-table colgroup,
+  #channel-table thead {
+    display: none !important;
+  }
+  
+  #channel-table tbody {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
   #channel-table tbody tr {
-    grid-template-columns: 1.4fr 1fr !important;
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    gap: 10px;
+    min-height: 56px;
+  }
+  
+  #channel-table tbody tr:hover {
+    border-color: var(--color-primary);
+  }
+  
+  /* Show ALL columns in cards */
+  #channel-table th:nth-child(1),
+  #channel-table td:nth-child(1),
+  #channel-table th:nth-child(2),
+  #channel-table td:nth-child(2),
+  #channel-table th:nth-child(3),
+  #channel-table td:nth-child(3) {
+    display: block !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  
+  /* Channel name - Left side, single line with Play button */
+  #channel-table tbody td:nth-child(1) {
+    flex: 1;
+    min-width: 0;
+    order: 1;
+  }
+  
+  #channel-table tbody td:nth-child(1) .channel-name-with-flag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  #channel-table tbody td:nth-child(1) .country-flag {
+    flex-shrink: 0;
+    font-size: 20px;
+    width: 28px;
+  }
+  
+  /* Hide channel link on mobile cards */
+  #channel-table tbody td:nth-child(2) {
+    display: none !important;
+  }
+  
+  /* Play button - Right side, on same line as channel name */
+  #channel-table tbody td:nth-child(3) {
+    flex-shrink: 0;
+    order: 2;
+  }
+  
+  #channel-table tbody td:nth-child(3) .play-button {
+    min-width: 75px !important;
+    width: auto !important;
+    height: 36px !important;
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+    border-radius: 8px;
+    gap: 6px !important;
   }
 
-  #channel-table th:nth-child(2),
-  #channel-table td:nth-child(2) {
+  /* ============================================
+     HERO - COMPACT ON MOBILE
+     ============================================ */
+  .hero-section {
+    padding: 20px 15px !important;
+    margin-bottom: 15px !important;
+    min-height: auto !important;
+  }
+  
+  .hero-title {
+    font-size: 24px !important;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  
+  .hero-subtitle {
+    font-size: 12px !important;
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  /* ============================================
+     HEADER - SCROLLABLE TABS
+     ============================================ */
+  .header-menu {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 5px;
+    margin: 0 -10px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .header-menu::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .header-menu ul {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    justify-content: flex-start;
+    min-width: max-content;
+  }
+  
+  .header-menu ul li a {
+    white-space: nowrap;
+    padding: 10px 14px;
+    font-size: 11px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+  }
+  
+  /* Section titles */
+  .section-title {
+    font-size: 18px !important;
+    padding: 12px 0;
+  }
+  
+  /* ============================================
+     GENERAL MOBILE UI RULES
+     ============================================ */
+  /* Tap targets minimum 44px */
+  button,
+  .play-button,
+  .stream-btn,
+  select,
+  input,
+  a.nav-link {
+    min-height: 44px;
+  }
+  
+  /* Input fields thumb-friendly */
+  .input-field {
+    min-height: 48px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+  }
+
+  .custom-select-trigger {
+    min-height: 48px;
+    font-size: 14px;
+  }
+  
+  /* Filter containers stack vertically */
+  .event-filter-box,
+  .channel-filter-box {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .filter-container,
+  .search-container {
+    width: 100%;
+  }
+  
+  /* Table containers */
+  .table-container {
+    padding: 0 10px;
+    overflow-x: visible;
+  }
+
+  /* ============================================
+     DARK MODE - CARDS CONTRAST SAME AS FILTERS
+     ============================================ */
+  [data-theme="dark"] #event-table tbody tr,
+  [data-theme="dark"] #channel-table tbody tr {
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    box-shadow: var(--shadow-md);
+  }
+  
+  [data-theme="dark"] #event-table tbody tr:hover,
+  [data-theme="dark"] #channel-table tbody tr:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-gold);
+  }
+
+  /* ============================================
+     SEARCH BOX & PLAYER - CARD STYLE ON MOBILE
+     ============================================ */
+  .stream-section {
+    padding: 15px 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .stream-input-box {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 14px 12px;
+    margin: 0 0 15px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .stream-input-box h3 {
+    font-size: 14px !important;
+    margin-bottom: 12px !important;
+  }
+  
+  /* Input and button on single line */
+  .input-container {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    width: 100%;
+  }
+  
+  .search-wrapper {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  .input-container .input-field {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    height: 40px !important;
+    box-sizing: border-box !important;
+  }
+  
+  .input-container .play-button {
+    flex-shrink: 0 !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+    min-width: auto !important;
+    width: auto !important;
+    height: 40px !important;
+    white-space: nowrap !important;
+  }
+  
+  [data-theme="dark"] .stream-input-box {
+    background: rgba(30, 30, 30, 0.95);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Player container as card - centered properly */
+  .player-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  #live-stream {
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 0;
+    width: 100% !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  [data-theme="dark"] #live-stream {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+
+  /* ============================================
+     HEADER MOBILE - CENTERED & COMPACT
+     ============================================ */
+  .header {
+    padding: 10px 12px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-left: max(12px, env(safe-area-inset-left));
+  }
+  
+  .nav-container {
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  
+  .mobile-header-title {
+    display: block;
+    order: 2;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  /* Mobile Logo - LEFT */
+  .header-logo {
+    order: 1;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+  
+  .header-logo-img {
+    height: 32px;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  /* Mobile Theme Toggle - RIGHT */
+  .header-theme-toggle {
+    order: 3;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-card) !important;
+    border: 2px solid var(--color-primary) !important;
+    box-shadow: var(--shadow-gold) !important;
+    position: relative;
+    z-index: 100;
+  }
+  
+  /* Force tabs to be hidden on mobile */
+  .tabs-container {
     display: none !important;
+  }
+  
+  .header-theme-toggle i {
+    font-size: 16px;
+  }
+  
+  [data-theme="light"] .header-theme-toggle {
+    background: #F0F4F8 !important;
+    border-color: var(--light-border) !important;
+  }
+  
+  /* When bottom nav present, still show theme toggle in header */
+  body.has-bottom-nav .header-theme-toggle {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    z-index: auto !important;
+  }
+  
+  /* Hide the old floating toggle override */
+  body.has-bottom-nav .theme-toggle:not(.header-theme-toggle) {
+    display: none !important;
+  }
+  
+  /* Mobile header title (when no tabs) */
+  body.has-bottom-nav .header::after {
+    display: none;
+  }
+  
+  body.has-bottom-nav .header::before {
+    display: none;
+  }
+  
+  .tabbed-menu {
+    display: flex;
+    width: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 4px;
+    padding: 2px 8px;
+    justify-content: center;
+  }
+  
+  .tabbed-menu::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tabbed-menu .tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 8px 10px;
+    font-size: 10px;
+    min-height: 32px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0;
   }
 }
 
@@ -2823,3 +4166,851 @@ table tbody tr:hover::before {
   margin-right: 8px !important;
 }
 
+/* 5) Desktop: Force CHANNEL LINK column visible (override mobile hide) */
+@media (min-width: 769px) {
+  #channel-table tbody td:nth-child(2) {
+    display: block !important;
+  }
+}
+
+
+/* ============================================
+   UX ENHANCEMENTS - Bottom Nav, Skeletons, 
+   Pull-to-Refresh, Micro-animations
+   ============================================ */
+
+/* ============================================
+   BOTTOM NAVIGATION (Mobile Only)
+   ============================================ */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-secondary);
+    border-top: 1px solid var(--color-accent);
+    padding: 8px 0;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="light"] .bottom-nav {
+    background: #FFFFFF;
+    border-top: 1px solid var(--light-border);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 12px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    min-width: 52px;
+  }
+
+  .bottom-nav-item i {
+    font-size: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--color-primary);
+  }
+
+  .bottom-nav-item.active i {
+    transform: scale(1.1);
+  }
+
+  [data-theme="light"] .bottom-nav-item.active {
+    color: var(--light-accent-blue-dark);
+  }
+
+  .bottom-nav-item:active {
+    transform: scale(0.95);
+    background: rgba(255, 215, 0, 0.1);
+  }
+
+  /* Body padding when bottom nav is present */
+  body.has-bottom-nav {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.has-bottom-nav main {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  /* Ensure footer is visible above bottom nav */
+  body.has-bottom-nav .footer {
+    padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+    margin-bottom: 70px;
+  }
+
+  /* Hide header tabs on mobile when bottom nav is active */
+  body.has-bottom-nav .tabbed-menu {
+    display: none;
+  }
+
+  body.has-bottom-nav .header {
+    padding: 10px 12px;
+  }
+
+  body.has-bottom-nav .nav-container {
+    justify-content: space-between;
+    padding: 0 3px;
+  }
+
+  /* Remove the text "THE LIVE VISION" since we have the logo */
+  body.has-bottom-nav .header::before {
+    display: none;
+  }
+}
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.skeleton-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-accent);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+[data-theme="light"] .skeleton-card {
+  background: #FFFFFF;
+  border-color: var(--light-border);
+}
+
+.skeleton-animate {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 0%,
+    var(--color-accent) 50%,
+    var(--color-bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+[data-theme="light"] .skeleton-animate {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e0e0e0 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Event skeleton */
+.skeleton-event .skeleton-badge {
+  width: 80px;
+  height: 24px;
+  border-radius: 12px;
+  align-self: flex-start;
+}
+
+.skeleton-event .skeleton-date {
+  width: 60%;
+  height: 16px;
+  align-self: center;
+}
+
+.skeleton-event .skeleton-title {
+  width: 90%;
+  height: 20px;
+  align-self: center;
+}
+
+.skeleton-event .skeleton-subtitle {
+  width: 70%;
+  height: 14px;
+  align-self: center;
+}
+
+.skeleton-event .skeleton-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-accent);
+}
+
+.skeleton-event .skeleton-btn {
+  width: 80px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+/* Channel skeleton */
+.skeleton-channel {
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 14px;
+}
+
+.skeleton-channel .skeleton-flag {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.skeleton-channel .skeleton-name {
+  flex: 1;
+  height: 18px;
+  margin: 0 12px;
+}
+
+.skeleton-channel .skeleton-btn {
+  width: 70px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* Desktop skeleton adjustments */
+@media (min-width: 769px) {
+  .skeleton-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .skeleton-card {
+    padding: 20px;
+  }
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+.empty-state-row td {
+  background: transparent !important;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.error-state i {
+  font-size: 40px;
+  color: #FF6B6B;
+  margin-bottom: 16px;
+}
+
+.error-state p {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  margin: 0 0 20px 0;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+.retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d4af37 100%);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.retry-btn:active {
+  transform: translateY(0);
+}
+
+[data-theme="light"] .retry-btn {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+}
+
+/* ============================================
+   PULL TO REFRESH (Mobile Only)
+   ============================================ */
+.pull-indicator {
+  position: fixed;
+  top: env(safe-area-inset-top, 0px);
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 1002;
+  background: linear-gradient(180deg, var(--color-bg-dark) 0%, transparent 100%);
+}
+
+[data-theme="light"] .pull-indicator {
+  background: linear-gradient(180deg, var(--color-bg-secondary) 0%, transparent 100%);
+}
+
+.pull-indicator i {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.pull-indicator.ready {
+  color: var(--color-primary);
+}
+
+.pull-indicator.ready i {
+  animation: pulse-rotate 0.5s ease;
+}
+
+@keyframes pulse-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(180deg); }
+}
+
+.pull-indicator.refreshing {
+  color: var(--color-primary);
+}
+
+/* ============================================
+   MICRO-ANIMATIONS
+   ============================================ */
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Entrance animations for cards/rows */
+body.animations-enabled #event-table tbody tr,
+body.animations-enabled #channel-table tbody tr {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+body.animations-enabled #event-table tbody tr.animate-in,
+body.animations-enabled #channel-table tbody tr.animate-in {
+  animation: card-entrance 0.4s ease forwards;
+}
+
+@keyframes card-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation for multiple items */
+body.animations-enabled #event-table tbody tr:nth-child(1) { animation-delay: 0ms; }
+body.animations-enabled #event-table tbody tr:nth-child(2) { animation-delay: 50ms; }
+body.animations-enabled #event-table tbody tr:nth-child(3) { animation-delay: 100ms; }
+body.animations-enabled #event-table tbody tr:nth-child(4) { animation-delay: 150ms; }
+body.animations-enabled #event-table tbody tr:nth-child(5) { animation-delay: 200ms; }
+body.animations-enabled #event-table tbody tr:nth-child(n+6) { animation-delay: 250ms; }
+
+body.animations-enabled #channel-table tbody tr:nth-child(1) { animation-delay: 0ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(2) { animation-delay: 30ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(3) { animation-delay: 60ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(4) { animation-delay: 90ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(5) { animation-delay: 120ms; }
+body.animations-enabled #channel-table tbody tr:nth-child(n+6) { animation-delay: 150ms; }
+
+/* Tap/click feedback on buttons and cards */
+body.animations-enabled .play-button,
+body.animations-enabled .stream-btn,
+body.animations-enabled .more-button,
+body.animations-enabled .retry-btn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+body.animations-enabled .play-button:active,
+body.animations-enabled .stream-btn:active,
+body.animations-enabled .more-button:active,
+body.animations-enabled .retry-btn:active {
+  transform: scale(0.95) !important;
+}
+
+/* Card hover effect (desktop) */
+@media (min-width: 769px) {
+  body.animations-enabled #event-table tbody tr,
+  body.animations-enabled #channel-table tbody tr {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  body.animations-enabled #event-table tbody tr:hover,
+  body.animations-enabled #channel-table tbody tr:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Card tap effect (mobile) */
+@media (max-width: 768px) {
+  body.animations-enabled #event-table tbody tr:active,
+  body.animations-enabled #channel-table tbody tr:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Bottom nav item tap animation */
+body.animations-enabled .bottom-nav-item {
+  transition: transform 0.15s ease, color 0.2s ease, background 0.2s ease;
+}
+
+body.animations-enabled .bottom-nav-item:active {
+  transform: scale(0.9);
+}
+
+/* Skeleton card entrance */
+body.animations-enabled .skeleton-card {
+  animation: skeleton-entrance 0.3s ease forwards;
+}
+
+@keyframes skeleton-entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+
+/* =========================================================
+
+
+/* =========================================================
+   PATCH 2026-02-02 - Mobile fixes (v2)
+   1) Theme toggle: fully visible + iOS safe area
+   2) Event cards: date/time alignment
+   3) Filters: single block (button + panel)
+   4) Search dropdown: always above the player
+   ========================================================= */
+
+@media (max-width: 768px) {
+  /* ============================================
+     1) HEADER: Toggle never clipped
+     ============================================ */
+  .header {
+    padding-right: calc(12px + env(safe-area-inset-right, 0px));
+    padding-left: calc(12px + env(safe-area-inset-left, 0px));
+  }
+
+  /* Nav container: structure anti-overflow */
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Toggle: fixed size, no compression */
+  .header-theme-toggle {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    margin-right: env(safe-area-inset-right, 0px) !important;
+    position: relative;
+    z-index: 100;
+  }
+
+  /* Logo can shrink if needed */
+  .header-logo {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  
+  .header-logo-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 32px;
+  }
+
+  /* ============================================
+     2) EVENTS CARDS: Perfect date/time alignment
+     ============================================ */
+  #event-table tbody td:nth-child(1) .date-time-cell {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px;
+    line-height: 1 !important;
+  }
+  
+  #event-table tbody td:nth-child(1) .date-line,
+  #event-table tbody td:nth-child(1) .time-line {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+    font-size: 13px;
+  }
+  
+  /* Icons: centered vertical alignment, same height */
+  #event-table tbody td:nth-child(1) .date-line::before,
+  #event-table tbody td:nth-child(1) .time-line::before {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    font-size: 11px;
+    height: 11px;
+    width: 11px;
+  }
+  
+  /* Separator | aligned with text */
+  #event-table tbody td:nth-child(1) .date-line::after {
+    content: '|';
+    margin-left: 6px;
+    margin-right: 2px;
+    opacity: 0.4;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    font-weight: 300;
+  }
+
+  /* ============================================
+     3) FILTERS: Single block (button + panel)
+     ============================================ */
+  /* Toggle button: base style */
+  .mobile-filter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    margin-bottom: 0 !important;
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    border-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    color: var(--color-text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 52px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Active state: merged with panel */
+  .mobile-filter-toggle.active {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-color: transparent !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  /* Filter box: hidden by default */
+  .event-filter-box,
+  .channel-filter-box {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    margin-top: 0 !important;
+    margin-bottom: 20px;
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-accent);
+    border-top: 0 !important;
+    border-radius: 0 0 14px 14px !important;
+    padding: 0 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Expanded state: visible, merged with toggle */
+  .event-filter-box.expanded,
+  .channel-filter-box.expanded {
+    max-height: 500px;
+    opacity: 1;
+    padding: 16px;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-top: 0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    overflow: visible;
+  }
+  
+  /* Dark mode */
+  [data-theme="dark"] .mobile-filter-toggle,
+  [data-theme="dark"] .event-filter-box,
+  [data-theme="dark"] .channel-filter-box {
+    background: var(--color-bg-card);
+    border-color: var(--color-accent);
+  }
+  
+  [data-theme="light"] .mobile-filter-toggle,
+  [data-theme="light"] .event-filter-box,
+  [data-theme="light"] .channel-filter-box {
+    background: #FFFFFF;
+    border-color: var(--light-border);
+  }
+  
+  /* Hover: text YELLOW, not black */
+  .mobile-filter-toggle:hover,
+  .mobile-filter-toggle:active {
+    background: var(--color-bg-card) !important;
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
+  }
+  
+  .mobile-filter-toggle:hover .toggle-icon,
+  .mobile-filter-toggle:active .toggle-icon {
+    color: var(--color-primary) !important;
+  }
+  
+  /* Dark mode: same behavior */
+  [data-theme="dark"] .mobile-filter-toggle:hover,
+  [data-theme="dark"] .mobile-filter-toggle:active {
+    background: var(--color-bg-card) !important;
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+  }
+
+  /* ============================================
+     4) FOOTER + BOTTOM NAV
+     ============================================ */
+  /* Variable for bottom nav height */
+  :root {
+    --bottom-nav-h: 72px;
+  }
+  
+  /* Body padding to allow scrolling down to the footer */
+  body.has-bottom-nav {
+    padding-bottom: calc(var(--bottom-nav-h) + 40px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  /* Main needs enough space at the bottom */
+  body.has-bottom-nav main {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  /* Footer padding so it stays visible above the bottom nav */
+  body.has-bottom-nav .footer {
+    padding-bottom: calc(var(--bottom-nav-h) + 30px + env(safe-area-inset-bottom, 0px));
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+/* ============================================
+   5) SEARCH DROPDOWN: Above the player (portal)
+   ============================================ */
+
+/* Input container: stable row with visible gap */
+.input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Search wrapper: takes available space */
+.search-wrapper {
+  flex: 1 1 auto;
+  min-width: 0;
+  position: relative;
+}
+
+/* Input should not overflow */
+#stream-url,
+.search-wrapper .input-field {
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* Play button: fixed size */
+#load-stream,
+.input-container .play-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Player: low z-index, no transform that creates a stacking context */
+.player-container {
+  position: relative;
+  z-index: 1;
+}
+
+#live-stream {
+  position: relative;
+  z-index: 1;
+  /* Remove outline that can cause stacking issues */
+  outline: none !important;
+}
+
+/* Iframe overlay: controlled z-index */
+#iframe-overlay {
+  z-index: 5;
+}
+
+/* Do not change z-index on hover for these elements */
+.player-container:hover,
+#live-stream:hover,
+#iframe-overlay:hover {
+  z-index: 1 !important;
+}
+
+@media (max-width: 768px) {
+  /* Keep input and button on a single row with gap */
+  .input-container {
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+  
+  .search-wrapper {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+  
+  #stream-url {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  
+  #load-stream {
+    flex: 0 0 auto !important;
+    padding: 10px 16px !important;
+  }
+  
+  /* Search results: fixed portal with a very high z-index */
+  .search-results {
+    position: fixed !important;
+    left: 12px;
+    right: 12px;
+    top: auto;
+    max-height: 50vh;
+    overflow-y: auto;
+    z-index: 2147483647 !important; /* Max z-index */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--color-primary);
+    border-radius: 0 0 12px 12px;
+    background: var(--color-bg-card);
+    /* Isolation to avoid parent stacking context */
+    isolation: isolate;
+  }
+  
+  /* Player and iframe must stay below */
+  .player-container,
+  #live-stream,
+  #iframe-overlay {
+    z-index: 1 !important;
+    transform: none !important; /* Avoid creating a stacking context */
+  }
+}

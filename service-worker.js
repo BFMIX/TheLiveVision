@@ -1,7 +1,7 @@
 // service-worker.js
 // PWA Service Worker for offline support and caching
 
-const CACHE_NAME = "sports-vision-v2"; // Updated version to clear old cache
+const CACHE_NAME = "sports-vision-v7"; // Updated version to clear old cache
 const urlsToCache = [
   "/",
   "/index.html",
@@ -16,6 +16,7 @@ const urlsToCache = [
   "/js/errorHandler.js",
   "/js/searchStream.js",
   "/js/streammanager.js",
+  "/js/streammanager.js?v=7",
   "/js/channelsmanager.js",
   "/js/sportsEventManager.js",
 
@@ -34,7 +35,7 @@ const urlsToCache = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("Opened cache v2");
+      console.log("Opened cache v7");
       return cache.addAll(urlsToCache);
     }),
   );

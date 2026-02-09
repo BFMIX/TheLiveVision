@@ -1,254 +1,735 @@
 // sportsEventManager.js
-// Gestion des événements sportifs via la nouvelle API beta.adstrim.ru
+// Sports events manager using beta.adstrim.ru (API) and viewembed.ru (player)
 
-document.addEventListener('DOMContentLoaded', () => {
-  const eventList = document.getElementById('event-list');
-  const sportFilter = document.getElementById('sport-filter');
-  const dateFilter = document.getElementById('date-filter');
-  const tournamentFilter = document.getElementById('tournament-filter');
-  const eventSearch = document.getElementById('event-search');
-  const loadingIndicator = document.getElementById('sports-loading');
-  const errorMessage = document.getElementById('sports-error');
-  let eventsData = [];
+(function () {
+  'use strict';
 
-  // Fonction pour charger les événements depuis la nouvelle API
-  async function loadEvents() {
-    try {
-      loadingIndicator.style.display = 'block';
-      errorMessage.style.display = 'none';
+  document.addEventListener('DOMContentLoaded', () => {
+    const eventList = document.getElementById('event-list');
+    const sportFilter = document.getElementById('sport-filter');
+    const leagueFilter = document.getElementById('league-filter');
+    const tournamentFilter = document.getElementById('tournament-filter');
+    const eventSearch = document.getElementById('event-search');
+    const loadingIndicator = document.getElementById('sports-loading');
+    const errorMessage = document.getElementById('sports-error');
 
-      const response = await fetch('https://beta.adstrim.ru/api/events');
-      if (!response.ok) {
-        throw new Error('Network error while fetching events.');
+    const API_BASE = window.API_BASE || 'https://beta.adstrim.ru';
+    const EMBED_BASE = window.EMBED_BASE || 'https://viewembed.ru';
+
+    window.API_BASE = API_BASE;
+    window.EMBED_BASE = EMBED_BASE;
+
+    let eventsData = [];
+    let isLoading = false;
+
+    function getFirstImage(obj, keys) {
+      if (!obj) return '';
+      for (const key of keys) {
+        if (obj[key]) return obj[key];
       }
-      const apiResponse = await response.json();
-
-      if (apiResponse.status !== 'success' || !apiResponse.data) {
-        throw new Error('Invalid API response.');
-      }
-
-      // Transform API data
-      eventsData = apiResponse.data.map(event => {
-        // Parse date from timestamp
-        const dateObj = new Date(event.timestamp * 1000);
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const dateStr = `${year}-${month}-${day}`;
-
-        // Build match name from home_team vs away_team
-        const matchName = event.home_team && event.away_team 
-          ? `${event.home_team} vs ${event.away_team}`
-          : event.match || 'TBD';
-
-        // Build channels array with proper format
-        const channels = event.channels ? event.channels.map(ch => {
-          // Build the stream URL using ch.name with proper encoding
-          return `https://topembed.pw/channel/${encodeURIComponent(ch.name)}`;
-        }) : [];
-
-        return {
-          id: event.id,
-          date: dateStr,
-          unix_timestamp: event.timestamp,
-          sport: event.sport || 'Unknown',
-          tournament: event.league || 'Unknown',
-          match: matchName,
-          channels: channels,
-          home_team_image: event.home_team_image || '',
-          away_team_image: event.away_team_image || '',
-          league_image: event.league_image || ''
-        };
-      });
-
-      console.log(`✅ Loaded ${eventsData.length} events from new API`);
-
-      // Populate filters
-      const sports = [...new Set(eventsData.map(event => event.sport))].sort();
-      sports.forEach(sport => {
-        const option = document.createElement('option');
-        option.value = sport;
-        option.textContent = sport;
-        sportFilter.appendChild(option);
-      });
-
-      const dates = [...new Set(eventsData.map(event => event.date))].sort();
-      dates.forEach(date => {
-        const option = document.createElement('option');
-        option.value = date;
-        option.textContent = date;
-        dateFilter.appendChild(option);
-      });
-
-      const tournaments = [...new Set(eventsData.map(event => event.tournament))].sort();
-      tournaments.forEach(tournament => {
-        const option = document.createElement('option');
-        option.value = tournament;
-        option.textContent = tournament;
-        tournamentFilter.appendChild(option);
-      });
-
-      // Display all events initially
-      displayEvents(eventsData);
-    } catch (error) {
-      console.error('Error loading events:', error);
-      eventList.innerHTML = '<tr><td colspan="5">Unable to load events. Please try again later.</td></tr>';
-      errorMessage.textContent = 'Unable to load events from API. Please check your connection and try again.';
-      errorMessage.style.display = 'block';
-    } finally {
-      loadingIndicator.style.display = 'none';
+      return '';
     }
-  }
 
-  // Display events in table
-  function displayEvents(events) {
-    eventList.innerHTML = '';
-    
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                        'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    // Function to extract country code from stream URL and return flag emoji
-    function getCountryFlag(streamUrl) {
-      // Decode URL first (e.g., %5B becomes [, %5D becomes ])
-      const decodedUrl = decodeURIComponent(streamUrl);
-      
-      // Extract country code from URL like: https://topembed.pw/channel/SkySportsNews[UK]
-      const countryMatch = decodedUrl.match(/\[([^\]]+)\]$/);
-      if (!countryMatch) return '';
-      
-      const countryCode = countryMatch[1].toUpperCase();
-      
-      // Map country names/codes to flag emojis
+    function isUrl(value) {
+      return /^https?:\/\//i.test(String(value || ''));
+    }
+
+    function extractEmoji(value) {
+      const text = String(value || '').trim();
+      if (!text) return '';
+      const emojiRegex = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+      return emojiRegex.test(text) && text.length <= 6 ? text : '';
+    }
+
+    function getSportFallbackIcon(sportName) {
+      const name = String(sportName || '').toLowerCase();
+      if (name.includes('basket')) return 'fa-basketball';
+      if (name.includes('baseball')) return 'fa-baseball';
+      if (name.includes('tennis')) return 'fa-table-tennis-paddle-ball';
+      if (name.includes('golf')) return 'fa-golf-ball-tee';
+      if (name.includes('hockey')) return 'fa-hockey-puck';
+      if (name.includes('rugby')) return 'fa-football';
+      if (name.includes('cricket')) return 'fa-baseball';
+      if (name.includes('boxing') || name.includes('mma') || name.includes('fight')) return 'fa-hand-fist';
+      if (name.includes('motor') || name.includes('racing') || name.includes('auto')) return 'fa-flag-checkered';
+      if (name.includes('cycling') || name.includes('bike')) return 'fa-person-biking';
+      if (name.includes('athletic') || name.includes('track') || name.includes('run')) return 'fa-person-running';
+      if (name.includes('football') || name.includes('soccer') || name.includes('futbol')) return 'fa-futbol';
+      return 'fa-futbol';
+    }
+
+    function normalizeChannelValue(value) {
+      if (!value) return '';
+      return String(value).trim();
+    }
+
+    function buildChannelUrl(value) {
+      const cleaned = normalizeChannelValue(value);
+      if (!cleaned) return '';
+      if (/^https?:\/\//i.test(cleaned)) {
+        if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
+          return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, '$1viewembed.ru');
+        }
+        return cleaned;
+      }
+      const path = cleaned.replace(/^\/+/, '');
+      if (path.toLowerCase().startsWith('channel/')) {
+        const slug = path.slice('channel/'.length);
+        return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
+      }
+      return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
+    }
+
+    function extractCountry(value) {
+      if (!value) return '';
+      const match = String(value).match(/\[([^\]]+)\]\s*$/);
+      return match ? match[1] : '';
+    }
+
+    function getCountryFlag(countryName) {
+      if (!countryName) return '';
+      const countryCode = String(countryName).toUpperCase();
       const countryFlags = {
         'UK': '🇬🇧', 'USA': '🇺🇸', 'CANADA': '🇨🇦', 'FRANCE': '🇫🇷', 'SPAIN': '🇪🇸',
         'GERMANY': '🇩🇪', 'ITALY': '🇮🇹', 'PORTUGAL': '🇵🇹', 'BRAZIL': '🇧🇷', 'ARGENTINA': '🇦🇷',
         'MEXICO': '🇲🇽', 'TURKEY': '🇹🇷', 'NETHERLANDS': '🇳🇱', 'BELGIUM': '🇧🇪', 'POLAND': '🇵🇱',
         'RUSSIA': '🇷🇺', 'GREECE': '🇬🇷', 'ROMANIA': '🇷🇴', 'BULGARIA': '🇧🇬', 'SERBIA': '🇷🇸',
         'CROATIA': '🇭🇷', 'SWEDEN': '🇸🇪', 'NORWAY': '🇳🇴', 'DENMARK': '🇩🇰', 'FINLAND': '🇫🇮',
-        'IRELAND': '🇮🇪', 'SCOTLAND': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'WALES': '🏴󠁧󠁢󠁷󠁬󠁳󠁿', 'AUSTRALIA': '🇦🇺', 'JAPAN': '🇯🇵',
+        'IRELAND': '🇮🇪', 'SCOTLAND': '🏴', 'WALES': '🏴', 'AUSTRALIA': '🇦🇺', 'JAPAN': '🇯🇵',
         'KOREA': '🇰🇷', 'CHINA': '🇨🇳', 'INDIA': '🇮🇳', 'PAKISTAN': '🇵🇰', 'UAE': '🇦🇪',
         'SAUDI ARABIA': '🇸🇦', 'QATAR': '🇶🇦', 'EGYPT': '🇪🇬', 'SOUTH AFRICA': '🇿🇦', 'NIGERIA': '🇳🇬',
         'ALGERIA': '🇩🇿', 'MOROCCO': '🇲🇦', 'TUNISIA': '🇹🇳', 'ISRAEL': '🇮🇱', 'CZECH': '🇨🇿',
         'SLOVAKIA': '🇸🇰', 'HUNGARY': '🇭🇺', 'AUSTRIA': '🇦🇹', 'SWITZERLAND': '🇨🇭', 'ALBANIA': '🇦🇱',
-        'CANADA': '🇨🇦', 'CHILE': '🇨🇱', 'COLOMBIA': '🇨🇴', 'PERU': '🇵🇪', 'VENEZUELA': '🇻🇪',
+        'CHILE': '🇨🇱', 'COLOMBIA': '🇨🇴', 'PERU': '🇵🇪', 'VENEZUELA': '🇻🇪',
         'URUGUAY': '🇺🇾', 'ECUADOR': '🇪🇨', 'BOLIVIA': '🇧🇴', 'PARAGUAY': '🇵🇾', 'COSTA RICA': '🇨🇷',
         'PANAMA': '🇵🇦', 'JAMAICA': '🇯🇲', 'HONDURAS': '🇭🇳', 'EL SALVADOR': '🇸🇻', 'GUATEMALA': '🇬🇹',
         'INTERNATIONAL': '🌍', 'WORLD': '🌎', 'GLOBAL': '🌏'
       };
-      
-      return countryFlags[countryCode] || '🌐';
+
+      return countryFlags[countryCode] || '';
     }
-    
-    events.forEach(event => {
-      // Parse date
-      const dateParts = event.date.split('-');
-      const year = dateParts[0];
-      const monthIndex = parseInt(dateParts[1], 10) - 1;
-      const day = parseInt(dateParts[2], 10);
-      const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
-      
-      // Parse time
-      const dateObj = new Date(event.unix_timestamp * 1000);
-      const time = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-      
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="date-time-cell">
-          <div class="date-line"><i class="fas fa-calendar-alt"></i> ${formattedDate}</div>
-          <div class="time-line"><i class="fas fa-clock"></i> ${time}</div>
-        </td>
-        <td class="sport-cell">${event.sport}</td>
-        <td class="match-cell">
-          <div class="match-name"><i class="fas fa-futbol"></i> ${event.match}</div>
-          <div class="match-tournament"><i class="fas fa-trophy"></i> ${event.tournament}</div>
-        </td>
-        <td>
-          <div class="stream-buttons">
-            ${event.channels.map(channel => {
-              const flag = getCountryFlag(channel);
-              return `<button class="play-button stream-btn" onclick="loadStream('${channel}')" oncontextmenu="copyStreamLink(event, '${channel}')" data-stream-url="${channel}" title="Right-click to copy link"><span class="flag-emoji">${flag}</span> Play</button>`;
-      // Data-labels for mobile card layout (CSS uses td[data-label])
-      const labels = ['DATE & TIME', 'SPORT', 'MATCH & TOURNAMENT', 'STREAM LINK'];
-      row.querySelectorAll('td').forEach((td, i) => {
-        td.setAttribute('data-label', labels[i] || '');
+
+    function showCopyFeedback(button) {
+      if (!button) return;
+      const originalTooltip = button.getAttribute('data-tooltip') || '';
+      const originalHtml = button.dataset.copyHtml || '';
+
+      if (!originalHtml) {
+        button.dataset.copyHtml = button.innerHTML;
+      }
+
+      button.setAttribute('data-tooltip', 'Copied!');
+      button.classList.add('show-tooltip');
+      button.textContent = 'Copied!';
+
+      clearTimeout(button._copyTimeout);
+      button._copyTimeout = setTimeout(() => {
+        if (originalTooltip) {
+          button.setAttribute('data-tooltip', originalTooltip);
+        } else {
+          button.removeAttribute('data-tooltip');
+        }
+        if (button.dataset.copyHtml) {
+          button.innerHTML = button.dataset.copyHtml;
+        }
+        button.classList.remove('show-tooltip');
+      }, 1400);
+    }
+
+    function copyStreamLink(event, url) {
+      if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
+
+      if (!url) return;
+
+      const targetButton = event?.currentTarget || event?.target;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).catch(() => {});
+        showCopyFeedback(targetButton);
+        return;
+      }
+
+      const tempInput = document.createElement('input');
+      tempInput.value = url;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showCopyFeedback(targetButton);
+    }
+
+    window.copyStreamLink = copyStreamLink;
+
+    function toDateKey(timestamp) {
+      const dateObj = new Date(timestamp * 1000);
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function buildLogoHtml(url, className, alt, fallbackIcon) {
+      if (!url) {
+        return `<span class="logo-fallback ${className}-fallback"><i class="fas ${fallbackIcon}"></i></span>`;
+      }
+
+      return `
+        <span class="logo-wrap ${className}-wrap">
+          <img
+            src="${url}"
+            alt="${alt}"
+            class="${className}"
+            loading="lazy"
+            decoding="async"
+            width="40"
+            height="40"
+            onerror="this.classList.add('is-hidden'); this.nextElementSibling.classList.remove('is-hidden');"
+          />
+          <span class="logo-fallback ${className}-fallback is-hidden"><i class="fas ${fallbackIcon}"></i></span>
+        </span>
+      `;
+    }
+
+    function buildSportIconHtml(event) {
+      const fallbackIcon = getSportFallbackIcon(event.sport);
+      const sportLogo = event.sport_logo && isUrl(event.sport_logo) ? event.sport_logo : '';
+
+      if (sportLogo) {
+        return `
+          <span class="sport-icon-wrap">
+            <img
+              src="${sportLogo}"
+              alt="${event.sport} logo"
+              class="sport-icon-img"
+              loading="lazy"
+              decoding="async"
+              width="22"
+              height="22"
+              onerror="this.classList.add('is-hidden'); this.nextElementSibling.classList.remove('is-hidden');"
+            />
+            <span class="sport-icon-fallback is-hidden"><i class="fas ${fallbackIcon}"></i></span>
+          </span>
+        `;
+      }
+
+      if (event.sport_emoji) {
+        return `<span class="sport-icon-emoji">${event.sport_emoji}</span>`;
+      }
+
+      return `<span class="sport-icon-fallback"><i class="fas ${fallbackIcon}"></i></span>`;
+    }
+
+    function buildSelectOptionHtml(option) {
+      const item = document.createElement('div');
+      item.className = 'custom-select-option';
+      item.dataset.value = option.value;
+
+      if (option.logoUrl) {
+        const img = document.createElement('img');
+        img.src = option.logoUrl;
+        img.alt = '';
+        img.className = 'select-logo';
+        img.width = 26;
+        img.height = 26;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.addEventListener('error', () => {
+          img.remove();
+          if (option.emoji) {
+            const emoji = document.createElement('span');
+            emoji.className = 'select-emoji';
+            emoji.textContent = option.emoji;
+            item.prepend(emoji);
+          } else {
+            const fallback = document.createElement('span');
+            fallback.className = 'select-fallback';
+            fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+            item.prepend(fallback);
+          }
+        });
+        item.appendChild(img);
+      } else if (option.emoji) {
+        const emoji = document.createElement('span');
+        emoji.className = 'select-emoji';
+        emoji.textContent = option.emoji;
+        item.appendChild(emoji);
+      } else {
+        const fallback = document.createElement('span');
+        fallback.className = 'select-fallback';
+        fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+        item.appendChild(fallback);
+      }
+
+      const label = document.createElement('span');
+      label.className = 'custom-select-label';
+      label.textContent = option.label;
+      item.appendChild(label);
+
+      return item;
+    }
+
+    function enhanceSelectWithLogos(selectEl, options, placeholderLabel) {
+      if (!selectEl) return;
+
+      const parent = selectEl.parentElement;
+      if (!parent) return;
+
+      const existing = parent.querySelector(`.custom-select[data-for="${selectEl.id}"]`);
+      if (existing) existing.remove();
+
+      selectEl.classList.add('select-hidden');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'custom-select';
+      wrapper.dataset.for = selectEl.id;
+
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'custom-select-trigger';
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'false');
+
+      const triggerIcon = document.createElement('span');
+      triggerIcon.className = 'custom-select-icon';
+
+      const triggerText = document.createElement('span');
+      triggerText.className = 'custom-select-text';
+      triggerText.textContent = placeholderLabel;
+
+      const triggerChevron = document.createElement('i');
+      triggerChevron.className = 'fas fa-chevron-down';
+
+      trigger.appendChild(triggerIcon);
+      trigger.appendChild(triggerText);
+      trigger.appendChild(triggerChevron);
+
+      const menu = document.createElement('div');
+      menu.className = 'custom-select-menu';
+      menu.setAttribute('role', 'listbox');
+
+      options.forEach((option) => {
+        const optionEl = buildSelectOptionHtml(option);
+        optionEl.addEventListener('click', () => {
+          selectEl.value = option.value;
+          selectEl.dispatchEvent(new Event('change'));
+          updateTrigger(option);
+          wrapper.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+        });
+        menu.appendChild(optionEl);
       });
 
-            }).join('')}
-          </div>
-        </td>
-      `;
-      eventList.appendChild(row);
-    });
-  }
+      function updateTrigger(option) {
+        triggerIcon.innerHTML = '';
+        if (option.logoUrl) {
+          const img = document.createElement('img');
+          img.src = option.logoUrl;
+          img.alt = '';
+          img.className = 'select-logo';
+          img.width = 26;
+          img.height = 26;
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          img.addEventListener('error', () => {
+            img.remove();
+            if (option.emoji) {
+              const emoji = document.createElement('span');
+              emoji.className = 'select-emoji';
+              emoji.textContent = option.emoji;
+              triggerIcon.appendChild(emoji);
+            } else {
+              const fallback = document.createElement('span');
+              fallback.className = 'select-fallback';
+              fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+              triggerIcon.appendChild(fallback);
+            }
+          });
+          triggerIcon.appendChild(img);
+        } else if (option.emoji) {
+          const emoji = document.createElement('span');
+          emoji.className = 'select-emoji';
+          emoji.textContent = option.emoji;
+          triggerIcon.appendChild(emoji);
+        } else {
+          const fallback = document.createElement('span');
+          fallback.className = 'select-fallback';
+          fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+          triggerIcon.appendChild(fallback);
+        }
+        triggerText.textContent = option.label;
+      }
 
-  // Filter events
-  function filterEvents() {
-    const selectedSport = sportFilter.value;
-    const selectedDate = dateFilter.value;
-    const selectedTournament = tournamentFilter.value;
-    const searchQuery = eventSearch.value.toLowerCase();
+      updateTrigger(options[0]);
 
-    const filteredEvents = eventsData.filter(event => {
-      const matchesSport = selectedSport ? event.sport === selectedSport : true;
-      const matchesDate = selectedDate ? event.date === selectedDate : true;
-      const matchesTournament = selectedTournament ? event.tournament === selectedTournament : true;
-      const matchesSearch = event.match.toLowerCase().includes(searchQuery) || 
-                           event.tournament.toLowerCase().includes(searchQuery);
-      return matchesSport && matchesDate && matchesTournament && matchesSearch;
-    });
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        const isOpen = wrapper.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', String(isOpen));
+      });
 
-    displayEvents(filteredEvents);
-  }
+      document.addEventListener('click', (event) => {
+        if (!wrapper.contains(event.target)) {
+          wrapper.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
 
-  // Event listeners for filters
-  if (sportFilter) sportFilter.addEventListener('change', filterEvents);
-  if (dateFilter) dateFilter.addEventListener('change', filterEvents);
-  if (tournamentFilter) tournamentFilter.addEventListener('change', filterEvents);
-  if (eventSearch) eventSearch.addEventListener('input', filterEvents);
+      wrapper.appendChild(trigger);
+      wrapper.appendChild(menu);
+      parent.appendChild(wrapper);
 
-  // Load events on page load
-  loadEvents();
-});
+      const selectedOption = options.find((option) => option.value === selectEl.value) || options[0];
+      updateTrigger(selectedOption);
+    }
 
-// Global function to copy stream link on right-click
-window.copyStreamLink = function(event, streamUrl) {
-  event.preventDefault(); // Prevent default context menu
-  
-  // Copy to clipboard
-  navigator.clipboard.writeText(streamUrl).then(() => {
-    // Show success toast
-    showToast('Link copied to clipboard!', 'success');
-  }).catch(err => {
-    console.error('Failed to copy link:', err);
-    showToast('Failed to copy link', 'error');
+    async function loadEvents(showSkeleton = true) {
+      if (isLoading) return;
+      isLoading = true;
+
+      try {
+        if (showSkeleton && window.UXEnhancements) {
+          loadingIndicator.style.display = 'none';
+          window.UXEnhancements.SkeletonLoader.show(eventList, 'events');
+        } else {
+          loadingIndicator.style.display = 'block';
+        }
+
+        if (window.UXEnhancements) {
+          window.UXEnhancements.ErrorState.hide(errorMessage);
+        } else {
+          errorMessage.style.display = 'none';
+        }
+
+        const response = await fetch(`${API_BASE}/api/events`);
+        if (!response.ok) {
+          throw new Error('Network error while fetching events.');
+        }
+        const apiResponse = await response.json();
+
+        if (apiResponse.status !== 'success' || !apiResponse.data) {
+          throw new Error('Invalid API response.');
+        }
+
+        eventsData = apiResponse.data.map((event) => {
+          const sportName = event.sport || event.sport_name || event.sportName || 'Unknown';
+          const leagueName = event.league || event.league_name || event.leagueName || event.tournament || event.tournament_name || 'Unknown';
+          const tournamentName = event.tournament || event.tournament_name || event.tournamentName || event.league || event.league_name || 'Unknown';
+          const homeTeam = event.home_team || event.homeTeam || event.home || '';
+          const awayTeam = event.away_team || event.awayTeam || event.away || '';
+          const matchName = homeTeam && awayTeam
+            ? `${homeTeam} vs ${awayTeam}`
+            : event.match || event.name || event.title || 'TBD';
+
+          const sportEmoji = extractEmoji(
+            event.sport_emoji || event.sportEmoji || event.sport_icon || event.sportIcon || ''
+          );
+          const sportLogoCandidate = getFirstImage(event, [
+            'sport_logo',
+            'sport_logo_url',
+            'sport_image',
+            'sport_image_url',
+            'sport_icon_url'
+          ]);
+          const sportLogo = isUrl(sportLogoCandidate) ? sportLogoCandidate : '';
+
+          const leagueLogo = getFirstImage(event, [
+            'league_logo',
+            'league_logo_url',
+            'league_image',
+            'league_image_url',
+            'league_icon',
+            'league_icon_url'
+          ]);
+          const tournamentLogo = getFirstImage(event, [
+            'tournament_logo',
+            'tournament_logo_url',
+            'tournament_image',
+            'tournament_image_url'
+          ]) || leagueLogo;
+
+          const channels = event.channels
+            ? event.channels.map((ch) => {
+              const canonicalName = ch.name || ch.link || '';
+              return {
+                url: buildChannelUrl(canonicalName),
+                country: extractCountry(canonicalName)
+              };
+            })
+            : [];
+
+          return {
+            id: event.id,
+            date: toDateKey(event.timestamp),
+            unix_timestamp: event.timestamp,
+            sport: sportName,
+            sport_emoji: sportEmoji,
+            tournament: tournamentName,
+            league: leagueName,
+            match: matchName,
+            channels,
+            home_team: homeTeam,
+            away_team: awayTeam,
+            sport_logo: sportLogo,
+            league_logo: leagueLogo,
+            tournament_logo: tournamentLogo,
+            home_team_logo: getFirstImage(event, [
+              'home_team_logo',
+              'home_team_logo_url',
+              'home_team_image',
+              'home_team_image_url',
+              'home_team_badge',
+              'home_team_icon',
+              'home_logo',
+              'home_badge'
+            ]),
+            away_team_logo: getFirstImage(event, [
+              'away_team_logo',
+              'away_team_logo_url',
+              'away_team_image',
+              'away_team_image_url',
+              'away_team_badge',
+              'away_team_icon',
+              'away_logo',
+              'away_badge'
+            ])
+          };
+        });
+
+        const sportsMap = new Map();
+        const leagueMap = new Map();
+        const tournamentMap = new Map();
+
+        eventsData.forEach((event) => {
+          if (!sportsMap.has(event.sport)) {
+            sportsMap.set(event.sport, { logoUrl: event.sport_logo, emoji: event.sport_emoji });
+          } else {
+            const current = sportsMap.get(event.sport);
+            if (!current.logoUrl && event.sport_logo) current.logoUrl = event.sport_logo;
+            if (!current.emoji && event.sport_emoji) current.emoji = event.sport_emoji;
+          }
+
+          if (!leagueMap.has(event.league) || (!leagueMap.get(event.league) && event.league_logo)) {
+            leagueMap.set(event.league, event.league_logo);
+          }
+
+          if (!tournamentMap.has(event.tournament) || (!tournamentMap.get(event.tournament) && event.tournament_logo)) {
+            tournamentMap.set(event.tournament, event.tournament_logo);
+          }
+        });
+
+        sportFilter.innerHTML = '<option value="">All Sports</option>';
+        Array.from(sportsMap.keys()).sort().forEach((sport) => {
+          const option = document.createElement('option');
+          option.value = sport;
+          option.textContent = sport;
+          sportFilter.appendChild(option);
+        });
+
+        leagueFilter.innerHTML = '<option value="">All Leagues</option>';
+        Array.from(leagueMap.keys()).sort().forEach((league) => {
+          const option = document.createElement('option');
+          option.value = league;
+          option.textContent = league;
+          leagueFilter.appendChild(option);
+        });
+
+        tournamentFilter.innerHTML = '<option value="">All Tournaments</option>';
+        Array.from(tournamentMap.keys()).sort().forEach((tournament) => {
+          const option = document.createElement('option');
+          option.value = tournament;
+          option.textContent = tournament;
+          tournamentFilter.appendChild(option);
+        });
+
+        const sportOptions = [
+          { value: '', label: 'All Sports', logoUrl: '', emoji: '', fallbackIcon: 'fa-futbol' },
+          ...Array.from(sportsMap.entries()).sort((a, b) => a[0].localeCompare(b[0])).map(([label, meta]) => ({
+            value: label,
+            label,
+            logoUrl: meta?.logoUrl || '',
+            emoji: meta?.emoji || '',
+            fallbackIcon: getSportFallbackIcon(label)
+          }))
+        ];
+
+        const leagueOptions = [
+          { value: '', label: 'All Leagues', logoUrl: '', fallbackIcon: 'fa-shield' },
+          ...Array.from(leagueMap.entries()).sort((a, b) => a[0].localeCompare(b[0])).map(([label, logoUrl]) => ({
+            value: label,
+            label,
+            logoUrl,
+            fallbackIcon: 'fa-shield'
+          }))
+        ];
+
+        const tournamentOptions = [
+          { value: '', label: 'All Tournaments', logoUrl: '', fallbackIcon: 'fa-trophy' },
+          ...Array.from(tournamentMap.entries()).sort((a, b) => a[0].localeCompare(b[0])).map(([label, logoUrl]) => ({
+            value: label,
+            label,
+            logoUrl,
+            fallbackIcon: 'fa-trophy'
+          }))
+        ];
+
+        enhanceSelectWithLogos(sportFilter, sportOptions, 'All Sports');
+        enhanceSelectWithLogos(leagueFilter, leagueOptions, 'All Leagues');
+        enhanceSelectWithLogos(tournamentFilter, tournamentOptions, 'All Tournaments');
+
+        displayEvents(eventsData);
+      } catch (error) {
+        console.error('Error loading events:', error);
+
+        if (window.UXEnhancements) {
+          eventList.innerHTML = '';
+          window.UXEnhancements.ErrorState.show(
+            errorMessage,
+            'Unable to load events. Please check your connection and try again.',
+            () => { loadEvents(true); }
+          );
+        } else {
+          eventList.innerHTML = '<tr><td colspan="5">Unable to load events. Please try again later.</td></tr>';
+          errorMessage.textContent = 'Unable to load events from the API. Please check your connection and try again.';
+          errorMessage.style.display = 'block';
+        }
+      } finally {
+        loadingIndicator.style.display = 'none';
+        isLoading = false;
+      }
+    }
+
+    function displayEvents(events) {
+      eventList.innerHTML = '';
+
+      if (events.length === 0) {
+        if (window.UXEnhancements) {
+          window.UXEnhancements.EmptyState.showInTable(
+            eventList,
+            'No events found. Try adjusting your filters.',
+            4
+          );
+        } else {
+          eventList.innerHTML = '<tr><td colspan="4">No events found.</td></tr>';
+        }
+        return;
+      }
+
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+
+      events.forEach((event) => {
+        const dateParts = event.date.split('-');
+        const year = dateParts[0];
+        const monthIndex = parseInt(dateParts[1], 10) - 1;
+        const day = parseInt(dateParts[2], 10);
+        const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
+
+        const dateObj = new Date(event.unix_timestamp * 1000);
+        const time = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+        const homeLogo = buildLogoHtml(
+          event.home_team_logo,
+          'team-logo',
+          `${event.home_team || 'Home'} logo`,
+          'fa-shield'
+        );
+        const awayLogo = buildLogoHtml(
+          event.away_team_logo,
+          'team-logo',
+          `${event.away_team || 'Away'} logo`,
+          'fa-shield'
+        );
+        const tournamentLogo = buildLogoHtml(
+          event.tournament_logo,
+          'league-logo',
+          `${event.tournament} logo`,
+          'fa-trophy'
+        );
+        const homeName = event.home_team || '';
+        const awayName = event.away_team || '';
+        const hasTeams = homeName && awayName;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="date-time-cell">
+            <div class="date-line"><i class="fas fa-calendar-alt"></i> ${formattedDate}</div>
+            <div class="time-line"><i class="fas fa-clock"></i> ${time}</div>
+          </td>
+          <td class="sport-cell">
+            <span class="sport-cell-content">
+              ${buildSportIconHtml(event)}
+              <span class="sport-text">${event.sport}</span>
+            </span>
+          </td>
+          <td class="match-cell">
+            <div class="match-logos">
+              <span class="team-logo-slot">${homeLogo}</span>
+              <span class="match-vs">VS</span>
+              <span class="team-logo-slot">${awayLogo}</span>
+            </div>
+            <div class="match-name${hasTeams ? '' : ' single'}">
+              ${hasTeams
+                ? `<span class="team-name-text home">${homeName}</span><span class="team-name-text away">${awayName}</span>`
+                : `<span class="team-name-text">${event.match}</span>`
+              }
+            </div>
+            <div class="match-tournament">
+              ${tournamentLogo}
+              <span class="tournament-text">${event.tournament}</span>
+            </div>
+          </td>
+          <td>
+            <div class="stream-buttons">
+              ${event.channels.map((channel) => {
+                const flag = getCountryFlag(channel.country);
+                const flagHtml = flag ? `<span class="flag-emoji">${flag}</span> ` : '';
+                return `<button class="play-button stream-btn" onclick="loadStream('${channel.url}')" oncontextmenu="copyStreamLink(event, '${channel.url}')" data-stream-url="${channel.url}" data-tooltip="Right-click to copy">${flagHtml}Play</button>`;
+              }).join('')}
+            </div>
+          </td>
+        `;
+        eventList.appendChild(row);
+      });
+    }
+
+    function filterEvents() {
+      const selectedSport = sportFilter.value;
+      const selectedLeague = leagueFilter.value;
+      const selectedTournament = tournamentFilter.value;
+      const searchQuery = eventSearch.value.toLowerCase();
+
+      const filteredEvents = eventsData.filter((event) => {
+        const matchesSport = selectedSport ? event.sport === selectedSport : true;
+        const matchesLeague = selectedLeague ? event.league === selectedLeague : true;
+        const matchesTournament = selectedTournament ? event.tournament === selectedTournament : true;
+        const matchesSearch = event.match.toLowerCase().includes(searchQuery) ||
+          event.tournament.toLowerCase().includes(searchQuery) ||
+          event.league.toLowerCase().includes(searchQuery);
+
+        return matchesSport && matchesLeague && matchesTournament && matchesSearch;
+      });
+
+      displayEvents(filteredEvents);
+    }
+
+    if (sportFilter) sportFilter.addEventListener('change', filterEvents);
+    if (leagueFilter) leagueFilter.addEventListener('change', filterEvents);
+    if (tournamentFilter) tournamentFilter.addEventListener('change', filterEvents);
+    if (eventSearch) eventSearch.addEventListener('input', filterEvents);
+
+    if (window.UXEnhancements && window.UXEnhancements.isMobile()) {
+      setTimeout(() => {
+        window.UXEnhancements.PullToRefresh.init('page-football', async () => {
+          await loadEvents(false);
+          filterEvents();
+        });
+      }, 500);
+    }
+
+    loadEvents();
   });
-  
-  return false;
-};
-
-// Toast notification function
-function showToast(message, type = 'info') {
-  // Remove existing toast if any
-  const existingToast = document.querySelector('.toast');
-  if (existingToast) {
-    existingToast.remove();
-  }
-  
-  // Create toast
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.innerHTML = `
-    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-    <span>${message}</span>
-  `;
-  document.body.appendChild(toast);
-  
-  // Show toast
-  setTimeout(() => toast.classList.add('show'), 10);
-  
-  // Hide and remove after 3 seconds
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
+})();
