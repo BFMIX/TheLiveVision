@@ -475,6 +475,31 @@
       let isCinemaMode = false;
 
       function toggleCinemaMode() {
+        isCinemaMode = !isCinemaMode;
+
+        if (isCinemaMode) {
+          liveStream.classList.add("cinema-mode", "entering");
+          moreLinks.classList.add("cinema-mode");
+          body.classList.add("cinema-background");
+          streamInputBox.classList.add("cinema-mode");
+          cinemaButton.innerHTML =
+            '<i class="fas fa-compress"></i> EXIT CINEMA MODE';
+
+          setTimeout(() => {
+            liveStream.classList.remove("entering");
+          }, 500);
+        } else {
+          liveStream.classList.add("exiting");
+          setTimeout(() => {
+            liveStream.classList.remove("cinema-mode", "exiting");
+            moreLinks.classList.remove("cinema-mode");
+            body.classList.remove("cinema-background");
+            streamInputBox.classList.remove("cinema-mode");
+            cinemaButton.innerHTML =
+              '<i class="fas fa-expand"></i> CINEMA MODE';
+          }, 400);
+        }
+
         if (window.innerWidth <= 768) {
           if (!document.fullscreenElement) {
             liveStream.requestFullscreen().catch((err) => {
@@ -484,31 +509,6 @@
             document.exitFullscreen().catch((err) => {
               console.error(`Exit fullscreen error: ${err.message}`);
             });
-          }
-        } else {
-          isCinemaMode = !isCinemaMode;
-
-          if (isCinemaMode) {
-            liveStream.classList.add("cinema-mode", "entering");
-            moreLinks.classList.add("cinema-mode");
-            body.classList.add("cinema-background");
-            streamInputBox.classList.add("cinema-mode");
-            cinemaButton.innerHTML =
-              '<i class="fas fa-compress"></i> EXIT CINEMA MODE';
-
-            setTimeout(() => {
-              liveStream.classList.remove("entering");
-            }, 500);
-          } else {
-            liveStream.classList.add("exiting");
-            setTimeout(() => {
-              liveStream.classList.remove("cinema-mode", "exiting");
-              moreLinks.classList.remove("cinema-mode");
-              body.classList.remove("cinema-background");
-              streamInputBox.classList.remove("cinema-mode");
-              cinemaButton.innerHTML =
-                '<i class="fas fa-expand"></i> CINEMA MODE';
-            }, 400);
           }
         }
       }

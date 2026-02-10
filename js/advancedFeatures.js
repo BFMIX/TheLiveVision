@@ -12,6 +12,11 @@ class AdvancedFeatures {
     this.setupSwipeGestures();
   }
 
+  // Haptic setup (compatibility noop)
+  setupHapticFeedback() {
+    this.hapticsEnabled = 'vibrate' in navigator;
+  }
+
   // Picture-in-Picture Support
   setupPictureInPicture() {
     const liveStream = document.getElementById('live-stream');

@@ -649,8 +649,9 @@
           `${event.tournament} logo`,
           'fa-trophy'
         );
-        const homeName = event.home_team || '';
-        const awayName = event.away_team || '';
+        const homeName = event.home_team ? String(event.home_team).toUpperCase() : '';
+        const awayName = event.away_team ? String(event.away_team).toUpperCase() : '';
+        const matchFallback = event.match ? String(event.match).toUpperCase() : '';
         const hasTeams = homeName && awayName;
 
         const row = document.createElement('tr');
@@ -674,7 +675,7 @@
             <div class="match-name${hasTeams ? '' : ' single'}">
               ${hasTeams
                 ? `<span class="team-name-text home">${homeName}</span><span class="team-name-text away">${awayName}</span>`
-                : `<span class="team-name-text">${event.match}</span>`
+                : `<span class="team-name-text">${matchFallback}</span>`
               }
             </div>
             <div class="match-tournament">

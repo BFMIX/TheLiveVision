@@ -228,6 +228,8 @@
     }
     if (streamUrlInput.value.length >= 2) {
       performSearch(streamUrlInput.value);
+    } else {
+      searchResults.classList.add('hidden');
     }
   });
 
@@ -241,33 +243,6 @@
   // Load data on page load
   loadSearchData();
   });
-})();
-
-/* =========================================================
-   PATCH: Position dropdown above the player (mobile)
-   ========================================================= */
-(function() {
-  function positionSearchDropdown() {
-    if (window.innerWidth > 768) return;
-    
-    const input = document.getElementById('stream-url');
-    const dropdown = document.getElementById('search-results');
-    if (!input || !dropdown) return;
-    
-    const rect = input.getBoundingClientRect();
-    dropdown.style.top = (rect.bottom + 4) + 'px';
-    dropdown.style.left = '12px';
-    dropdown.style.right = '12px';
-    dropdown.style.width = 'auto';
-  }
-
-  const input = document.getElementById('stream-url');
-  if (input) {
-    input.addEventListener('focus', positionSearchDropdown);
-  }
-  
-  window.addEventListener('scroll', positionSearchDropdown, { passive: true });
-  window.addEventListener('resize', positionSearchDropdown);
 })();
 
 /* =========================================================
@@ -291,9 +266,9 @@
     dropdown.style.zIndex = '2147483647';
     
     if (isMobile) {
-      dropdown.style.left = '12px';
-      dropdown.style.right = '12px';
-      dropdown.style.width = 'auto';
+      dropdown.style.left = rect.left + 'px';
+      dropdown.style.width = rect.width + 'px';
+      dropdown.style.right = 'auto';
     } else {
       // Desktop: align with the input
       dropdown.style.left = rect.left + 'px';
@@ -327,9 +302,12 @@
     }
   });
   
-  // Reposition on scroll/resize
-  window.addEventListener('scroll', positionSearchDropdown, { passive: true });
-  window.addEventListener('resize', positionSearchDropdown);
+  // Reposition on scroll/resize (capture scroll on any container)
+  const scheduleReposition = () => requestAnimationFrame(positionSearchDropdown);
+  window.addEventListener('scroll', scheduleReposition, { passive: true });
+  document.addEventListener('scroll', scheduleReposition, true);
+  window.addEventListener('touchmove', scheduleReposition, { passive: true });
+  window.addEventListener('resize', scheduleReposition);
   
   // Click outside to close
   document.addEventListener('click', function(e) {

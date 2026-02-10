@@ -425,6 +425,22 @@
     // Micro-animations
     MicroAnimations.init();
 
+    // Header logo animation (load + click)
+    const headerLogo = document.querySelector('.header-logo');
+    if (headerLogo) {
+      headerLogo.classList.add('logo-animate-in');
+      headerLogo.addEventListener('click', () => {
+        headerLogo.classList.remove('logo-clicked');
+        void headerLogo.offsetWidth;
+        headerLogo.classList.add('logo-clicked');
+      });
+      headerLogo.addEventListener('animationend', (event) => {
+        if (event.animationName === 'logoPulse') {
+          headerLogo.classList.remove('logo-clicked');
+        }
+      });
+    }
+
     // Re-init on resize (for bottom nav)
     let resizeTimeout;
     window.addEventListener('resize', () => {
