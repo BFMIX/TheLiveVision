@@ -1,0 +1,91 @@
+/* General Styles - DAZN Inspired */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* DAZN-Inspired Color Variables */
+:root {
+  --color-primary: #FFD700;
+  --color-primary-hover: #F6C744;
+  --color-bg-dark: #1A1A1A;
+  --color-bg-secondary: #252525;
+  --color-bg-card: #2A2A2A;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B0B0B0;
+  --color-accent: #333333;
+  --font-body: "Sofia Pro Soft Light", "Sofia Pro Soft", "Sofia Pro", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --font-title: "Avenir Next Heavy Italic", "Avenir Next", "Sofia Pro Soft Bold", "Sofia Pro Soft Medium", "Sofia Pro Soft", "Helvetica Neue", Arial, sans-serif;
+  --font-table: "Roboto", sans-serif;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.2);
+  --text-shadow-hero: none;
+  --text-shadow-subtitle: none;
+}
+
+[data-theme="light"] {
+  --color-primary: #2196F3;
+  --color-primary-hover: #1976D2;
+  --color-bg-dark: #F5F7FA;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-card: #FAFBFC;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #666666;
+  --color-accent: #D1D5DB;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --shadow-gold: 0 0 20px rgba(33, 150, 243, 0.25);
+  --text-shadow-hero: none;
+  --text-shadow-subtitle: none;
+  --light-accent-blue: #E3F2FD;
+  --light-accent-blue-dark: #2196F3;
+  --light-border: #B0BEC5;
+}
+
+[data-theme="dark"] {
+  --color-primary: #FFD700;
+  --color-primary-hover: #F6C744;
+  --color-bg-dark: #1A1A1A;
+  --color-bg-secondary: #252525;
+  --color-bg-card: #2A2A2A;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B0B0B0;
+  --color-accent: #333333;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --text-shadow-hero: none;
+  --text-shadow-subtitle: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow-x: hidden;
+  max-width: 100%;
+  font-family: var(--font-body);
+}
+

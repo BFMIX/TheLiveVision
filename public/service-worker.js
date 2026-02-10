@@ -1,12 +1,20 @@
 // service-worker.js
 // PWA Service Worker for offline support and caching
 
-const CACHE_NAME = "sports-vision-v7"; // Updated version to clear old cache
+const CACHE_NAME = "sports-vision-v9"; // Updated version to clear old cache
 const urlsToCache = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/css/style.css",
+  "/css/main.css",
+  "/css/base.css",
+  "/css/layout.css",
+  "/css/header.css",
+  "/css/components.css",
+  "/css/pages/stream.css",
+  "/css/pages/events.css",
+  "/css/pages/channels.css",
+  "/css/responsive.css",
 
   // Core JS
   "/js/navigation.js",
@@ -35,7 +43,7 @@ const urlsToCache = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("Opened cache v7");
+      console.log("Opened cache v9");
       return cache.addAll(urlsToCache);
     }),
   );

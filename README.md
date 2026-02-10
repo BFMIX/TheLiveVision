@@ -8,11 +8,17 @@ The Live Vision is a mobile-first sports streaming web app (PWA-like) built with
 - Channels page with searchable list and country flags in filters.
 - Mobile bottom navigation and pull-to-refresh support.
 
-## Running Locally
-1. Open a terminal in the project root.
-2. Start a static server:
-   - `python3 -m http.server 3000`
-3. Open `http://localhost:3000` in your browser.
+## Development / Build (Vite)
+1. Install dependencies:
+   - `npm install`
+2. Start the dev server:
+   - `npm run dev`
+3. Build for production:
+   - `npm run build`
+4. Preview the production build locally:
+   - `npm run preview`
+
+Service worker registration is disabled on localhost during dev to avoid cache conflicts.
 
 ## APIs Used
 - **beta.adstrim.ru**
@@ -21,16 +27,24 @@ The Live Vision is a mobile-first sports streaming web app (PWA-like) built with
   - Host for playable stream/embed links built from the metadata.
 ## Configuration
 - Stream metadata and embed hosts are defined in:
-  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/js/streammanager.js`
-  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/js/searchStream.js`
-  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/js/sportsEventManager.js`
-  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/js/channelsmanager.js`
+  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/public/js/streammanager.js`
+  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/public/js/searchStream.js`
+  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/public/js/sportsEventManager.js`
+  - `/Users/bfmix/Desktop/DEv/Project/TheLiveVision/public/js/channelsmanager.js`
   - Update `API_BASE` (beta.adstrim.ru) and `EMBED_BASE` (viewembed.ru) together if needed.
 
 ## Project Structure
 - `index.html`: Main single-page UI.
-- `css/style.css`: Global styles and responsive layout.
-- `js/`: Feature scripts for navigation, streams, events, and channels.
+- `public/css/main.css`: Main stylesheet importing split CSS files.
+- `public/css/base.css`: Reset, variables, global typography.
+- `public/css/layout.css`: Shared layout.
+- `public/css/header.css`: Header, tabs, theme toggle.
+- `public/css/components.css`: Buttons, inputs, dropdowns, cards, UI helpers.
+- `public/css/pages/stream.css`: Stream page styles.
+- `public/css/pages/events.css`: Events page styles.
+- `public/css/pages/channels.css`: Channels page styles.
+- `public/css/responsive.css`: Cross-cutting responsive overrides.
+- `public/js/`: Feature scripts for navigation, streams, events, and channels.
 
 ## Notes
 - This project is static and does not host streams directly.

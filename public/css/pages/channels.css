@@ -1,0 +1,285 @@
+/* Channel Filter Box - Modern Design */
+.channel-filter-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 30px;
+  padding: 30px;
+  background: var(--color-bg-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  width: 100%;
+  margin: 0 auto 30px;
+  box-sizing: border-box;
+  gap: 20px;
+  flex-wrap: wrap;
+  border: 2px solid var(--color-accent);
+  position: relative;
+  overflow: visible;
+  z-index: 200;
+}
+
+.channel-filter-box:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-gold);
+}
+
+.filter-container,
+.search-container {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.channel-filter-box label,
+.filter-container label,
+.search-container label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: var(--text-shadow-subtitle);
+}
+
+.filter-container,
+.search-container {
+  flex: 1;
+  min-width: 200px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-container .input-field,
+.search-container .input-field,
+.channel-filter-box .input-field,
+.channel-filter-box select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Channel Table Styles - Modern Card Design */
+#channel-table {
+  width: 100% !important;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  margin: 0;
+  background-color: transparent;
+  box-sizing: border-box;
+  table-layout: fixed; /* Fixed column widths */
+}
+
+#channel-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+#channel-table th {
+  background: linear-gradient(180deg, rgba(74, 79, 86, 0.96) 0%, rgba(43, 47, 53, 0.98) 100%);
+  color: var(--color-primary);
+  font-family: var(--font-table);
+  font-style: normal;
+  font-weight: 600;
+  padding: 18px 12px;
+  text-align: center;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-size: 17px;
+  box-shadow: var(--shadow-sm);
+  text-shadow: var(--text-shadow-subtitle);
+  white-space: nowrap;
+}
+
+/* Responsive headers on mobile */
+@media (max-width: 768px) {
+  #channel-table th {
+    font-size: 12px;
+    padding: 14px 8px;
+    letter-spacing: 0.8px;
+  }
+}
+
+/* Fixed column widths for channels table */
+#channel-table th:nth-child(1),
+#channel-table td:nth-child(1) { width: 21%; }  /* CHANNEL NAME */
+#channel-table th:nth-child(2),
+#channel-table td:nth-child(2) { width: 44%; }  /* CHANNEL LINK */
+#channel-table th:nth-child(3),
+#channel-table td:nth-child(3) { width: 35%; }  /* STREAM LINK */
+
+[data-theme="light"] #channel-table th {
+  background: linear-gradient(180deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+[data-theme="light"] #channel-table tbody tr {
+  background: white;
+  border: 1px solid var(--light-border);
+}
+
+[data-theme="light"] #channel-table tbody tr:hover {
+  background: var(--light-accent-blue);
+  border-color: var(--light-accent-blue-dark);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+}
+
+#channel-table th:first-child {
+  border-radius: 12px 0 0 12px;
+}
+
+#channel-table th:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+#channel-table tbody tr {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+#channel-table td {
+  padding: 20px;
+  text-align: center;
+  border: none;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  background: var(--color-bg-card);
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+#channel-table td:first-child {
+  border-radius: 12px 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#channel-table td:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+#channel-table tbody tr:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-gold);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), var(--color-bg-card));
+}
+
+#channel-table tbody tr:hover td {
+  background: transparent;
+}
+
+#channel-table .channel-link-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+#channel-table .channel-link-input {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 2px solid var(--color-accent);
+  border-radius: 8px;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 40px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+#channel-table .channel-link-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+/* COPY button - neutral style, same height as input, compact width */
+#channel-table .channel-link-copy {
+  padding: 10px 16px;
+  font-size: 12px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 2px solid var(--color-accent);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  height: 40px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#channel-table .channel-link-copy:hover {
+  background: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+/* Uniform button sizes for channel table */
+.channel-btn {
+  min-width: 80px;
+  height: 40px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Larger PLAY button for channels table (doubled size) */
+#channel-table .play-button.channel-btn {
+  min-width: 160px;
+  height: 50px;
+  padding: 14px 36px;
+  font-size: 16px;
+  gap: 8px;
+}
+
+/* Responsive PLAY button on mobile */
+@media (max-width: 768px) {
+  #channel-table .play-button.channel-btn {
+    min-width: 100px;
+    height: 40px;
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
+
+[data-theme="light"] #channel-table .channel-link-copy {
+  border-color: var(--light-border);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="light"] #channel-table .channel-link-copy:hover {
+  background: var(--light-accent-blue);
+  color: var(--light-accent-blue-dark);
+  border-color: var(--light-accent-blue-dark);
+}
+
+[data-theme="light"] #channel-table .channel-link-copy:hover {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+}
+
