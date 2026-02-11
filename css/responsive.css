@@ -2601,12 +2601,6 @@ body.animations-enabled .skeleton-card {
     transform: scale(1);
   }
 }
-
-
-
-/* =========================================================
-
-
 /* =========================================================
    PATCH 2026-02-02 - Mobile fixes (v2)
    1) Theme toggle: fully visible + iOS safe area
@@ -2838,6 +2832,8 @@ body.animations-enabled .skeleton-card {
     position: relative;
     z-index: 1;
   }
+
+}
 
 /* ============================================
    5) SEARCH DROPDOWN: Above the player (portal)

@@ -76,7 +76,7 @@ class ErrorHandler {
     setTimeout(() => errorModal.classList.add('show'), 100);
 
     // Add event listeners
-    errorModal.querySelectorAll('.error-action-btn').forEach((btn, i) => {
+    errorModal.querySelectorAll('.error-action-btn').forEach((btn, _i) => {
       btn.addEventListener('click', () => {
         const actionIndex = btn.getAttribute('data-action');
         if (actionIndex === 'close') {

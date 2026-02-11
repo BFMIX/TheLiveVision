@@ -1,0 +1,13 @@
+node_modules
+dist
+public/assets
+public/js
+public/service-worker.js
+css
+index.html
+test_reports
+memory
+CHANGELOG.md
+COMMIT_GUIDE.md
+IMPROVEMENTS_SUGGESTIONS.md
+README.md

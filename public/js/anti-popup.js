@@ -47,7 +47,7 @@
   });
   
   // Block window.open attempts from iframe (if possible)
-  const originalOpen = window.open;
+  const _originalOpen = window.open;
   window.open = function(...args) {
     console.log('🚫 Blocked popup attempt:', args[0]);
     return null;

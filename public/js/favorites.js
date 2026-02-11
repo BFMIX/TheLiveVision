@@ -60,7 +60,7 @@ class FavoritesManager {
     }
 
     // Add to event table rows
-    document.querySelectorAll('#event-list tr').forEach((row, index) => {
+    document.querySelectorAll('#event-list tr').forEach((row, _index) => {
       const actionsCell = row.querySelector('td:last-child');
       if (actionsCell) {
         // Check if star button already exists
@@ -270,7 +270,7 @@ class FavoritesManager {
     this.favBadge = favBadge;
 
     // Create and configure MutationObserver with better performance
-    this.observer = new MutationObserver((mutations) => {
+    this.observer = new MutationObserver((_mutations) => {
       // Use debounce to prevent too many calls
       clearTimeout(this.debounceTimer);
       this.debounceTimer = setTimeout(() => {
@@ -290,7 +290,7 @@ class FavoritesManager {
 }
 
 // Initialize favorites manager
-let favoritesManager;
+let _favoritesManager;
 document.addEventListener('DOMContentLoaded', () => {
-  favoritesManager = new FavoritesManager();
+  _favoritesManager = new FavoritesManager();
 });

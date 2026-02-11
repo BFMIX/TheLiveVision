@@ -20,6 +20,18 @@ The Live Vision is a mobile-first sports streaming web app (PWA-like) built with
 
 Service worker registration is disabled on localhost during dev to avoid cache conflicts.
 
+## Quality Checks
+Before delivering changes, run:
+- `npm run check`
+
+This runs ESLint, Prettier check, and a production build.
+
+Tooling:
+- Autoprefixer (PostCSS): adds vendor prefixes for better cross-browser support (including iOS Safari).
+- ESLint: lints browser JavaScript for common errors.
+- Prettier: formatting checks (no automatic repo-wide formatting).
+- Vite build: minifies and bundles CSS for production output.
+
 ## APIs Used
 - **beta.adstrim.ru**
   - Metadata API for streams, events, and channels.
@@ -35,15 +47,15 @@ Service worker registration is disabled on localhost during dev to avoid cache c
 
 ## Project Structure
 - `index.html`: Main single-page UI.
-- `public/css/main.css`: Main stylesheet importing split CSS files.
-- `public/css/base.css`: Reset, variables, global typography.
-- `public/css/layout.css`: Shared layout.
-- `public/css/header.css`: Header, tabs, theme toggle.
-- `public/css/components.css`: Buttons, inputs, dropdowns, cards, UI helpers.
-- `public/css/pages/stream.css`: Stream page styles.
-- `public/css/pages/events.css`: Events page styles.
-- `public/css/pages/channels.css`: Channels page styles.
-- `public/css/responsive.css`: Cross-cutting responsive overrides.
+- `css/main.css`: Main stylesheet importing split CSS files.
+- `css/base.css`: Reset, variables, global typography.
+- `css/layout.css`: Shared layout.
+- `css/header.css`: Header, tabs, theme toggle.
+- `css/components.css`: Buttons, inputs, dropdowns, cards, UI helpers.
+- `css/pages/stream.css`: Stream page styles.
+- `css/pages/events.css`: Events page styles.
+- `css/pages/channels.css`: Channels page styles.
+- `css/responsive.css`: Cross-cutting responsive overrides.
 - `public/js/`: Feature scripts for navigation, streams, events, and channels.
 
 ## Notes

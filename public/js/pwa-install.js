@@ -25,7 +25,7 @@
   };
 
   const dismissPermanently = () => {
-    try { localStorage.setItem(STORAGE_KEY, '1'); } catch {}
+    try { localStorage.setItem(STORAGE_KEY, '1'); } catch { /* ignore storage errors */ }
   };
 
   const createBanner = () => {
@@ -84,7 +84,7 @@
       subtitle.textContent = 'On iPhone/iPad: tap Share, then Add to Home Screen.';
       installBtn.textContent = 'How to install';
       installBtn.addEventListener('click', () => {
-        alert('To install:\n1) Tap the Share button (square + arrow)\n2) Choose \"Add to Home Screen\"\n3) Tap \"Add\"');
+        alert('To install:\n1) Tap the Share button (square + arrow)\n2) Choose "Add to Home Screen"\n3) Tap "Add"');
       });
       return;
     }

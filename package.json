@@ -5,9 +5,24 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "check": "npm run lint && npm run format:check && npm run build"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "postcss": "^8.4.39",
+    "prettier": "^3.3.3",
     "vite": "^5.4.0"
-  }
+  },
+  "browserslist": [
+    ">=0.5%",
+    "last 2 versions",
+    "not dead",
+    "iOS >= 14"
+  ]
 }
