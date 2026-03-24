@@ -252,7 +252,7 @@
             () => { loadChannels(true); }
           );
         } else {
-          channelList.innerHTML = '<tr><td colspan="3">Unable to load channels. Please try again later.</td></tr>';
+          channelList.innerHTML = '<div class="empty-message">Unable to load channels. Please try again later.</div>';
           errorMessage.textContent = 'Unable to load channels from the API. Please check your connection and try again.';
           errorMessage.style.display = 'block';
         }
@@ -267,60 +267,84 @@
 
       if (channels.length === 0) {
         if (window.UXEnhancements) {
-          window.UXEnhancements.EmptyState.showInTable(
+          window.UXEnhancements.EmptyState.showInContainer(
             channelList,
-            'No channels found. Try adjusting your search.',
-            3
+            'No channels found. Try adjusting your search.'
           );
         } else {
-          channelList.innerHTML = '<tr><td colspan="3">No channels found.</td></tr>';
+          channelList.innerHTML = '<div class="empty-message">No channels found.</div>';
         }
         return;
       }
 
-      channels.forEach((channel) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>
-            <div class="channel-name-with-flag">
-              <span class="country-flag flag-icon">${window.getCountryFlag ? window.getCountryFlag(channel.country) : '🌍'}</span>
-              ${channel.name}
+      channels.forEach((channel, index) => {
+        const cardId = `channel-card-${index}`;
+        const previewId = `${cardId}-preview`;
+        const card = document.createElement('div');
+        card.className = 'channel-card';
+        card.innerHTML = `
+          <div class="channel-card-shell">
+            <div class="channel-card-main">
+              <div class="channel-card-header">
+                <span class="country-flag flag-icon">${window.getCountryFlag ? window.getCountryFlag(channel.country) : '🌍'}</span>
+                <span class="channel-name">${channel.name}</span>
+              </div>
+              <div class="channel-card-actions">
+                <button
+                  class="channel-action-btn channel-action-preview"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="${previewId}"
+                >
+                  <span class="channel-action-text">Preview</span>
+                  <span class="channel-action-icon" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <button class="channel-action-btn channel-action-play" type="button">
+                  <span class="channel-action-icon" aria-hidden="true"><i class="fas fa-play"></i></span>
+                  <span class="channel-action-text">Play</span>
+                </button>
+              </div>
             </div>
-          </td>
-          <td>
-            <div class="channel-link-container">
-              <input type="text" class="channel-link-input" value="${channel.url}" readonly>
-              <button class="channel-link-copy channel-btn">Copy</button>
+            <div class="channel-card-body">
+              <div class="channel-preview-panel" id="${previewId}" hidden>
+                <div class="channel-preview-frame" aria-hidden="true">
+                  <iframe
+                    class="channel-preview-iframe"
+                    src="${channel.url}"
+                    title="${channel.name} preview"
+                    loading="lazy"
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    allowfullscreen
+                    referrerpolicy="no-referrer"
+                  ></iframe>
+                </div>
+              </div>
             </div>
-          </td>
-          <td>
-            <button class="play-button channel-btn" onclick="loadStream('${channel.url}')"><i class="fas fa-play"></i> Play</button>
-          </td>
+          </div>
         `;
+        channelList.appendChild(card);
 
-        const labels = ['CHANNEL NAME', 'CHANNEL LINK', 'STREAM LINK'];
-        row.querySelectorAll('td').forEach((td, i) => {
-          td.setAttribute('data-label', labels[i] || '');
-        });
+        const previewButton = card.querySelector('.channel-action-preview');
+        const playButton = card.querySelector('.channel-action-play');
+        const previewPanel = card.querySelector('.channel-preview-panel');
 
-        channelList.appendChild(row);
-      });
+        if (previewButton && previewPanel) {
+          previewButton.addEventListener('click', () => {
+            const isExpanded = card.classList.toggle('is-expanded');
+            previewButton.setAttribute('aria-expanded', String(isExpanded));
+            previewPanel.hidden = !isExpanded;
+            const label = previewButton.querySelector('.channel-action-text');
+            if (label) label.textContent = isExpanded ? 'Close Preview' : 'Preview';
+          });
+        }
 
-      document.querySelectorAll('.channel-link-copy').forEach((button) => {
-        button.addEventListener('click', function () {
-          const input = this.parentElement.querySelector('.channel-link-input');
-          input.select();
-          document.execCommand('copy');
-
-          const originalText = this.textContent;
-          this.textContent = 'Copied!';
-          this.classList.add('copied');
-
-          setTimeout(() => {
-            this.textContent = originalText;
-            this.classList.remove('copied');
-          }, 2000);
-        });
+        if (playButton) {
+          playButton.addEventListener('click', () => {
+            if (typeof window.loadStream === 'function') {
+              window.loadStream(channel.url);
+            }
+          });
+        }
       });
     }
 

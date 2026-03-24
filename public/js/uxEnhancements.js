@@ -91,19 +91,16 @@
     },
 
     /**
-     * Show empty state in table body
-     * @param {HTMLElement} tbody 
-     * @param {string} message 
-     * @param {number} colspan 
+     * Show empty state in any container used by the page lists
+     * @param {HTMLElement} container
+     * @param {string} message
      */
-    showInTable(tbody, message, colspan = 4) {
-      if (!tbody) return;
-      tbody.innerHTML = `
-        <tr class="empty-state-row">
-          <td colspan="${colspan}">
-            ${this.generate(message)}
-          </td>
-        </tr>
+    showInContainer(container, message) {
+      if (!container) return;
+      container.innerHTML = `
+        <div class="empty-message">
+          ${this.generate(message)}
+        </div>
       `;
     }
   };
@@ -304,6 +301,7 @@
 
       const nav = document.createElement('nav');
       nav.className = 'bottom-nav';
+      nav.setAttribute('aria-label', 'Bottom navigation');
       nav.innerHTML = `
         <a href="#" class="bottom-nav-item active" data-page="page-stream" onclick="navigateToWithBottomNav('page-stream', event)">
           <i class="fas fa-play-circle"></i>
@@ -390,9 +388,9 @@
         });
       }, { threshold: 0.1 });
 
-      // Observe table rows and cards
+      // Observe dynamic cards and loading placeholders
       const observeElements = () => {
-        document.querySelectorAll('#event-table tbody tr, #channel-table tbody tr, .skeleton-card').forEach(el => {
+        document.querySelectorAll('.event-card, .channel-card, .skeleton-card, .empty-message').forEach(el => {
           if (!el.classList.contains('animate-in')) {
             observer.observe(el);
           }

@@ -105,14 +105,19 @@
 
   <body>
     <header class="header">
-      <div class="nav-container">
-        <!-- Logo -->
+      <nav class="nav-container" id="top-dock" aria-label="Primary navigation">
         <a href="#stream" class="header-logo">
-          <img
-            src="assets/icons/TheliveVision(NB-Logo).png"
-            alt="The Live Vision"
-            class="header-logo-img"
-          />
+          <span class="brand-group">
+            <img
+              src="assets/icons/TheliveVision(NB-Logo).png"
+              alt="The Live Vision"
+              class="header-logo-img"
+            />
+            <span class="brand-name">
+              <span class="brand-name-light">The Live</span>
+              <span class="brand-name-accent">Vision</span>
+            </span>
+          </span>
         </a>
 
         <div class="tabs-container">
@@ -145,16 +150,28 @@
           STREAM
         </div>
 
-        <!-- Theme Toggle in header -->
-        <button
-          class="theme-toggle header-theme-toggle"
-          id="header-theme-toggle"
-          aria-label="Toggle theme"
-        >
-          <i class="fas fa-sun sun"></i>
-          <i class="fas fa-moon moon"></i>
-        </button>
-      </div>
+        <div class="header-actions">
+          <div class="header-search">
+            <i class="fas fa-search header-search-icon" aria-hidden="true"></i>
+            <input
+              type="text"
+              id="header-global-search"
+              class="header-search-input"
+              placeholder="Search events or channels..."
+              autocomplete="off"
+            />
+            <div id="header-search-results" class="header-search-results hidden"></div>
+          </div>
+
+          <button
+            class="theme-toggle header-theme-toggle single-theme-toggle"
+            id="header-theme-toggle"
+            aria-label="Toggle theme"
+          >
+            <i class="fas fa-moon theme-icon" aria-hidden="true"></i>
+          </button>
+        </div>
+      </nav>
     </header>
 
     <main>
@@ -253,30 +270,21 @@
               <div class="loading-spinner"></div>
               <div class="loading-text">Loading sports events...</div>
             </div>
-            <div class="skeleton-table">
-              <div class="skeleton-row">
-                <div class="skeleton skeleton-cell short"></div>
-                <div class="skeleton skeleton-cell short"></div>
-                <div class="skeleton skeleton-cell"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton-grid">
+              <div class="skeleton-card">
+                <div class="skeleton-card-header skeleton"></div>
+                <div class="skeleton-card-body skeleton"></div>
+                <div class="skeleton-card-footer skeleton"></div>
               </div>
-              <div class="skeleton-row">
-                <div class="skeleton skeleton-cell short"></div>
-                <div class="skeleton skeleton-cell short"></div>
-                <div class="skeleton skeleton-cell"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell"></div>
+              <div class="skeleton-card">
+                <div class="skeleton-card-header skeleton"></div>
+                <div class="skeleton-card-body skeleton"></div>
+                <div class="skeleton-card-footer skeleton"></div>
               </div>
-              <div class="skeleton-row">
-                <div class="skeleton skeleton-cell short"></div>
-                <div class="skeleton skeleton-cell short"></div>
-                <div class="skeleton skeleton-cell"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell"></div>
+              <div class="skeleton-card">
+                <div class="skeleton-card-header skeleton"></div>
+                <div class="skeleton-card-body skeleton"></div>
+                <div class="skeleton-card-footer skeleton"></div>
               </div>
             </div>
           </div>
@@ -330,24 +338,7 @@
             </div>
           </div>
 
-          <table id="event-table">
-            <colgroup>
-              <col style="width: 15%" />
-              <col style="width: 11%" />
-              <col style="width: 34%" />
-              <col style="width: 40%" />
-            </colgroup>
-
-            <thead>
-              <tr>
-                <th><i class="fas fa-calendar-alt"></i> DATE & TIME</th>
-                <th><i class="fas fa-futbol"></i> SPORT</th>
-                <th><i class="fas fa-users"></i> MATCH & TOURNAMENT</th>
-                <th><i class="fas fa-play-circle"></i> STREAM LINK</th>
-              </tr>
-            </thead>
-            <tbody id="event-list"></tbody>
-          </table>
+          <div id="event-list" class="cards-grid"></div>
         </div>
       </section>
 
@@ -373,21 +364,21 @@
               <div class="loading-spinner"></div>
               <div class="loading-text">Loading channels...</div>
             </div>
-            <div class="skeleton-table">
-              <div class="skeleton-row">
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton-grid">
+              <div class="skeleton-card">
+                <div class="skeleton-card-header skeleton"></div>
+                <div class="skeleton-card-body skeleton"></div>
+                <div class="skeleton-card-footer skeleton"></div>
               </div>
-              <div class="skeleton-row">
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell"></div>
+              <div class="skeleton-card">
+                <div class="skeleton-card-header skeleton"></div>
+                <div class="skeleton-card-body skeleton"></div>
+                <div class="skeleton-card-footer skeleton"></div>
               </div>
-              <div class="skeleton-row">
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell long"></div>
-                <div class="skeleton skeleton-cell"></div>
+              <div class="skeleton-card">
+                <div class="skeleton-card-header skeleton"></div>
+                <div class="skeleton-card-body skeleton"></div>
+                <div class="skeleton-card-footer skeleton"></div>
               </div>
             </div>
           </div>
@@ -425,22 +416,13 @@
             </div>
           </div>
 
-          <table id="channel-table">
-            <colgroup>
-              <col style="width: 21%" />
-              <col style="width: 44%" />
-              <col style="width: 35%" />
-            </colgroup>
+          <div class="channel-list-head" aria-hidden="true">
+            <span class="channel-list-head-label channel-list-head-name">Channel Name</span>
+            <span class="channel-list-head-label channel-list-head-preview">Preview</span>
+            <span class="channel-list-head-label channel-list-head-stream">Stream Link</span>
+          </div>
 
-            <thead>
-              <tr>
-                <th><i class="fas fa-tv"></i> CHANNEL NAME</th>
-                <th><i class="fas fa-link"></i> CHANNEL LINK</th>
-                <th><i class="fas fa-play-circle"></i> STREAM LINK</th>
-              </tr>
-            </thead>
-            <tbody id="channel-list"></tbody>
-          </table>
+          <div id="channel-list" class="cards-grid"></div>
         </div>
       </section>
     </main>
@@ -472,6 +454,7 @@
     <script>
       const cinemaButton = document.getElementById("cinema-mode");
       const liveStream = document.getElementById("live-stream");
+      const playerContainer = document.getElementById("player-container");
       const body = document.body;
       const moreLinks = document.querySelector(".more-links");
       const streamInputBox = document.querySelector(".stream-input-box");
@@ -481,6 +464,7 @@
         isCinemaMode = !isCinemaMode;
 
         if (isCinemaMode) {
+          playerContainer.classList.add("cinema-mode", "entering");
           liveStream.classList.add("cinema-mode", "entering");
           moreLinks.classList.add("cinema-mode");
           body.classList.add("cinema-background");
@@ -489,11 +473,14 @@
             '<i class="fas fa-compress"></i> EXIT CINEMA MODE';
 
           setTimeout(() => {
+            playerContainer.classList.remove("entering");
             liveStream.classList.remove("entering");
           }, 500);
         } else {
+          playerContainer.classList.add("exiting");
           liveStream.classList.add("exiting");
           setTimeout(() => {
+            playerContainer.classList.remove("cinema-mode", "entering", "exiting");
             liveStream.classList.remove("cinema-mode", "exiting");
             moreLinks.classList.remove("cinema-mode");
             body.classList.remove("cinema-background");
@@ -505,7 +492,7 @@
 
         if (window.innerWidth <= 768) {
           if (!document.fullscreenElement) {
-            liveStream.requestFullscreen().catch((err) => {
+            playerContainer.requestFullscreen().catch((err) => {
               console.error(`Fullscreen error: ${err.message}`);
             });
           } else {

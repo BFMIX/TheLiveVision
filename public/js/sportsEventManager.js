@@ -109,6 +109,46 @@
       return countryFlags[countryCode] || '';
     }
 
+    function formatStreamCode(countryName) {
+      const raw = String(countryName || '').trim().toUpperCase();
+      if (!raw) return 'GLB';
+
+      const normalized = raw
+        .replace(/[()[\]]/g, '')
+        .replace(/[^A-Z\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const directCodes = {
+        UK: 'EN',
+        USA: 'US',
+        US: 'US',
+        FRANCE: 'FR',
+        SPAIN: 'ES',
+        GERMANY: 'DE',
+        ITALY: 'IT',
+        PORTUGAL: 'PT',
+        BRAZIL: 'BR',
+        ARGENTINA: 'AR',
+        JAPAN: 'JP',
+        INTERNATIONAL: 'INT',
+        WORLD: 'INT',
+        GLOBAL: 'INT'
+      };
+
+      if (directCodes[normalized]) return directCodes[normalized];
+      if (normalized.length <= 3) return normalized;
+
+      const initials = normalized
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part[0])
+        .join('')
+        .slice(0, 3);
+
+      return initials || normalized.slice(0, 3);
+    }
+
     function showCopyFeedback(button) {
       if (!button) return;
       const originalTooltip = button.getAttribute('data-tooltip') || '';
@@ -590,7 +630,7 @@
             () => { loadEvents(true); }
           );
         } else {
-          eventList.innerHTML = '<tr><td colspan="5">Unable to load events. Please try again later.</td></tr>';
+          eventList.innerHTML = '<div class="empty-message">Unable to load events. Please try again later.</div>';
           errorMessage.textContent = 'Unable to load events from the API. Please check your connection and try again.';
           errorMessage.style.display = 'block';
         }
@@ -605,13 +645,12 @@
 
       if (events.length === 0) {
         if (window.UXEnhancements) {
-          window.UXEnhancements.EmptyState.showInTable(
+          window.UXEnhancements.EmptyState.showInContainer(
             eventList,
-            'No events found. Try adjusting your filters.',
-            4
+            'No events found. Try adjusting your filters.'
           );
         } else {
-          eventList.innerHTML = '<tr><td colspan="4">No events found.</td></tr>';
+          eventList.innerHTML = '<div class="empty-message">No events found.</div>';
         }
         return;
       }
@@ -620,6 +659,34 @@
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
       ];
+
+      function buildStreamButton(channel, index) {
+        const flag = getCountryFlag(channel.country);
+        const code = formatStreamCode(channel.country);
+        const flagHtml = flag ? `<span class="stream-flag" aria-hidden="true">${flag}</span>` : '';
+        const streamNumber = String(index + 1).padStart(2, '0');
+
+        return `
+          <button
+            class="stream-chip"
+            type="button"
+            onclick="loadStream('${channel.url}')"
+            oncontextmenu="copyStreamLink(event, '${channel.url}')"
+            data-stream-url="${channel.url}"
+            data-tooltip="Right-click to copy"
+          >
+            ${flagHtml}
+            <span class="stream-chip-meta">
+              <span class="stream-chip-index">Stream #${streamNumber}</span>
+              <span class="stream-chip-code">(${code})</span>
+            </span>
+            <span class="stream-chip-play">
+              <span class="stream-chip-icon" aria-hidden="true"><i class="fas fa-play"></i></span>
+              <span class="stream-chip-label">Play</span>
+            </span>
+          </button>
+        `;
+      }
 
       events.forEach((event) => {
         const dateParts = event.date.split('-');
@@ -649,51 +716,99 @@
           `${event.tournament} logo`,
           'fa-trophy'
         );
-        const homeName = event.home_team ? String(event.home_team).toUpperCase() : '';
-        const awayName = event.away_team ? String(event.away_team).toUpperCase() : '';
-        const matchFallback = event.match ? String(event.match).toUpperCase() : '';
+        const homeName = event.home_team ? String(event.home_team).trim() : '';
+        const awayName = event.away_team ? String(event.away_team).trim() : '';
+        const matchFallback = event.match ? String(event.match).trim() : '';
         const hasTeams = homeName && awayName;
+        const cardId = `event-card-${event.id || `${event.date}-${event.match}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
+        const streamPanelId = `${cardId}-streams`;
+        const hasStreams = Array.isArray(event.channels) && event.channels.length > 0;
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td class="date-time-cell">
-            <div class="date-line"><i class="fas fa-calendar-alt"></i> ${formattedDate}</div>
-            <div class="time-line"><i class="fas fa-clock"></i> ${time}</div>
-          </td>
-          <td class="sport-cell">
-            <span class="sport-cell-content">
-              ${buildSportIconHtml(event)}
-              <span class="sport-text">${event.sport}</span>
-            </span>
-          </td>
-          <td class="match-cell">
-            <div class="match-logos">
-              <span class="team-logo-slot">${homeLogo}</span>
-              <span class="match-vs">VS</span>
-              <span class="team-logo-slot">${awayLogo}</span>
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.dataset.eventId = String(event.id || '');
+        card.innerHTML = `
+          <div class="event-card-shell">
+            <div class="event-card-header">
+              <div class="event-meta-cluster">
+                <div class="event-meta-stack">
+                  <div class="event-meta-item">
+                    <span class="event-meta-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="event-meta-text">${formattedDate}</span>
+                  </div>
+                  <div class="event-meta-item time-meta">
+                    <span class="event-meta-icon"><i class="fas fa-clock"></i></span>
+                    <span class="event-meta-text">${time}</span>
+                  </div>
+                </div>
+                <div class="event-meta-divider" aria-hidden="true"></div>
+                <div class="event-meta-item sport-meta">
+                  ${buildSportIconHtml(event)}
+                  <span class="event-meta-text">${event.sport}</span>
+                </div>
+              </div>
             </div>
-            <div class="match-name${hasTeams ? '' : ' single'}">
-              ${hasTeams
-                ? `<span class="team-name-text home">${homeName}</span><span class="team-name-text away">${awayName}</span>`
-                : `<span class="team-name-text">${matchFallback}</span>`
-              }
+            <div class="event-card-body">
+              <div class="event-match-layout${hasTeams ? '' : ' single'}">
+                ${hasTeams
+                  ? `
+                    <div class="team-column home-team">
+                      <span class="team-logo-slot">${homeLogo}</span>
+                      <span class="team-name-text home">${homeName}</span>
+                    </div>
+                    <span class="match-vs">VS</span>
+                    <div class="team-column away-team">
+                      <span class="team-logo-slot">${awayLogo}</span>
+                      <span class="team-name-text away">${awayName}</span>
+                    </div>
+                  `
+                  : `<div class="match-name single"><span class="team-name-text">${matchFallback}</span></div>`
+                }
+              </div>
+              <div class="event-league-row">
+                ${tournamentLogo}
+                <div class="event-league-copy">
+                  <span class="event-league-name">${event.tournament}</span>
+                </div>
+              </div>
             </div>
-            <div class="match-tournament">
-              ${tournamentLogo}
-              <span class="tournament-text">${event.tournament}</span>
+            <div class="event-stream-panel" id="${streamPanelId}" hidden>
+              <div class="event-stream-panel-inner">
+                <div class="event-stream-divider" aria-hidden="true">
+                  <span class="event-stream-divider-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="event-stream-grid">
+                  ${hasStreams ? event.channels.map((channel, index) => buildStreamButton(channel, index)).join('') : ''}
+                </div>
+              </div>
             </div>
-          </td>
-          <td>
-            <div class="stream-buttons">
-              ${event.channels.map((channel) => {
-                const flag = getCountryFlag(channel.country);
-                const flagHtml = flag ? `<span class="flag-emoji">${flag}</span> ` : '';
-                return `<button class="play-button stream-btn" onclick="loadStream('${channel.url}')" oncontextmenu="copyStreamLink(event, '${channel.url}')" data-stream-url="${channel.url}" data-tooltip="Right-click to copy">${flagHtml}Play</button>`;
-              }).join('')}
+            <div class="event-card-footer">
+              <button
+                class="event-stream-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="${streamPanelId}"
+                ${hasStreams ? '' : 'disabled'}
+              >
+                <span class="event-stream-toggle-text">${hasStreams ? 'Watch Available Streams' : 'No Streams Available'}</span>
+                <span class="event-stream-toggle-icon" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
+              </button>
             </div>
-          </td>
+          </div>
         `;
-        eventList.appendChild(row);
+
+        const toggle = card.querySelector('.event-stream-toggle');
+        const panel = card.querySelector('.event-stream-panel');
+
+        if (toggle && panel && hasStreams) {
+          toggle.addEventListener('click', () => {
+            const isExpanded = card.classList.toggle('is-expanded');
+            toggle.setAttribute('aria-expanded', String(isExpanded));
+            panel.hidden = !isExpanded;
+          });
+        }
+
+        eventList.appendChild(card);
       });
     }
 

@@ -45,10 +45,11 @@
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
 
-    // Update aria-label
+    // Update button state
     const themeToggle = document.getElementById('header-theme-toggle') || document.querySelector('.theme-toggle');
     if (themeToggle) {
-      themeToggle.setAttribute('aria-label', newTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      triggerThemeAnimation(themeToggle);
+      updateThemeButton(themeToggle, newTheme);
     }
 
     console.log('[Theme] Switched to:', newTheme);
@@ -66,12 +67,33 @@
       localStorage.setItem('theme', 'dark');
     }
 
-    // Update initial aria-label
+    // Update initial button state
     const themeToggle = document.getElementById('header-theme-toggle') || document.querySelector('.theme-toggle');
     if (themeToggle) {
       const currentTheme = document.documentElement.getAttribute('data-theme');
-      themeToggle.setAttribute('aria-label', currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      updateThemeButton(themeToggle, currentTheme);
     }
+  }
+
+  function updateThemeButton(themeToggle, currentTheme) {
+    themeToggle.setAttribute('aria-label', currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+
+    const icon = themeToggle.querySelector('.theme-icon');
+    if (!icon) return;
+
+    icon.classList.remove('fa-sun', 'fa-moon');
+    icon.classList.add(currentTheme === 'dark' ? 'fa-moon' : 'fa-sun');
+  }
+
+  function triggerThemeAnimation(themeToggle) {
+    themeToggle.classList.remove('animating');
+    // Force reflow so rapid clicks can replay the animation.
+    void themeToggle.offsetWidth;
+    themeToggle.classList.add('animating');
+
+    setTimeout(() => {
+      themeToggle.classList.remove('animating');
+    }, 300);
   }
 
   // ============================================

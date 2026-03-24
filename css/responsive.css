@@ -12,143 +12,14 @@
     padding: 35px 20px;
   }
 
-  /* Tablet - adjust table sizing */
-  #event-table th,
-  #event-table td {
-    padding: 14px 10px;
-    font-size: 14px;
-  }
-
-  #channel-table th,
-  #channel-table td {
-    padding: 14px 10px;
-    font-size: 14px;
-  }
-
-  /* Reduce minimum widths on tablet */
-  #event-table th:nth-child(1) { min-width: 120px; }
-  #event-table th:nth-child(2) { min-width: 70px; }
-  #event-table th:nth-child(3) { min-width: 200px; }
-  #event-table th:nth-child(4) { min-width: 100px; }
-}
-
-@media (max-width: 768px) {
-  .hero-title {
-    display: none;
-  }
-
-  .hero-subtitle {
-    font-size: 12px;
-  }
-
-  .hero-section {
-    padding: 30px 15px;
-    margin-bottom: 20px;
-  }
-
-  /* Mobile: Hide DATE/TIME and SPORT columns - keep MATCH/TOURNAMENT and STREAM LINK */
-  #event-table th:nth-child(1),
-  #event-table td:nth-child(1),
-  #event-table th:nth-child(2),
-  #event-table td:nth-child(2) {
-    display: none;
-  }
-
-  /* Mobile table - fluid responsive */
-  #event-table {
-    font-size: 12px;
-    border-spacing: 0 8px;
-  }
-
-  #event-table th,
-  #event-table td {
-    padding: 10px 8px;
-  }
-
-  /* Match cell on mobile - 2 lines */
-  .match-cell {
-    min-width: 150px;
-  }
-
-  .match-cell .match-logos {
-    gap: 12px;
-    margin-bottom: 6px;
-  }
-
-  .match-cell .match-vs {
-    font-size: 10px;
-  }
-
-  .match-cell .match-name {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: var(--color-text-primary);
-  }
-
-  .match-cell .match-tournament {
-    font-size: 10px;
-    color: var(--color-text-secondary);
-  }
-
-  .match-cell .match-tournament i {
-    margin-right: 4px;
-    font-size: 9px;
-  }
-
-  /* Stream buttons on mobile - left aligned */
-  .stream-buttons {
-    gap: 6px;
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
-
-  .stream-buttons .stream-btn {
-    padding: 6px 10px;
-    font-size: 10px;
-    min-width: auto;
-  }
-
-  /* Match column can wrap on mobile */
-  #event-table td:nth-child(3) {
-    word-break: break-word;
-  }
-
-  /* Hide CHANNEL LINK on mobile only */
-  #channel-table th:nth-child(2),
-  #channel-table td:nth-child(2) {
-    display: none;
-  }
-
-  /* Mobile channel table - fluid responsive */
-  #channel-table {
-    font-size: 12px;
-    border-spacing: 0 8px;
-  }
-
-  #channel-table th,
-  #channel-table td {
-    padding: 10px 6px;
-  }
-
-  /* Channel name can wrap on mobile */
-  #channel-table td:first-child {
-    word-break: break-word;
-    max-width: 150px;
-  }
-
-  /* Flags on mobile - still visible */
-  .country-flag,
-  .flag-icon {
-    font-size: 22px;
-  }
+  /* Removed old table layout queries */
 
   /* Uniform buttons on mobile */
   .channel-btn {
-    min-width: 60px;
-    height: 36px;
-    padding: 8px 12px;
-    font-size: 12px;
+    min-width: 80px;
+    height: 44px;
+    padding: 10px 16px;
+    font-size: 14px;
   }
 
   .tabbed-menu {
@@ -156,8 +27,11 @@
   }
 
   .tab {
-    font-size: 13px;
+    font-size: 14px;
     padding: 10px 16px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .stream-section {
@@ -240,11 +114,14 @@
 
   body.cinema-background .more-links.cinema-mode {
     position: fixed;
-    bottom: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
     left: 50%;
+    top: auto;
+    right: auto;
     transform: translateX(-50%);
     margin-top: 0;
-    z-index: 1002;
+    z-index: 10002;
+    align-items: center;
   }
   
   /* Hide footer in cinema mode */
@@ -265,21 +142,17 @@
     display: none !important;
   }
 
+  .player-container.cinema-mode {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    max-height: calc(100vh - 86px) !important;
+    border-radius: 0 !important;
+  }
+
+  .player-container.cinema-mode::before,
+  .player-container.cinema-mode::after,
   #live-stream.cinema-mode {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(1);
-    width: 84vw;
-    max-width: 84vw;
-    height: auto;
-    max-height: 78vh;
-    aspect-ratio: 16 / 9;
-    z-index: 2000;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.95),
-                0 40px 120px rgba(0, 0, 0, 0.8),
-                0 0 80px rgba(255, 215, 0, 0.3);
-    border-radius: 16px;
+    border-radius: 0 !important;
   }
 
   .header {
@@ -956,16 +829,20 @@ table tbody tr:hover::before {
 
 /* Footer */
 .footer {
-  background: var(--color-bg-secondary);
+  background:
+    linear-gradient(180deg, rgba(255, 215, 0, 0.04) 0%, rgba(17, 17, 17, 0) 20%),
+    var(--color-bg-secondary);
   border-top: 2px solid var(--color-accent);
-  padding: 30px 20px;
+  padding: 34px 20px;
   text-align: center;
-  margin-top: 60px;
+  margin-top: 88px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="light"] .footer {
-  background: linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #f6f8fb 0%, #ffffff 100%);
   border-top: 2px solid var(--light-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .footer-content {
@@ -1739,11 +1616,13 @@ table tbody tr:hover::before {
   }
   
   .hero-title {
-    display: none !important;
+    display: block !important;
+    font-size: clamp(2.2rem, 10vw, 3.6rem) !important;
+    margin-bottom: 10px !important;
   }
   
   .hero-subtitle {
-    font-size: 12px !important;
+    font-size: 14px !important;
     line-height: 1.4;
     margin-bottom: 0;
   }
@@ -1956,7 +1835,7 @@ table tbody tr:hover::before {
   }
   
   .mobile-header-title {
-    display: block;
+    display: none;
     order: 2;
     flex: 1 1 auto;
     min-width: 0;
@@ -1998,27 +1877,19 @@ table tbody tr:hover::before {
   /* Mobile Theme Toggle - RIGHT */
   .header-theme-toggle {
     order: 3;
-    --toggle-w: 72px;
-    --toggle-h: 34px;
-    --toggle-pad: 3px;
-    --toggle-border: 2px;
-    --toggle-knob: calc(var(--toggle-h) - (2 * var(--toggle-pad)) - (2 * var(--toggle-border)));
-    flex: 0 0 var(--toggle-w) !important;
+  }
+
+  .header-theme-toggle.single-theme-toggle {
+    --toggle-w: 44px;
+    --toggle-h: 44px;
     width: var(--toggle-w) !important;
     min-width: var(--toggle-w) !important;
     height: var(--toggle-h) !important;
     min-height: var(--toggle-h) !important;
-    padding: 0 !important;
-    box-sizing: border-box;
-    border-radius: 999px !important;
     display: inline-flex !important;
     align-items: center;
-    justify-content: space-between;
-    background: #2b2f36 !important;
-    border: 2px solid #5b616b !important;
-    box-shadow: var(--shadow-sm) !important;
-    position: relative;
-    z-index: 100;
+    justify-content: center;
+    border-radius: 999px !important;
   }
   
   /* Force tabs to be hidden on mobile */
@@ -2028,6 +1899,10 @@ table tbody tr:hover::before {
   
   .header-theme-toggle i {
     font-size: 12px;
+  }
+
+  .header-theme-toggle.single-theme-toggle .theme-icon {
+    font-size: 16px;
   }
   
   [data-theme="light"] .header-theme-toggle {
@@ -2215,20 +2090,28 @@ table tbody tr:hover::before {
    SKELETON LOADERS
    ============================================ */
 .skeleton-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
   padding: 10px 0;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  width: 100%;
 }
 
 .skeleton-card {
   background: var(--color-bg-card);
   border: 1px solid var(--color-accent);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 220px;
 }
 
 [data-theme="light"] .skeleton-card {
@@ -2305,37 +2188,36 @@ table tbody tr:hover::before {
 
 /* Channel skeleton */
 .skeleton-channel {
-  flex-direction: row;
-  align-items: center;
-  padding: 12px 14px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 18px;
 }
 
 .skeleton-channel .skeleton-flag {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 4px;
-  flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .skeleton-channel .skeleton-name {
-  flex: 1;
+  width: 70%;
   height: 18px;
-  margin: 0 12px;
+  margin: 8px 0 auto;
 }
 
 .skeleton-channel .skeleton-btn {
-  width: 70px;
-  height: 36px;
+  width: 100%;
+  height: 44px;
   border-radius: 8px;
-  flex-shrink: 0;
 }
 
 /* Desktop skeleton adjustments */
 @media (min-width: 769px) {
   .skeleton-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
   }
 
   .skeleton-card {
@@ -2643,6 +2525,19 @@ body.animations-enabled .skeleton-card {
     padding: 0 !important;
     position: relative;
     z-index: 100;
+  }
+
+  .header-theme-toggle.single-theme-toggle {
+    --toggle-w: 44px;
+    --toggle-h: 44px;
+    width: var(--toggle-w) !important;
+    min-width: var(--toggle-w) !important;
+    height: var(--toggle-h) !important;
+    min-height: var(--toggle-h) !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px !important;
   }
 
   /* Logo can shrink if needed */

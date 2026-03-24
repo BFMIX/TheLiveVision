@@ -320,3 +320,264 @@
     }
   });
 })();
+
+/* =========================================================
+   HEADER GLOBAL SEARCH: events + channels
+   ========================================================= */
+(function () {
+  'use strict';
+
+  const API_BASE = window.API_BASE || 'https://beta.adstrim.ru';
+  const EMBED_BASE = window.EMBED_BASE || 'https://viewembed.ru';
+
+  function normalizeChannelValue(value) {
+    if (!value) return '';
+    return String(value).trim();
+  }
+
+  function buildChannelUrl(value) {
+    const cleaned = normalizeChannelValue(value);
+    if (!cleaned) return '';
+    if (/^https?:\/\//i.test(cleaned)) {
+      if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
+        return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, '$1viewembed.ru');
+      }
+      return cleaned;
+    }
+    const path = cleaned.replace(/^\/+/, '');
+    if (path.toLowerCase().startsWith('channel/')) {
+      const slug = path.slice('channel/'.length);
+      return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
+    }
+    return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
+  }
+
+  function extractCountry(channelName) {
+    const match = String(channelName || '').match(/\[([^\]]+)\]$/);
+    return match ? match[1] : 'International';
+  }
+
+  function cleanChannelName(channelName) {
+    return String(channelName || '').replace(/\[[^\]]+\]$/, '').trim();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('header-global-search');
+    const results = document.getElementById('header-search-results');
+
+    if (!input || !results) return;
+
+    let allItems = [];
+    let selectedIndex = -1;
+    let loading = false;
+    let loaded = false;
+
+    function renderEmpty(message) {
+      results.innerHTML = `<div class="header-search-empty">${message}</div>`;
+      results.classList.remove('hidden');
+    }
+
+    function hideResults() {
+      selectedIndex = -1;
+      results.classList.add('hidden');
+    }
+
+    async function loadData() {
+      if (loading || loaded) return;
+      loading = true;
+
+      try {
+        const [eventsResponse, channelsResponse] = await Promise.allSettled([
+          fetch(`${API_BASE}/api/events`),
+          fetch(`${API_BASE}/api/channels`)
+        ]);
+
+        const items = [];
+
+        if (eventsResponse.status === 'fulfilled' && eventsResponse.value.ok) {
+          const eventPayload = await eventsResponse.value.json();
+          if (eventPayload.status === 'success' && Array.isArray(eventPayload.data)) {
+            eventPayload.data.forEach((event) => {
+              const dateObj = new Date(event.timestamp * 1000);
+              const timeStr = dateObj.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+              const dateStr = dateObj.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short'
+              });
+
+              const sportName = event.sport || event.sport_name || event.sportName || 'Sport';
+              const leagueName =
+                event.league || event.tournament || event.league_name || event.leagueName || 'Tournament';
+              const homeTeam = event.home_team || event.homeTeam || event.home || '';
+              const awayTeam = event.away_team || event.awayTeam || event.away || '';
+              const title =
+                homeTeam && awayTeam
+                  ? `${homeTeam} vs ${awayTeam}`
+                  : event.match || event.name || event.title || 'Event';
+
+              items.push({
+                type: 'event',
+                title,
+                meta: `${sportName} - ${leagueName} - ${dateStr} ${timeStr}`,
+                queryValue: title,
+                icon: 'fa-futbol'
+              });
+            });
+          }
+        }
+
+        if (channelsResponse.status === 'fulfilled' && channelsResponse.value.ok) {
+          const channelPayload = await channelsResponse.value.json();
+          if (channelPayload.status === 'success' && Array.isArray(channelPayload.channels)) {
+            channelPayload.channels
+              .filter((ch) => ch.show_on_livetv === true && ch.hide === false)
+              .forEach((channel) => {
+                const canonicalName = channel.name || channel.title || channel.link || '';
+                const country = channel.country || extractCountry(canonicalName);
+                const title = cleanChannelName(canonicalName);
+                items.push({
+                  type: 'channel',
+                  title,
+                  meta: country,
+                  queryValue: title,
+                  url: buildChannelUrl(canonicalName),
+                  icon: 'fa-tv'
+                });
+              });
+          }
+        }
+
+        allItems = items;
+        loaded = true;
+      } catch (error) {
+        console.error('Header search failed to load:', error);
+      } finally {
+        loading = false;
+      }
+    }
+
+    function updateSelection(items) {
+      items.forEach((item, index) => {
+        item.classList.toggle('selected', index === selectedIndex);
+      });
+    }
+
+    function navigateToItem(item) {
+      hideResults();
+
+      if (item.type === 'event') {
+        if (typeof window.navigateTo === 'function') {
+          window.navigateTo('page-football');
+        }
+        const eventSearch = document.getElementById('event-search');
+        if (eventSearch) {
+          eventSearch.value = item.queryValue;
+          eventSearch.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      } else {
+        if (typeof window.navigateTo === 'function') {
+          window.navigateTo('page-channels');
+        }
+        const channelSearch = document.getElementById('channel-search');
+        if (channelSearch) {
+          channelSearch.value = item.queryValue;
+          channelSearch.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+    }
+
+    function displayResults(list) {
+      if (!list.length) {
+        renderEmpty('No results found');
+        return;
+      }
+
+      results.innerHTML = list
+        .map(
+          (item, index) => `
+            <div class="header-search-result-item" data-index="${index}">
+              <span class="header-result-icon"><i class="fas ${item.icon}"></i></span>
+              <div class="header-result-copy">
+                <div class="header-result-title">${item.title}</div>
+                <div class="header-result-meta">${item.meta}</div>
+              </div>
+              <span class="header-result-type">${item.type}</span>
+            </div>
+          `,
+        )
+        .join('');
+
+      selectedIndex = -1;
+      results.classList.remove('hidden');
+
+      Array.from(results.querySelectorAll('.header-search-result-item')).forEach((node) => {
+        node.addEventListener('click', () => {
+          const item = list[Number(node.dataset.index)];
+          if (item) navigateToItem(item);
+        });
+      });
+    }
+
+    function search(query) {
+      const trimmed = String(query || '').trim();
+      if (trimmed.length < 2) {
+        hideResults();
+        return;
+      }
+
+      const lower = trimmed.toLowerCase();
+      const filtered = allItems
+        .filter((item) => {
+          return item.title.toLowerCase().includes(lower) || item.meta.toLowerCase().includes(lower);
+        })
+        .slice(0, 8);
+
+      displayResults(filtered);
+    }
+
+    let debounceTimer;
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => search(input.value), 180);
+    });
+
+    input.addEventListener('focus', async () => {
+      await loadData();
+      if (input.value.trim().length >= 2) {
+        search(input.value);
+      }
+    });
+
+    input.addEventListener('keydown', (event) => {
+      const items = Array.from(results.querySelectorAll('.header-search-result-item'));
+      if (!items.length) return;
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+        updateSelection(items);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        updateSelection(items);
+      } else if (event.key === 'Enter' && selectedIndex >= 0) {
+        event.preventDefault();
+        const chosen = items[selectedIndex];
+        if (chosen) chosen.click();
+      } else if (event.key === 'Escape') {
+        hideResults();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.header-search')) {
+        hideResults();
+      }
+    });
+
+    loadData();
+  });
+})();

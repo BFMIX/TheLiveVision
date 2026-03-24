@@ -292,8 +292,8 @@
   border: none;
   cursor: pointer;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  color: var(--color-bg-dark);
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: #111111;
   border-radius: 12px;
   transition: all 0.3s ease;
   font-weight: 700;
@@ -306,14 +306,14 @@
 }
 
 [data-theme="light"] .play-button {
-  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-  color: white;
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: #ffffff;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   animation: none;
 }
 
 [data-theme="light"] .play-button:hover {
-  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  background: linear-gradient(180deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -339,7 +339,7 @@
 .play-button:hover {
   transform: translateY(-2px) scale(1.05);
   box-shadow: var(--shadow-gold);
-  background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+  background: linear-gradient(180deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
   animation: none;
 }
 
@@ -367,16 +367,11 @@
 @media (min-width: 769px) {
   .more-links.cinema-mode {
     position: fixed;
-    bottom: 24px;
+    bottom: 26px;
     left: 50%;
     transform: translateX(-50%);
     margin-top: 0;
-  }
-
-  /* Desktop: Ensure CHANNEL LINK column is visible */
-  #channel-table th:nth-child(2),
-  #channel-table td:nth-child(2) {
-    display: block !important;
+    z-index: 10002;
   }
 }
 
@@ -414,7 +409,7 @@
 }
 
 body.cinema-background .more-button {
-  opacity: 0.7;
+  opacity: 0.9;
   background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 165, 0, 0.8));
 }
 
@@ -462,4 +457,3 @@ body.cinema-background .more-button:hover {
   margin-bottom: 30px;
   border: 2px solid #FF4444;
 }
-
