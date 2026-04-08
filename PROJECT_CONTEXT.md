@@ -1,6 +1,7 @@
 # The Live Vision - Project Context
 
 ## Purpose
+
 The Live Vision is a sports streaming web app with 3 main pages:
 
 1. `Stream`
@@ -18,28 +19,34 @@ The project must remain web-first, premium, and practical for streaming usage.
 ## Current Repos / Versions
 
 ### V1
+
 Path:
 `/Users/bfmix/Desktop/DEv/Project/TheLiveVision`
 
 Stack:
+
 - HTML
 - CSS
 - Vanilla JS
 - Vite for dev/build
 
 Role:
+
 - functional reference
 - current live-ready baseline
 - source of truth for UX behavior unless explicitly changed
 
 ### V2
+
 Path:
 `/Users/bfmix/Desktop/DEv/Project/TheLiveVision-V2`
 
 Stack:
+
 - React / Next.js
 
 Role:
+
 - rebuilt architecture candidate
 - should progressively mirror V1 product behavior and design direction
 
@@ -67,6 +74,7 @@ The project should feel:
 - realistic and implementable
 
 Important:
+
 - No Apple TV / floating glass dock header.
 - No glassmorphism navigation system.
 - Header should stay in the classic sticky bar direction.
@@ -75,6 +83,7 @@ Important:
 ## Current Theme / Tokens
 
 ### Dark theme
+
 - Primary accent: `#FFD700`
 - Primary hover: `#F6C744`
 - Main background: `#1A1A1A`
@@ -85,6 +94,7 @@ Important:
 - Neutral accent/border: `#333333`
 
 ### Light theme
+
 - Primary accent: `#2196F3`
 - Primary hover: `#1976D2`
 - Main background: `#F5F7FA`
@@ -108,12 +118,14 @@ Current font stacks:
   `"Avenir Next LT Pro Bold", "Avenir Next", "Sofia Pro Soft Medium", "Helvetica Neue", Arial, sans-serif`
 
 Design intent:
+
 - page titles can stay expressive
 - team names / channel names should be cleaner, sharper, and less heavy than before
 
 ## Current V1 State
 
 ### Header
+
 The header has been partially redesigned and is now the current reference for V2:
 
 - classic sticky header retained
@@ -128,12 +140,14 @@ The header has been partially redesigned and is now the current reference for V2
   - page titles moved back into the hero/content area instead of the mobile header
 
 ### Header branding
+
 `The Live Vision` currently uses split styling:
 
 - `The Live` = light/white gradient
 - `Vision` = yellow/gold gradient
 
 ### Header global search
+
 The desktop header search is now functional in V1:
 
 - searches both events and channels
@@ -143,11 +157,13 @@ The desktop header search is now functional in V1:
   - `TV Channels` and fills the channels search
 
 Current implementation was added in:
+
 - `index.html`
 - `css/header.css`
 - `public/js/searchStream.js`
 
 ### Navigation
+
 Important page IDs / routing logic in V1:
 
 - `page-stream`
@@ -159,17 +175,20 @@ Do not rename these in V1 without a good reason.
 ## Current V1 Page State
 
 ### Stream
+
 - functional
 - cinema mode has been reworked
 - header search should not replace the main stream search
 - main player / stream search flow must remain intact
 
 ### Sports Events
+
 - currently migrated toward cards
 - cards are acknowledged as not final and visually weak
 - full redesign of the Events page is planned next
 
 ### TV Channels
+
 - currently migrated toward cards
 - cards are acknowledged as not final and visually weak
 

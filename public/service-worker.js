@@ -1,69 +1,35 @@
 // service-worker.js
-// PWA Service Worker for offline support and caching
+// Versioned runtime caching with network-only HTML to avoid mixed old/new app shells.
 
-const STATIC_CACHE_NAME = 'sports-vision-static-v13';
-const RUNTIME_CACHE_NAME = 'sports-vision-runtime-v2';
+const SW_VERSION = new URL(self.location.href).searchParams.get('v') || 'dev';
+const STATIC_CACHE_NAME = `sports-vision-static-${SW_VERSION}`;
+const RUNTIME_CACHE_NAME = `sports-vision-runtime-${SW_VERSION}`;
 
-const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/css/main.css',
-
-  // Core JS
-  '/js/navigation.js',
-  '/js/themeToggle.js',
-  '/js/headerScroll.js',
-  '/js/countryFlags.js',
-  '/js/errorHandler.js',
-  '/js/searchStream.js',
-  '/js/streammanager.js',
-  '/js/channelsmanager.js',
-  '/js/sportsEventManager.js',
-  '/js/advancedFeatures.js',
-  '/js/anti-popup.js',
-  '/js/pwa-install.js',
-  '/js/mobileFilters.js',
-  '/js/uxEnhancements.js',
-
-  // Assets
-  '/assets/icons/favicon.svg',
-  '/assets/icons/favicon-96.png',
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-512.png',
-  '/assets/icons/icon-512.svg',
-];
-
-const STATIC_ASSET_PREFIXES = ['/css/', '/js/', '/assets/', '/files/'];
+const STATIC_ASSET_PREFIXES = ['/js/', '/assets/', '/files/'];
+const STATIC_EXACT_PATHS = ['/manifest.json'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(STATIC_CACHE_NAME).then((cache) => {
-      console.log('Opened static cache:', STATIC_CACHE_NAME);
-      return cache.addAll(PRECACHE_URLS);
-    })
-  );
-  self.skipWaiting();
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [STATIC_CACHE_NAME, RUNTIME_CACHE_NAME];
 
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-          return Promise.resolve();
-        })
+    caches
+      .keys()
+      .then((cacheNames) =>
+        Promise.all(
+          cacheNames.map((cacheName) => {
+            if (!cacheWhitelist.includes(cacheName)) {
+              return caches.delete(cacheName);
+            }
+            return Promise.resolve();
+          })
+        )
       )
-    )
+      .then(() => self.clients.claim())
   );
-
-  return self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
@@ -75,14 +41,15 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (isApiRequest(url.pathname)) return;
+  if (isServiceWorkerAsset(url.pathname)) return;
 
   if (isHtmlRequest(request, url.pathname)) {
-    event.respondWith(networkFirst(request, STATIC_CACHE_NAME));
+    event.respondWith(fetch(request, { cache: 'no-store' }));
     return;
   }
 
   if (isStaticAssetRequest(url.pathname)) {
-    event.respondWith(cacheFirst(request, RUNTIME_CACHE_NAME));
+    event.respondWith(cacheFirst(request, STATIC_CACHE_NAME));
   }
 });
 
@@ -90,7 +57,12 @@ function isApiRequest(pathname) {
   return pathname === '/api' || pathname.startsWith('/api/');
 }
 
+function isServiceWorkerAsset(pathname) {
+  return pathname === '/service-worker.js';
+}
+
 function isStaticAssetRequest(pathname) {
+  if (STATIC_EXACT_PATHS.includes(pathname)) return true;
   return STATIC_ASSET_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
@@ -110,28 +82,10 @@ async function cacheFirst(request, cacheName) {
   const response = await fetch(request);
   if (isCacheableResponse(response)) {
     await cache.put(request, response.clone());
-    if (cacheName === RUNTIME_CACHE_NAME) {
-      await trimCache(cacheName, 80);
-    }
+    await trimCache(cacheName, 120);
   }
 
   return response;
-}
-
-async function networkFirst(request, cacheName) {
-  try {
-    const response = await fetch(request);
-    if (isCacheableResponse(response)) {
-      const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (_error) {
-    const cache = await caches.open(cacheName);
-    const cachedResponse = await cache.match(request);
-    if (cachedResponse) return cachedResponse;
-    throw _error;
-  }
 }
 
 function isCacheableResponse(response) {
@@ -145,7 +99,7 @@ async function trimCache(cacheName, maxEntries) {
   if (keys.length <= maxEntries) return;
 
   const overflowCount = keys.length - maxEntries;
-  for (let i = 0; i < overflowCount; i += 1) {
-    await cache.delete(keys[i]);
+  for (let index = 0; index < overflowCount; index += 1) {
+    await cache.delete(keys[index]);
   }
 }

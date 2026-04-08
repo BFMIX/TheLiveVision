@@ -23,6 +23,7 @@ Do not start the full Events redesign yet.
 V2 must match the current V1 header direction.
 
 ### Required
+
 - Remove any Apple TV / floating glass dock navigation if still present.
 - Use a classic sticky header.
 - Keep:
@@ -32,6 +33,7 @@ V2 must match the current V1 header direction.
   - single-button dark/light toggle
 
 ### Explicitly forbidden
+
 - no glass dock
 - no floating navigation capsule
 - no glassmorphism menu
@@ -47,6 +49,7 @@ Recreate the current V1 brand treatment:
   - `Vision` in a yellow/gold gradient
 
 Typography intent:
+
 - cleaner and more premium
 - not overly heavy
 - not cartoonish
@@ -60,6 +63,7 @@ Desktop layout should match V1:
 - compact header search + theme button on the right
 
 Tabs:
+
 - centered, not left-aligned
 - spacing clean and balanced
 - active state readable and premium
@@ -78,10 +82,12 @@ V2 must replicate the validated V1 behavior:
   - navigates to `TV Channels` and fills/filter-searches the channel page
 
 ### Important
+
 - this header search must not replace the main Stream page search
 - keep the Stream page main search intact
 
 ### Search UX
+
 - desktop-first behavior
 - compact dropdown
 - keyboard-safe if practical
@@ -98,6 +104,7 @@ V2 mobile header must mirror the current V1 mobile behavior:
 - no page title inside the mobile header
 
 Page titles on mobile:
+
 - must appear back in the hero/content area
 - same structural role as desktop
 - do not keep page subtitles/titles inside the mobile header
@@ -121,14 +128,17 @@ Before the Events redesign starts, align V2 typography direction with V1 for:
 - channel names on cards
 
 Direction:
+
 - more modern
 - less heavy
 - more readable
 
 Suggested stack:
+
 - `"Avenir Next LT Pro Bold", "Avenir Next", "Sofia Pro Soft Medium", "Helvetica Neue", Arial, sans-serif`
 
 Suggested weight:
+
 - around `600`, not `800`
 
 ## Validation Checklist
@@ -136,6 +146,7 @@ Suggested weight:
 Before marking the V2 header sync as complete:
 
 1. Desktop
+
 - logo + brand visible left
 - tabs centered
 - search visible right
@@ -143,6 +154,7 @@ Before marking the V2 header sync as complete:
 - no Apple TV dock styling remains
 
 2. Mobile
+
 - logo left
 - brand centered
 - toggle right
@@ -150,11 +162,13 @@ Before marking the V2 header sync as complete:
 - page title back in hero/content area
 
 3. Search
+
 - typing finds events and channels
 - clicking result opens correct page
 - corresponding page search/filter is filled
 
 4. Safety
+
 - no stream/API/embed logic changed
 - no push
 - no deploy

@@ -21,62 +21,62 @@
     />
 
     <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg?v=__BUILD_ID__" />
     <link
       rel="icon"
       type="image/png"
       sizes="96x96"
-      href="/assets/icons/favicon-96.png"
+      href="/assets/icons/favicon-96.png?v=__BUILD_ID__"
     />
 
     <!-- PWA -->
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/assets/icons/icon-512.png" />
+    <link rel="manifest" href="/manifest.json?v=__BUILD_ID__" />
+    <link rel="apple-touch-icon" href="/assets/icons/icon-512.png?v=__BUILD_ID__" />
 
     <!-- iOS Splash Screens -->
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-640x1136.png"
+      href="/assets/icons/splash-ios-640x1136.png?v=__BUILD_ID__"
       media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-750x1334.png"
+      href="/assets/icons/splash-ios-750x1334.png?v=__BUILD_ID__"
       media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-828x1792.png"
+      href="/assets/icons/splash-ios-828x1792.png?v=__BUILD_ID__"
       media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-1125x2436.png"
+      href="/assets/icons/splash-ios-1125x2436.png?v=__BUILD_ID__"
       media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-1242x2688.png"
+      href="/assets/icons/splash-ios-1242x2688.png?v=__BUILD_ID__"
       media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-1242x2208.png"
+      href="/assets/icons/splash-ios-1242x2208.png?v=__BUILD_ID__"
       media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-1536x2048.png"
+      href="/assets/icons/splash-ios-1536x2048.png?v=__BUILD_ID__"
       media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-2208x1242.png"
+      href="/assets/icons/splash-ios-2208x1242.png?v=__BUILD_ID__"
       media="(device-width: 736px) and (device-height: 414px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
     />
     <link
       rel="apple-touch-startup-image"
-      href="/assets/icons/splash-ios-2688x1242.png"
+      href="/assets/icons/splash-ios-2688x1242.png?v=__BUILD_ID__"
       media="(device-width: 896px) and (device-height: 414px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
     />
 
@@ -96,7 +96,9 @@
         const isLocalhost = ["localhost", "127.0.0.1"].includes(location.hostname);
         if (!isLocalhost) {
           window.addEventListener("load", () => {
-            navigator.serviceWorker.register("/service-worker.js");
+            navigator.serviceWorker.register("/service-worker.js?v=__BUILD_ID__", {
+              updateViaCache: "none",
+            });
           });
         }
       }
@@ -109,7 +111,7 @@
         <a href="#stream" class="header-logo">
           <span class="brand-group">
             <img
-              src="assets/icons/TheliveVision(NB-Logo).png"
+              src="assets/icons/TheliveVision(NB-Logo).png?v=__BUILD_ID__"
               alt="The Live Vision"
               class="header-logo-img"
             />
@@ -437,21 +439,23 @@
       </div>
     </footer>
 
-    <script src="js/navigation.js"></script>
-    <script src="js/uxEnhancements.js"></script>
-    <script src="js/themeToggle.js"></script>
-    <script src="js/headerScroll.js"></script>
-    <script src="js/countryFlags.js"></script>
-    <script src="js/errorHandler.js"></script>
-    <script src="js/searchStream.js"></script>
-    <script src="js/advancedFeatures.js"></script>
-    <script src="js/streammanager.js?v=7"></script>
-    <script src="js/channelsmanager.js"></script>
-    <script src="js/sportsEventManager.js"></script>
-    <script src="js/anti-popup.js"></script>
-    <script src="js/pwa-install.js"></script>
+    <script src="js/navigation.js?v=__BUILD_ID__"></script>
+    <script src="js/uxEnhancements.js?v=__BUILD_ID__"></script>
+    <script src="js/themeToggle.js?v=__BUILD_ID__"></script>
+    <script src="js/headerScroll.js?v=__BUILD_ID__"></script>
+    <script src="js/countryFlags.js?v=__BUILD_ID__"></script>
+    <script src="js/errorHandler.js?v=__BUILD_ID__"></script>
+    <script src="js/searchStream.js?v=__BUILD_ID__"></script>
+    <script src="js/advancedFeatures.js?v=__BUILD_ID__"></script>
+    <script src="js/streammanager.js?v=__BUILD_ID__"></script>
+    <script src="js/channelsmanager.js?v=__BUILD_ID__"></script>
+    <script src="js/sportsEventManager.js?v=__BUILD_ID__"></script>
+    <script src="js/anti-popup.js?v=__BUILD_ID__"></script>
+    <script src="js/pwa-install.js?v=__BUILD_ID__"></script>
 
-    <script>
+    <script src="js/mobileFilters.js?v=__BUILD_ID__"></script>
+
+    <script data-build-id="__BUILD_ID__">
       const cinemaButton = document.getElementById("cinema-mode");
       const liveStream = document.getElementById("live-stream");
       const playerContainer = document.getElementById("player-container");
@@ -531,6 +535,5 @@
         }
       });
     </script>
-    <script src="js/mobileFilters.js"></script>
   </body>
 </html>
