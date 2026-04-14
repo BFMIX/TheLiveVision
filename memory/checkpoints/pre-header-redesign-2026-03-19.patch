@@ -1,0 +1,2085 @@
+diff --git a/css/components.css b/css/components.css
+index 26b9125..8d3846b 100644
+--- a/css/components.css
++++ b/css/components.css
+@@ -292,8 +292,8 @@
+   border: none;
+   cursor: pointer;
+   padding: 14px 32px;
+-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+-  color: var(--color-bg-dark);
++  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
++  color: #111111;
+   border-radius: 12px;
+   transition: all 0.3s ease;
+   font-weight: 700;
+@@ -306,14 +306,14 @@
+ }
+ 
+ [data-theme="light"] .play-button {
+-  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+-  color: white;
++  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
++  color: #ffffff;
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+   animation: none;
+ }
+ 
+ [data-theme="light"] .play-button:hover {
+-  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
++  background: linear-gradient(180deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+ }
+ 
+@@ -339,7 +339,7 @@
+ .play-button:hover {
+   transform: translateY(-2px) scale(1.05);
+   box-shadow: var(--shadow-gold);
+-  background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
++  background: linear-gradient(180deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+   animation: none;
+ }
+ 
+@@ -367,16 +367,11 @@
+ @media (min-width: 769px) {
+   .more-links.cinema-mode {
+     position: fixed;
+-    bottom: 24px;
++    bottom: 26px;
+     left: 50%;
+     transform: translateX(-50%);
+     margin-top: 0;
+-  }
+-
+-  /* Desktop: Ensure CHANNEL LINK column is visible */
+-  #channel-table th:nth-child(2),
+-  #channel-table td:nth-child(2) {
+-    display: block !important;
++    z-index: 10002;
+   }
+ }
+ 
+@@ -414,7 +409,7 @@
+ }
+ 
+ body.cinema-background .more-button {
+-  opacity: 0.7;
++  opacity: 0.9;
+   background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 165, 0, 0.8));
+ }
+ 
+@@ -462,4 +457,3 @@ body.cinema-background .more-button:hover {
+   margin-bottom: 30px;
+   border: 2px solid #FF4444;
+ }
+-
+diff --git a/css/header.css b/css/header.css
+index a8b4687..29cf5a2 100644
+--- a/css/header.css
++++ b/css/header.css
+@@ -378,6 +378,107 @@ body.cinema-background .stream-section {
+   pointer-events: none;
+ }
+ 
++/* Single neutral button variant */
++.theme-toggle.single-theme-toggle {
++  width: 44px;
++  height: 44px;
++  border-radius: 999px;
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  background: #2f333a;
++  border: 1px solid #4e5662;
++  color: #d3d8e0;
++  padding: 0;
++  box-shadow:
++    7px 7px 14px rgba(0, 0, 0, 0.42),
++    -6px -6px 12px rgba(255, 255, 255, 0.03),
++    inset 1px 1px 0 rgba(255, 255, 255, 0.06),
++    inset -1px -1px 0 rgba(0, 0, 0, 0.35);
++}
++
++.theme-toggle.single-theme-toggle::before {
++  content: none;
++}
++
++.theme-toggle.single-theme-toggle .theme-icon {
++  position: static;
++  transform: none;
++  width: auto;
++  height: auto;
++  font-size: 17px;
++  opacity: 1;
++  color: #d3d8e0;
++  transition: color 0.25s ease;
++}
++
++.theme-toggle.single-theme-toggle:hover {
++  border-color: #656f7d;
++  background: #343941;
++  box-shadow:
++    8px 8px 16px rgba(0, 0, 0, 0.46),
++    -7px -7px 14px rgba(255, 255, 255, 0.04),
++    inset 1px 1px 0 rgba(255, 255, 255, 0.08),
++    inset -1px -1px 0 rgba(0, 0, 0, 0.4);
++}
++
++[data-theme="light"] .theme-toggle.single-theme-toggle {
++  background: #e9edf2;
++  border-color: #b5beca;
++  color: #616a78;
++  box-shadow:
++    6px 6px 14px rgba(163, 177, 198, 0.45),
++    -6px -6px 14px rgba(255, 255, 255, 0.95),
++    inset 1px 1px 0 rgba(255, 255, 255, 0.9),
++    inset -1px -1px 0 rgba(182, 192, 206, 0.5);
++}
++
++[data-theme="light"] .theme-toggle.single-theme-toggle .theme-icon {
++  color: #616a78;
++}
++
++[data-theme="light"] .theme-toggle.single-theme-toggle:hover {
++  background: #f0f3f7;
++  border-color: #aab3c1;
++  box-shadow:
++    7px 7px 16px rgba(163, 177, 198, 0.48),
++    -7px -7px 16px rgba(255, 255, 255, 0.98),
++    inset 1px 1px 0 rgba(255, 255, 255, 0.96),
++    inset -1px -1px 0 rgba(182, 192, 206, 0.55);
++}
++
++.theme-toggle.single-theme-toggle.animating {
++  animation: themeButtonPress 260ms ease;
++}
++
++.theme-toggle.single-theme-toggle.animating .theme-icon {
++  animation: themeIconFlip 280ms ease;
++}
++
++@keyframes themeButtonPress {
++  0% {
++    transform: translateY(0) scale(1);
++  }
++  45% {
++    transform: translateY(1px) scale(0.94);
++  }
++  100% {
++    transform: translateY(0) scale(1);
++  }
++}
++
++@keyframes themeIconFlip {
++  0% {
++    transform: scale(1) rotate(0deg);
++  }
++  50% {
++    transform: scale(0.72) rotate(-14deg);
++  }
++  100% {
++    transform: scale(1) rotate(0deg);
++  }
++}
++
+ .theme-toggle .sun {
+   left: calc(var(--toggle-pad) + (var(--toggle-knob) - 18px) / 2);
+ }
+@@ -445,4 +546,3 @@ body.cinema-background .stream-section {
+ [data-theme="light"] .theme-toggle::before {
+   background: #C4CBD4;
+ }
+-
+diff --git a/css/pages/channels.css b/css/pages/channels.css
+index e271f7f..6c5eec9 100644
+--- a/css/pages/channels.css
++++ b/css/pages/channels.css
+@@ -64,128 +64,69 @@
+   box-sizing: border-box;
+ }
+ 
+-/* Channel Table Styles - Modern Card Design */
+-#channel-table {
+-  width: 100% !important;
+-  border-collapse: separate;
+-  border-spacing: 0 12px;
+-  margin: 0;
+-  background-color: transparent;
+-  box-sizing: border-box;
+-  table-layout: fixed; /* Fixed column widths */
+-}
+-
+-#channel-table thead {
+-  position: sticky;
+-  top: 0;
+-  z-index: 10;
+-}
+-
+-#channel-table th {
+-  background: linear-gradient(180deg, rgba(74, 79, 86, 0.96) 0%, rgba(43, 47, 53, 0.98) 100%);
+-  color: var(--color-primary);
+-  font-family: var(--font-table);
+-  font-style: normal;
+-  font-weight: 600;
+-  padding: 18px 12px;
+-  text-align: center;
+-  border: none;
+-  text-transform: uppercase;
+-  letter-spacing: 1.2px;
+-  font-size: 17px;
++/* Channel Card Style */
++.channel-card {
++  background: var(--color-bg-card);
++  border-radius: 20px;
+   box-shadow: var(--shadow-sm);
+-  text-shadow: var(--text-shadow-subtitle);
+-  white-space: nowrap;
+-}
+-
+-/* Responsive headers on mobile */
+-@media (max-width: 768px) {
+-  #channel-table th {
+-    font-size: 12px;
+-    padding: 14px 8px;
+-    letter-spacing: 0.8px;
+-  }
+-}
+-
+-/* Fixed column widths for channels table */
+-#channel-table th:nth-child(1),
+-#channel-table td:nth-child(1) { width: 21%; }  /* CHANNEL NAME */
+-#channel-table th:nth-child(2),
+-#channel-table td:nth-child(2) { width: 44%; }  /* CHANNEL LINK */
+-#channel-table th:nth-child(3),
+-#channel-table td:nth-child(3) { width: 35%; }  /* STREAM LINK */
+-
+-[data-theme="light"] #channel-table th {
+-  background: linear-gradient(180deg, #2196F3 0%, #1976D2 100%);
+-  color: white;
+-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
++  transition: all 0.3s ease;
++  display: flex;
++  flex-direction: column;
++  overflow: hidden;
++  border: 1px solid rgba(255, 255, 255, 0.05);
++  min-height: 280px;
+ }
+ 
+-[data-theme="light"] #channel-table tbody tr {
++[data-theme="light"] .channel-card {
+   background: white;
+   border: 1px solid var(--light-border);
++  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+ }
+ 
+-[data-theme="light"] #channel-table tbody tr:hover {
+-  background: var(--light-accent-blue);
+-  border-color: var(--light-accent-blue-dark);
+-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+-}
+-
+-#channel-table th:first-child {
+-  border-radius: 12px 0 0 12px;
+-}
+-
+-#channel-table th:last-child {
+-  border-radius: 0 12px 12px 0;
+-}
+-
+-#channel-table tbody tr {
+-  background: var(--color-bg-card);
+-  border-radius: 12px;
+-  transition: all 0.3s ease;
+-  box-shadow: var(--shadow-sm);
++.channel-card:hover {
++  transform: translateY(-4px);
++  box-shadow: var(--shadow-gold);
+ }
+ 
+-#channel-table td {
+-  padding: 20px;
+-  text-align: center;
+-  border: none;
+-  color: var(--color-text-primary);
+-  font-weight: 500;
+-  background: var(--color-bg-card);
+-  font-size: 15px;
+-  vertical-align: middle;
++[data-theme="light"] .channel-card:hover {
++  box-shadow: 0 8px 24px rgba(33, 150, 243, 0.15);
++  border-color: var(--light-accent-blue-dark);
+ }
+ 
+-#channel-table td:first-child {
+-  border-radius: 12px 0 0 12px;
+-  font-size: 16px;
++.channel-card-header {
++  padding: 18px 20px;
++  background: linear-gradient(180deg, rgba(74, 79, 86, 0.4) 0%, rgba(43, 47, 53, 0.24) 100%);
++  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
++  display: flex;
++  align-items: center;
++  gap: 12px;
++  font-size: 17px;
+   font-weight: 600;
++  color: var(--color-text-primary);
+ }
+ 
+-#channel-table td:last-child {
+-  border-radius: 0 12px 12px 0;
+-}
+-
+-#channel-table tbody tr:hover {
+-  transform: translateY(-3px);
+-  box-shadow: var(--shadow-gold);
+-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), var(--color-bg-card));
++[data-theme="light"] .channel-card-header {
++  background: var(--light-accent-blue);
++  border-bottom: 1px solid var(--light-border);
+ }
+ 
+-#channel-table tbody tr:hover td {
+-  background: transparent;
++.channel-card-body {
++  padding: 24px 20px;
++  display: flex;
++  flex-direction: column;
++  align-items: stretch;
++  flex-grow: 1;
++  justify-content: center;
+ }
+ 
+-#channel-table .channel-link-container {
++.channel-link-container {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   width: 100%;
+ }
+ 
+-#channel-table .channel-link-input {
++.channel-link-input {
+   flex: 1;
+   padding: 10px 14px;
+   font-size: 14px;
+@@ -203,15 +144,14 @@
+   min-width: 0;
+ }
+ 
+-#channel-table .channel-link-input:focus {
++.channel-link-input:focus {
+   border-color: var(--color-primary);
+   box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+ }
+ 
+-/* COPY button - neutral style, same height as input, compact width */
+-#channel-table .channel-link-copy {
++.channel-link-copy {
+   padding: 10px 16px;
+-  font-size: 12px;
++  font-size: 13px;
+   background: transparent;
+   color: var(--color-text-secondary);
+   border: 2px solid var(--color-accent);
+@@ -230,15 +170,14 @@
+   flex-shrink: 0;
+ }
+ 
+-#channel-table .channel-link-copy:hover {
++.channel-link-copy:hover {
+   background: var(--color-accent);
+   color: var(--color-text-primary);
+ }
+ 
+-/* Uniform button sizes for channel table */
+ .channel-btn {
+-  min-width: 80px;
+-  height: 40px;
++  min-width: 92px;
++  min-height: 44px;
+   padding: 10px 18px;
+   font-size: 14px;
+   font-weight: 700;
+@@ -249,37 +188,56 @@
+   justify-content: center;
+ }
+ 
+-/* Larger PLAY button for channels table (doubled size) */
+-#channel-table .play-button.channel-btn {
+-  min-width: 160px;
+-  height: 50px;
+-  padding: 14px 36px;
++.channel-card-footer {
++  padding: 18px 20px 20px;
++  border-top: 1px solid rgba(255, 255, 255, 0.05);
++  display: flex;
++  justify-content: center;
++}
++
++[data-theme="light"] .channel-card-footer {
++  border-top: 1px solid var(--light-border);
++}
++
++.channel-card-footer .play-button {
++  width: 100%;
++  min-height: 48px;
+   font-size: 16px;
+   gap: 8px;
+ }
+ 
+-/* Responsive PLAY button on mobile */
+-@media (max-width: 768px) {
+-  #channel-table .play-button.channel-btn {
+-    min-width: 100px;
+-    height: 40px;
+-    padding: 10px 20px;
+-    font-size: 13px;
+-  }
++.channel-name {
++  display: block;
++  font-size: 18px;
++  font-weight: 800;
++  line-height: 1.2;
+ }
+ 
+-[data-theme="light"] #channel-table .channel-link-copy {
+-  border-color: var(--light-border);
+-  color: var(--color-text-secondary);
++.channel-card .country-flag {
++  font-size: 26px;
++  line-height: 1;
+ }
+ 
+-[data-theme="light"] #channel-table .channel-link-copy:hover {
+-  background: var(--light-accent-blue);
+-  color: var(--light-accent-blue-dark);
+-  border-color: var(--light-accent-blue-dark);
++[data-theme="light"] .channel-link-copy {
++  border-color: var(--light-border);
++  color: var(--color-text-secondary);
+ }
+ 
+-[data-theme="light"] #channel-table .channel-link-copy:hover {
++[data-theme="light"] .channel-link-copy:hover {
+   background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
++  color: white;
++  border-color: transparent;
+ }
+ 
++@media (max-width: 960px) {
++  .channel-card {
++    min-height: auto;
++  }
++
++  .channel-card-header,
++  .channel-card-body,
++  .channel-card-footer {
++    padding-left: 18px;
++    padding-right: 18px;
++  }
++}
+diff --git a/css/pages/events.css b/css/pages/events.css
+index 0c7838c..8f41aab 100644
+--- a/css/pages/events.css
++++ b/css/pages/events.css
+@@ -71,7 +71,9 @@
+ /* Table Container - Full Width */
+ .table-container {
+   width: 100%;
+-  padding: 0 40px;
++  max-width: 1480px;
++  margin: 0 auto;
++  padding: 0 32px 24px;
+   box-sizing: border-box;
+ }
+ 
+@@ -82,364 +84,304 @@
+   }
+ }
+ 
+-/* Event Table Styles - Modern Card Design */
+-#event-table {
+-  width: 100% !important;
+-  border-collapse: separate;
+-  border-spacing: 0 12px;
+-  margin: 0;
+-  background-color: transparent;
+-  box-sizing: border-box;
+-  table-layout: fixed; /* Fixed column widths */
+-}
+-
+-#event-table thead {
+-  position: sticky;
+-  top: 0;
+-  z-index: 5;
++/* Cards Grid Layout */
++.cards-grid {
++  display: grid;
++  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
++  gap: 28px;
++  width: 100%;
++  padding: 10px 0 24px;
+ }
+ 
+-#event-table th {
+-  background: linear-gradient(180deg, rgba(74, 79, 86, 0.96) 0%, rgba(43, 47, 53, 0.98) 100%);
+-  color: var(--color-primary);
+-  font-family: var(--font-table);
+-  font-style: normal;
+-  font-weight: 600;
+-  padding: 18px 12px;
+-  text-align: center;
+-  border: none;
+-  text-transform: uppercase;
+-  letter-spacing: 1.2px;
+-  font-size: 17px;
++/* Event Card Style */
++.event-card {
++  background: var(--color-bg-card);
++  border-radius: 20px;
+   box-shadow: var(--shadow-sm);
+-  text-shadow: var(--text-shadow-subtitle);
+-  white-space: nowrap;
+-}
+-
+-/* Responsive headers on mobile */
+-@media (max-width: 768px) {
+-  #event-table th {
+-    font-size: 12px;
+-    padding: 14px 8px;
+-    letter-spacing: 0.8px;
+-  }
+-}
+-
+-/* Fixed column widths for events table - 4 columns */
+-#event-table th:nth-child(1),
+-#event-table td:nth-child(1) { width: 15%; }  /* DATE & TIME */
+-#event-table th:nth-child(2),
+-#event-table td:nth-child(2) { width: 11%; }  /* SPORT */
+-#event-table th:nth-child(3),
+-#event-table td:nth-child(3) { width: 34%; }  /* MATCH & TOURNAMENT */
+-#event-table th:nth-child(4),
+-#event-table td:nth-child(4) { width: 40%; }  /* STREAM LINK */
+-
+-/* Exception: DATE & TIME column aligned to the left */
+-#event-table td:nth-child(1) {
+-  text-align: left;
+-  padding-left: 24px;
+-}
+-
+-[data-theme="light"] #event-table th {
+-  background: linear-gradient(180deg, #2196F3 0%, #1976D2 100%);
+-  color: white;
+-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
++  transition: all 0.3s ease;
++  display: flex;
++  flex-direction: column;
++  overflow: hidden;
++  border: 1px solid rgba(255, 255, 255, 0.05);
++  min-height: 420px;
+ }
+ 
+-[data-theme="light"] #event-table tbody tr {
++[data-theme="light"] .event-card {
+   background: white;
+   border: 1px solid var(--light-border);
++  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+ }
+ 
+-[data-theme="light"] #event-table tbody tr:hover {
+-  background: var(--light-accent-blue);
+-  border-color: var(--light-accent-blue-dark);
+-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+-}
+-
+-#event-table th:first-child {
+-  border-radius: 12px 0 0 12px;
+-}
+-
+-#event-table th:last-child {
+-  border-radius: 0 12px 12px 0;
++.event-card:hover {
++  transform: translateY(-4px);
++  box-shadow: var(--shadow-gold);
+ }
+ 
+-#event-table tbody tr {
+-  background: var(--color-bg-card);
+-  border-radius: 12px;
+-  transition: all 0.3s ease;
+-  box-shadow: var(--shadow-sm);
++[data-theme="light"] .event-card:hover {
++  box-shadow: 0 8px 24px rgba(33, 150, 243, 0.15);
++  border-color: var(--light-accent-blue-dark);
+ }
+ 
+-#event-table td {
+-  padding: 16px 20px;
+-  text-align: center;
+-  border: none;
+-  color: var(--color-text-primary);
+-  font-weight: 500;
+-  background: var(--color-bg-card);
+-  font-size: 15px;
+-  vertical-align: middle;
++.event-card-header {
++  padding: 18px 20px;
++  background: linear-gradient(180deg, rgba(74, 79, 86, 0.42) 0%, rgba(43, 47, 53, 0.26) 100%);
++  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
++  display: flex;
++  justify-content: space-between;
++  align-items: flex-start;
++  gap: 16px;
++  font-size: 13px;
++  font-weight: 600;
++  color: var(--color-text-secondary);
++  text-transform: uppercase;
++  letter-spacing: 0.5px;
+ }
+ 
+-.sport-cell {
+-  white-space: nowrap;
++[data-theme="light"] .event-card-header {
++  background: linear-gradient(180deg, rgba(33, 150, 243, 0.14) 0%, rgba(33, 150, 243, 0.07) 100%);
++  border-bottom: 1px solid var(--light-border);
++  color: #555;
+ }
+ 
+-.sport-cell-content {
+-  display: inline-flex;
++.event-date-badge,
++.event-sport {
++  display: flex;
+   align-items: center;
+   gap: 8px;
+ }
+ 
+-.sport-icon-wrap {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: 22px;
+-  height: 22px;
++.event-date-badge {
++  flex-direction: column;
++  align-items: flex-start;
++  gap: 5px;
++  font-size: 12px;
+ }
+ 
+-.sport-icon-img {
+-  width: 22px;
+-  height: 22px;
+-  object-fit: contain;
+-  display: block;
++.sport-text,
++.event-league-name {
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++  max-width: 220px;
+ }
+ 
+-.sport-icon-emoji {
+-  font-size: 20px;
+-  line-height: 1;
++.event-card-body {
++  padding: 24px 22px 20px;
++  display: flex;
++  flex-direction: column;
++  align-items: stretch;
++  flex-grow: 1;
++  gap: 22px;
+ }
+ 
+-.sport-icon-fallback {
+-  width: 22px;
+-  height: 22px;
+-  display: inline-flex;
++.event-league-row {
++  display: flex;
+   align-items: center;
+-  justify-content: center;
+-  border-radius: 50%;
+-  background: rgba(255, 255, 255, 0.08);
+-  color: var(--color-text-secondary);
+-  font-size: 12px;
+-}
+-
+-.sport-icon-fallback.is-hidden {
+-  display: none;
+-}
+-
+-#event-table td:first-child {
+-  border-radius: 12px 0 0 12px;
+-  font-size: 14px;
+-  font-weight: 500;
++  gap: 12px;
++  padding: 10px 12px;
++  border-radius: 14px;
++  background: rgba(255, 255, 255, 0.03);
++  border: 1px solid rgba(255, 255, 255, 0.05);
+ }
+ 
+-/* Date-time cell - separate date and time on two lines, neutral colors */
+-.date-time-cell {
+-  font-weight: 500;
+-  line-height: 1.5;
+-  min-width: 140px;
++[data-theme="light"] .event-league-row {
++  background: rgba(33, 150, 243, 0.05);
++  border-color: rgba(33, 150, 243, 0.08);
+ }
+ 
+-.date-time-cell .date-line {
+-  color: var(--color-text-primary);
+-  font-weight: 500;
+-  margin-bottom: 4px;
+-  white-space: nowrap;
++.event-league-copy {
++  display: flex;
++  flex-direction: column;
++  min-width: 0;
++  gap: 2px;
+ }
+ 
+-.date-time-cell .date-line i,
+-.date-time-cell .time-line i {
+-  margin-right: 6px;
+-  opacity: 0.7;
++.event-league-label {
++  font-size: 11px;
++  text-transform: uppercase;
++  letter-spacing: 0.8px;
++  color: var(--color-text-secondary);
+ }
+ 
+-.date-time-cell .time-line {
++.event-league-name {
++  font-size: 15px;
++  font-weight: 700;
+   color: var(--color-text-primary);
+-  font-size: 13px;
+-  font-weight: 500;
+-  white-space: nowrap;
+ }
+ 
+-/* Stream buttons container - proper spacing and LEFT alignment */
+-.stream-buttons {
+-  display: inline-flex;
+-  flex-wrap: wrap;
+-  gap: 10px;
++.event-match-layout {
++  display: grid;
++  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+   align-items: center;
+-  align-content: center;
+-  justify-content: center;
+-  text-align: center;
+-  max-width: 100%;
++  gap: 14px;
++  min-height: 176px;
+ }
+ 
+-/* Uniform button sizes - auto width, centered content */
+-.stream-buttons .stream-btn {
+-  margin: 0;
+-  flex-shrink: 0;
+-  min-width: 70px;
+-  height: 38px;
+-  padding: 8px 16px;
+-  font-size: 13px;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  gap: 6px;
+-  box-sizing: border-box;
++.event-match-layout.single {
++  grid-template-columns: 1fr;
++  min-height: 140px;
+ }
+ 
+-/* Match cell with official logos */
+-.match-cell .match-logos {
+-  display: grid;
+-  grid-template-columns: 1fr auto 1fr;
++.team-column {
++  display: flex;
++  flex-direction: column;
+   align-items: center;
+-  justify-items: center;
+-  justify-content: center;
+-  gap: 18px;
+-  margin-bottom: 10px;
+-  width: 100%;
++  gap: 12px;
++  text-align: center;
+ }
+ 
+-.match-cell .team-logo-slot {
++.match-vs {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+-  width: 100%;
+-}
+-
+-.match-cell .match-vs {
+-  font-size: 12px;
++  min-width: 56px;
++  height: 56px;
++  border-radius: 999px;
++  font-size: 16px;
+   font-weight: 700;
+-  letter-spacing: 1px;
+-  color: var(--color-text-secondary);
+-}
+-
+-.match-cell .match-name {
+-  display: grid;
+-  grid-template-columns: 1fr 1fr;
+-  justify-items: center;
+-  gap: 12px;
+-  font-weight: 600;
+-  margin-bottom: 8px;
+-  width: 100%;
+-  line-height: 1.25;
+-  text-align: center;
++  color: var(--color-primary);
++  background: rgba(255, 215, 0, 0.08);
++  border: 1px solid rgba(255, 215, 0, 0.16);
+ }
+ 
+-.match-cell .match-name.single {
+-  grid-template-columns: 1fr;
++[data-theme="light"] .match-vs {
++  background: rgba(33, 150, 243, 0.08);
++  border-color: rgba(33, 150, 243, 0.16);
+ }
+ 
+-.match-cell .team-name-text {
+-  display: block;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-  white-space: nowrap;
+-  text-transform: uppercase;
++.match-name.single {
+   text-align: center;
++  font-size: 22px;
++  font-weight: 700;
++  display: flex;
++  flex-direction: column;
++  gap: 4px;
++  line-height: 1.3;
++  justify-content: center;
++  min-height: 100%;
+ }
+ 
+-.match-cell .match-text {
+-  white-space: normal;
++.team-name-text {
+   text-align: center;
++  text-transform: uppercase;
++  font-size: 18px;
++  font-weight: 800;
++  letter-spacing: 0.4px;
++  line-height: 1.25;
+ }
+ 
+-.match-cell .match-tournament {
+-  display: inline-flex;
++.team-logo-slot {
++  display: flex;
+   align-items: center;
+   justify-content: center;
+-  gap: 8px;
+-  row-gap: 4px;
+-  font-size: 13px;
+-  color: var(--color-text-secondary);
+-  width: 100%;
+-  line-height: 1.2;
+-}
+-
+-.match-cell .match-tournament .logo-wrap {
+-  width: 28px;
+-  height: 28px;
+-  flex: 0 0 28px;
++  width: 92px;
++  min-height: 92px;
+ }
+ 
+-.match-cell .match-tournament .league-logo {
+-  width: 28px;
+-  height: 28px;
++.date-line i, .time-line i {
++  margin-right: 6px;
++  opacity: 0.7;
+ }
+ 
+-.logo-wrap {
+-  display: inline-flex;
+-  align-items: center;
++.event-card-footer {
++  padding: 18px 20px 20px;
++  border-top: 1px solid rgba(255, 255, 255, 0.05);
++  display: flex;
+   justify-content: center;
+-  width: 48px;
+-  height: 48px;
+-  flex: 0 0 48px;
++  gap: 10px;
++  flex-wrap: wrap;
++  margin-top: auto;
+ }
+ 
+-.team-logo,
+-.league-logo {
+-  width: 48px;
+-  height: 48px;
+-  object-fit: contain;
+-  display: block;
++[data-theme="light"] .event-card-footer {
++  border-top: 1px solid var(--light-border);
+ }
+ 
+-.logo-fallback {
+-  width: 40px;
+-  height: 40px;
+-  border-radius: 50%;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  background: rgba(255, 255, 255, 0.08);
++.empty-message {
++  padding: 40px;
++  text-align: center;
+   color: var(--color-text-secondary);
+-  font-size: 13px;
++  background: var(--color-bg-card);
++  border-radius: 12px;
++  grid-column: 1 / -1;
++  font-size: 16px;
++  border: 1px solid rgba(255, 255, 255, 0.05);
+ }
+ 
+-[data-theme="light"] .logo-fallback {
+-  background: rgba(0, 0, 0, 0.06);
++[data-theme="light"] .empty-message {
++  background: white;
++  border: 1px solid var(--light-border);
+ }
+ 
+-.logo-fallback.is-hidden {
+-  display: none;
++/* Shared Icons & Logos */
++.sport-icon-img {
++  width: 20px;
++  height: 20px;
++  object-fit: contain;
+ }
+-
+-/* Flag emoji styling - natural size, hidden when empty */
+-.flag-emoji {
+-  font-size: 18px;
+-  display: inline-block;
+-  line-height: 1;
+-  vertical-align: middle;
++.sport-icon-emoji { font-size: 18px; }
++.sport-icon-fallback, .logo-fallback {
++  width: 20px; height: 20px; border-radius: 50%;
++  display: inline-flex; align-items: center; justify-content: center;
++  background: rgba(255, 255, 255, 0.08); font-size: 10px;
+ }
+-
+-/* Hide empty flag spans */
+-.flag-emoji:empty {
+-  display: none;
++.team-logo, .league-logo {
++  width: 72px; height: 72px; object-fit: contain;
+ }
+-
+-#event-table td:nth-child(4) {
++.league-logo {
++  width: 34px;
++  height: 34px;
++}
++.logo-fallback { width: 72px; height: 72px; font-size: 18px; }
++.stream-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
++.stream-btn {
++  min-height: 44px;
++  padding: 10px 18px;
++  border-radius: 10px;
+   font-size: 14px;
+-  font-weight: 500;
+-  text-align: center;
+-  vertical-align: middle;
++  font-weight: 600;
+ }
++.flag-emoji { font-size: 18px; line-height: 1; vertical-align: middle; }
++.flag-emoji:empty { display: none; }
+ 
+-#event-table td:last-child {
+-  border-radius: 0 12px 12px 0;
+-  text-align: center;
+-  padding: 12px 16px;
+-}
++@media (max-width: 960px) {
++  .table-container {
++    padding: 0 20px 24px;
++  }
+ 
+-#event-table tbody tr:hover {
+-  transform: translateY(-3px);
+-  box-shadow: var(--shadow-gold);
+-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), var(--color-bg-card));
+-}
++  .cards-grid {
++    grid-template-columns: 1fr;
++    gap: 20px;
++  }
+ 
+-#event-table tbody tr:hover td {
+-  background: transparent;
++  .event-card {
++    min-height: auto;
++  }
++
++  .event-card-header {
++    flex-direction: column;
++    align-items: stretch;
++  }
++
++  .event-match-layout {
++    gap: 10px;
++    min-height: auto;
++  }
++
++  .team-logo,
++  .logo-fallback {
++    width: 60px;
++    height: 60px;
++  }
++
++  .team-logo-slot {
++    width: 76px;
++    min-height: 76px;
++  }
++
++  .team-name-text {
++    font-size: 16px;
++  }
+ }
+ 
+ /* Tooltips for buttons */
+@@ -510,4 +452,3 @@
+ .stream-buttons .play-button {
+   margin: 0 !important;
+ }
+-
+diff --git a/css/pages/stream.css b/css/pages/stream.css
+index b75e4c3..55ea89f 100644
+--- a/css/pages/stream.css
++++ b/css/pages/stream.css
+@@ -137,7 +137,7 @@ h3,
+   flex-direction: column;
+   align-items: center;
+   gap: 25px;
+-  padding: 0 20px 40px;
++  padding: 0 20px 56px;
+   width: 100%;
+   max-width: 100%;
+   margin: 0 auto;
+@@ -146,14 +146,14 @@ h3,
+ /* Desktop Stream Section - Contained width */
+ @media (min-width: 1024px) {
+   .stream-section {
+-    max-width: 900px;
+-    padding: 0 40px 60px;
++    max-width: 1080px;
++    padding: 0 40px 72px;
+   }
+ }
+ 
+ @media (min-width: 1440px) {
+   .stream-section {
+-    max-width: 1000px;
++    max-width: 1160px;
+   }
+ }
+ 
+@@ -182,24 +182,46 @@ body.cinema-background .footer {
+   display: none !important;
+ }
+ 
+-#live-stream.cinema-mode {
+-  position: fixed;
+-  top: 50%;
+-  left: 50%;
+-  transform: translate(-50%, -50%) scale(1);
+-  width: 90vw;
+-  max-width: 90vw;
+-  height: auto;
+-  max-height: 90vh;
++.player-container.cinema-mode {
++  position: fixed !important;
++  top: 50% !important;
++  left: 50% !important;
++  transform: translate(-50%, -50%) scale(1) !important;
++  width: min(92vw, 1560px) !important;
++  max-width: 92vw !important;
++  max-height: calc(100vh - 120px) !important;
+   aspect-ratio: 16 / 9;
+-  z-index: 1001;
+-  transition: transform 0.5s ease-in-out;
+-  border-radius: 16px;
+-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.95),
+-              0 40px 120px rgba(0, 0, 0, 0.8),
+-              0 0 80px rgba(255, 215, 0, 0.3);
+-  outline-width: 5px;
+-  outline-color: var(--color-primary);
++  z-index: 9999 !important;
++  transition: transform 0.5s ease-in-out, opacity 0.4s ease;
++}
++
++.player-container.cinema-mode::before {
++  inset: -26px;
++  opacity: 0.75;
++}
++
++.player-container.cinema-mode::after {
++  box-shadow:
++    0 0 0 9999px rgba(0, 0, 0, 0.94),
++    0 45px 120px rgba(0, 0, 0, 0.78),
++    0 0 80px rgba(255, 215, 0, 0.18);
++}
++
++#live-stream.cinema-mode,
++.player-container.cinema-mode .player-empty-state,
++.player-container.cinema-mode #iframe-overlay {
++  position: absolute !important;
++  inset: 0 !important;
++  width: 100% !important;
++  height: 100% !important;
++  max-width: none !important;
++  max-height: none !important;
++}
++
++#live-stream.cinema-mode {
++  transform: none !important;
++  border-radius: 20px !important;
++  border-width: 4px !important;
+ }
+ 
+ /* Simple zoom animation on enter */
+@@ -207,6 +229,10 @@ body.cinema-background .footer {
+   animation: simpleZoomIn 0.5s ease-out forwards;
+ }
+ 
++.player-container.cinema-mode.entering {
++  animation: simpleZoomIn 0.5s ease-out forwards;
++}
++
+ @keyframes simpleZoomIn {
+   from {
+     transform: translate(-50%, -50%) scale(0.8);
+@@ -223,6 +249,10 @@ body.cinema-background .footer {
+   animation: simpleZoomOut 0.4s ease-in forwards;
+ }
+ 
++.player-container.cinema-mode.exiting {
++  animation: simpleZoomOut 0.4s ease-in forwards;
++}
++
+ @keyframes simpleZoomOut {
+   from {
+     transform: translate(-50%, -50%) scale(1);
+@@ -244,6 +274,7 @@ body.cinema-background .footer {
+   text-align: center;
+   transition: all 0.3s ease;
+   box-sizing: border-box;
++  max-width: 100%;
+ }
+ 
+ [data-theme="light"] .stream-input-box {
+@@ -287,6 +318,7 @@ body.cinema-background .footer {
+   aspect-ratio: 16 / 9;
+   isolation: isolate;
+   overflow: visible;
++  max-width: 100%;
+ }
+ 
+ .player-container::before {
+@@ -509,4 +541,3 @@ body.cinema-background .footer {
+               inset 0 0 0 4px rgba(255, 215, 0, 0.75);
+   border-color: rgba(255, 215, 0, 0.75);
+ }
+-
+diff --git a/css/responsive.css b/css/responsive.css
+index 97389f1..f47eb14 100644
+--- a/css/responsive.css
++++ b/css/responsive.css
+@@ -12,143 +12,14 @@
+     padding: 35px 20px;
+   }
+ 
+-  /* Tablet - adjust table sizing */
+-  #event-table th,
+-  #event-table td {
+-    padding: 14px 10px;
+-    font-size: 14px;
+-  }
+-
+-  #channel-table th,
+-  #channel-table td {
+-    padding: 14px 10px;
+-    font-size: 14px;
+-  }
+-
+-  /* Reduce minimum widths on tablet */
+-  #event-table th:nth-child(1) { min-width: 120px; }
+-  #event-table th:nth-child(2) { min-width: 70px; }
+-  #event-table th:nth-child(3) { min-width: 200px; }
+-  #event-table th:nth-child(4) { min-width: 100px; }
+-}
+-
+-@media (max-width: 768px) {
+-  .hero-title {
+-    display: none;
+-  }
+-
+-  .hero-subtitle {
+-    font-size: 12px;
+-  }
+-
+-  .hero-section {
+-    padding: 30px 15px;
+-    margin-bottom: 20px;
+-  }
+-
+-  /* Mobile: Hide DATE/TIME and SPORT columns - keep MATCH/TOURNAMENT and STREAM LINK */
+-  #event-table th:nth-child(1),
+-  #event-table td:nth-child(1),
+-  #event-table th:nth-child(2),
+-  #event-table td:nth-child(2) {
+-    display: none;
+-  }
+-
+-  /* Mobile table - fluid responsive */
+-  #event-table {
+-    font-size: 12px;
+-    border-spacing: 0 8px;
+-  }
+-
+-  #event-table th,
+-  #event-table td {
+-    padding: 10px 8px;
+-  }
+-
+-  /* Match cell on mobile - 2 lines */
+-  .match-cell {
+-    min-width: 150px;
+-  }
+-
+-  .match-cell .match-logos {
+-    gap: 12px;
+-    margin-bottom: 6px;
+-  }
+-
+-  .match-cell .match-vs {
+-    font-size: 10px;
+-  }
+-
+-  .match-cell .match-name {
+-    font-size: 12px;
+-    font-weight: 600;
+-    margin-bottom: 4px;
+-    color: var(--color-text-primary);
+-  }
+-
+-  .match-cell .match-tournament {
+-    font-size: 10px;
+-    color: var(--color-text-secondary);
+-  }
+-
+-  .match-cell .match-tournament i {
+-    margin-right: 4px;
+-    font-size: 9px;
+-  }
+-
+-  /* Stream buttons on mobile - left aligned */
+-  .stream-buttons {
+-    gap: 6px;
+-    justify-content: flex-start;
+-    align-items: flex-start;
+-  }
+-
+-  .stream-buttons .stream-btn {
+-    padding: 6px 10px;
+-    font-size: 10px;
+-    min-width: auto;
+-  }
+-
+-  /* Match column can wrap on mobile */
+-  #event-table td:nth-child(3) {
+-    word-break: break-word;
+-  }
+-
+-  /* Hide CHANNEL LINK on mobile only */
+-  #channel-table th:nth-child(2),
+-  #channel-table td:nth-child(2) {
+-    display: none;
+-  }
+-
+-  /* Mobile channel table - fluid responsive */
+-  #channel-table {
+-    font-size: 12px;
+-    border-spacing: 0 8px;
+-  }
+-
+-  #channel-table th,
+-  #channel-table td {
+-    padding: 10px 6px;
+-  }
+-
+-  /* Channel name can wrap on mobile */
+-  #channel-table td:first-child {
+-    word-break: break-word;
+-    max-width: 150px;
+-  }
+-
+-  /* Flags on mobile - still visible */
+-  .country-flag,
+-  .flag-icon {
+-    font-size: 22px;
+-  }
++  /* Removed old table layout queries */
+ 
+   /* Uniform buttons on mobile */
+   .channel-btn {
+-    min-width: 60px;
+-    height: 36px;
+-    padding: 8px 12px;
+-    font-size: 12px;
++    min-width: 80px;
++    height: 44px;
++    padding: 10px 16px;
++    font-size: 14px;
+   }
+ 
+   .tabbed-menu {
+@@ -156,8 +27,11 @@
+   }
+ 
+   .tab {
+-    font-size: 13px;
++    font-size: 14px;
+     padding: 10px 16px;
++    min-height: 44px;
++    display: inline-flex;
++    align-items: center;
+   }
+ 
+   .stream-section {
+@@ -240,11 +114,14 @@
+ 
+   body.cinema-background .more-links.cinema-mode {
+     position: fixed;
+-    bottom: 24px;
++    bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+     left: 50%;
++    top: auto;
++    right: auto;
+     transform: translateX(-50%);
+     margin-top: 0;
+-    z-index: 1002;
++    z-index: 10002;
++    align-items: center;
+   }
+   
+   /* Hide footer in cinema mode */
+@@ -265,21 +142,17 @@
+     display: none !important;
+   }
+ 
++  .player-container.cinema-mode {
++    width: 100vw !important;
++    max-width: 100vw !important;
++    max-height: calc(100vh - 86px) !important;
++    border-radius: 0 !important;
++  }
++
++  .player-container.cinema-mode::before,
++  .player-container.cinema-mode::after,
+   #live-stream.cinema-mode {
+-    position: fixed;
+-    top: 50%;
+-    left: 50%;
+-    transform: translate(-50%, -50%) scale(1);
+-    width: 84vw;
+-    max-width: 84vw;
+-    height: auto;
+-    max-height: 78vh;
+-    aspect-ratio: 16 / 9;
+-    z-index: 2000;
+-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.95),
+-                0 40px 120px rgba(0, 0, 0, 0.8),
+-                0 0 80px rgba(255, 215, 0, 0.3);
+-    border-radius: 16px;
++    border-radius: 0 !important;
+   }
+ 
+   .header {
+@@ -956,16 +829,20 @@ table tbody tr:hover::before {
+ 
+ /* Footer */
+ .footer {
+-  background: var(--color-bg-secondary);
++  background:
++    linear-gradient(180deg, rgba(255, 215, 0, 0.04) 0%, rgba(17, 17, 17, 0) 20%),
++    var(--color-bg-secondary);
+   border-top: 2px solid var(--color-accent);
+-  padding: 30px 20px;
++  padding: 34px 20px;
+   text-align: center;
+-  margin-top: 60px;
++  margin-top: 88px;
++  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+ }
+ 
+ [data-theme="light"] .footer {
+-  background: linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
++  background: linear-gradient(180deg, #f6f8fb 0%, #ffffff 100%);
+   border-top: 2px solid var(--light-border);
++  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+ }
+ 
+ .footer-content {
+@@ -2020,6 +1897,19 @@ table tbody tr:hover::before {
+     position: relative;
+     z-index: 100;
+   }
++
++  .header-theme-toggle.single-theme-toggle {
++    --toggle-w: 44px;
++    --toggle-h: 44px;
++    width: var(--toggle-w) !important;
++    min-width: var(--toggle-w) !important;
++    height: var(--toggle-h) !important;
++    min-height: var(--toggle-h) !important;
++    display: inline-flex !important;
++    align-items: center;
++    justify-content: center;
++    border-radius: 999px !important;
++  }
+   
+   /* Force tabs to be hidden on mobile */
+   .tabs-container {
+@@ -2029,6 +1919,10 @@ table tbody tr:hover::before {
+   .header-theme-toggle i {
+     font-size: 12px;
+   }
++
++  .header-theme-toggle.single-theme-toggle .theme-icon {
++    font-size: 16px;
++  }
+   
+   [data-theme="light"] .header-theme-toggle {
+     background: #EEF1F4 !important;
+@@ -2215,20 +2109,28 @@ table tbody tr:hover::before {
+    SKELETON LOADERS
+    ============================================ */
+ .skeleton-container {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 12px;
++  display: grid;
++  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
++  gap: 20px;
+   padding: 10px 0;
+ }
+ 
++.skeleton-grid {
++  display: grid;
++  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
++  gap: 20px;
++  width: 100%;
++}
++
+ .skeleton-card {
+   background: var(--color-bg-card);
+   border: 1px solid var(--color-accent);
+-  border-radius: 12px;
+-  padding: 16px;
++  border-radius: 16px;
++  padding: 18px;
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
++  min-height: 220px;
+ }
+ 
+ [data-theme="light"] .skeleton-card {
+@@ -2305,37 +2207,36 @@ table tbody tr:hover::before {
+ 
+ /* Channel skeleton */
+ .skeleton-channel {
+-  flex-direction: row;
+-  align-items: center;
+-  padding: 12px 14px;
++  flex-direction: column;
++  align-items: stretch;
++  justify-content: center;
++  padding: 18px;
+ }
+ 
+ .skeleton-channel .skeleton-flag {
+-  width: 28px;
+-  height: 28px;
++  width: 32px;
++  height: 32px;
+   border-radius: 4px;
+-  flex-shrink: 0;
++  align-self: flex-start;
+ }
+ 
+ .skeleton-channel .skeleton-name {
+-  flex: 1;
++  width: 70%;
+   height: 18px;
+-  margin: 0 12px;
++  margin: 8px 0 auto;
+ }
+ 
+ .skeleton-channel .skeleton-btn {
+-  width: 70px;
+-  height: 36px;
++  width: 100%;
++  height: 44px;
+   border-radius: 8px;
+-  flex-shrink: 0;
+ }
+ 
+ /* Desktop skeleton adjustments */
+ @media (min-width: 769px) {
+   .skeleton-container {
+-    display: grid;
+-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+-    gap: 16px;
++    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
++    gap: 20px;
+   }
+ 
+   .skeleton-card {
+@@ -2645,6 +2546,19 @@ body.animations-enabled .skeleton-card {
+     z-index: 100;
+   }
+ 
++  .header-theme-toggle.single-theme-toggle {
++    --toggle-w: 44px;
++    --toggle-h: 44px;
++    width: var(--toggle-w) !important;
++    min-width: var(--toggle-w) !important;
++    height: var(--toggle-h) !important;
++    min-height: var(--toggle-h) !important;
++    display: inline-flex !important;
++    align-items: center;
++    justify-content: center;
++    border-radius: 999px !important;
++  }
++
+   /* Logo can shrink if needed */
+   .header-logo {
+     flex: 0 1 auto;
+diff --git a/index.html b/index.html
+index e1d95b0..e8cb7f7 100644
+--- a/index.html
++++ b/index.html
+@@ -105,7 +105,7 @@
+ 
+   <body>
+     <header class="header">
+-      <div class="nav-container">
++      <nav class="nav-container" id="top-dock" aria-label="Primary navigation">
+         <!-- Logo -->
+         <a href="#stream" class="header-logo">
+           <img
+@@ -147,14 +147,13 @@
+ 
+         <!-- Theme Toggle in header -->
+         <button
+-          class="theme-toggle header-theme-toggle"
++          class="theme-toggle header-theme-toggle single-theme-toggle"
+           id="header-theme-toggle"
+           aria-label="Toggle theme"
+         >
+-          <i class="fas fa-sun sun"></i>
+-          <i class="fas fa-moon moon"></i>
++          <i class="fas fa-moon theme-icon" aria-hidden="true"></i>
+         </button>
+-      </div>
++      </nav>
+     </header>
+ 
+     <main>
+@@ -253,30 +252,21 @@
+               <div class="loading-spinner"></div>
+               <div class="loading-text">Loading sports events...</div>
+             </div>
+-            <div class="skeleton-table">
+-              <div class="skeleton-row">
+-                <div class="skeleton skeleton-cell short"></div>
+-                <div class="skeleton skeleton-cell short"></div>
+-                <div class="skeleton skeleton-cell"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell"></div>
++            <div class="skeleton-grid">
++              <div class="skeleton-card">
++                <div class="skeleton-card-header skeleton"></div>
++                <div class="skeleton-card-body skeleton"></div>
++                <div class="skeleton-card-footer skeleton"></div>
+               </div>
+-              <div class="skeleton-row">
+-                <div class="skeleton skeleton-cell short"></div>
+-                <div class="skeleton skeleton-cell short"></div>
+-                <div class="skeleton skeleton-cell"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell"></div>
++              <div class="skeleton-card">
++                <div class="skeleton-card-header skeleton"></div>
++                <div class="skeleton-card-body skeleton"></div>
++                <div class="skeleton-card-footer skeleton"></div>
+               </div>
+-              <div class="skeleton-row">
+-                <div class="skeleton skeleton-cell short"></div>
+-                <div class="skeleton skeleton-cell short"></div>
+-                <div class="skeleton skeleton-cell"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell"></div>
++              <div class="skeleton-card">
++                <div class="skeleton-card-header skeleton"></div>
++                <div class="skeleton-card-body skeleton"></div>
++                <div class="skeleton-card-footer skeleton"></div>
+               </div>
+             </div>
+           </div>
+@@ -330,24 +320,7 @@
+             </div>
+           </div>
+ 
+-          <table id="event-table">
+-            <colgroup>
+-              <col style="width: 15%" />
+-              <col style="width: 11%" />
+-              <col style="width: 34%" />
+-              <col style="width: 40%" />
+-            </colgroup>
+-
+-            <thead>
+-              <tr>
+-                <th><i class="fas fa-calendar-alt"></i> DATE & TIME</th>
+-                <th><i class="fas fa-futbol"></i> SPORT</th>
+-                <th><i class="fas fa-users"></i> MATCH & TOURNAMENT</th>
+-                <th><i class="fas fa-play-circle"></i> STREAM LINK</th>
+-              </tr>
+-            </thead>
+-            <tbody id="event-list"></tbody>
+-          </table>
++          <div id="event-list" class="cards-grid"></div>
+         </div>
+       </section>
+ 
+@@ -373,21 +346,21 @@
+               <div class="loading-spinner"></div>
+               <div class="loading-text">Loading channels...</div>
+             </div>
+-            <div class="skeleton-table">
+-              <div class="skeleton-row">
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell"></div>
++            <div class="skeleton-grid">
++              <div class="skeleton-card">
++                <div class="skeleton-card-header skeleton"></div>
++                <div class="skeleton-card-body skeleton"></div>
++                <div class="skeleton-card-footer skeleton"></div>
+               </div>
+-              <div class="skeleton-row">
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell"></div>
++              <div class="skeleton-card">
++                <div class="skeleton-card-header skeleton"></div>
++                <div class="skeleton-card-body skeleton"></div>
++                <div class="skeleton-card-footer skeleton"></div>
+               </div>
+-              <div class="skeleton-row">
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell long"></div>
+-                <div class="skeleton skeleton-cell"></div>
++              <div class="skeleton-card">
++                <div class="skeleton-card-header skeleton"></div>
++                <div class="skeleton-card-body skeleton"></div>
++                <div class="skeleton-card-footer skeleton"></div>
+               </div>
+             </div>
+           </div>
+@@ -425,22 +398,7 @@
+             </div>
+           </div>
+ 
+-          <table id="channel-table">
+-            <colgroup>
+-              <col style="width: 21%" />
+-              <col style="width: 44%" />
+-              <col style="width: 35%" />
+-            </colgroup>
+-
+-            <thead>
+-              <tr>
+-                <th><i class="fas fa-tv"></i> CHANNEL NAME</th>
+-                <th><i class="fas fa-link"></i> CHANNEL LINK</th>
+-                <th><i class="fas fa-play-circle"></i> STREAM LINK</th>
+-              </tr>
+-            </thead>
+-            <tbody id="channel-list"></tbody>
+-          </table>
++          <div id="channel-list" class="cards-grid"></div>
+         </div>
+       </section>
+     </main>
+@@ -472,6 +430,7 @@
+     <script>
+       const cinemaButton = document.getElementById("cinema-mode");
+       const liveStream = document.getElementById("live-stream");
++      const playerContainer = document.getElementById("player-container");
+       const body = document.body;
+       const moreLinks = document.querySelector(".more-links");
+       const streamInputBox = document.querySelector(".stream-input-box");
+@@ -481,6 +440,7 @@
+         isCinemaMode = !isCinemaMode;
+ 
+         if (isCinemaMode) {
++          playerContainer.classList.add("cinema-mode", "entering");
+           liveStream.classList.add("cinema-mode", "entering");
+           moreLinks.classList.add("cinema-mode");
+           body.classList.add("cinema-background");
+@@ -489,11 +449,14 @@
+             '<i class="fas fa-compress"></i> EXIT CINEMA MODE';
+ 
+           setTimeout(() => {
++            playerContainer.classList.remove("entering");
+             liveStream.classList.remove("entering");
+           }, 500);
+         } else {
++          playerContainer.classList.add("exiting");
+           liveStream.classList.add("exiting");
+           setTimeout(() => {
++            playerContainer.classList.remove("cinema-mode", "entering", "exiting");
+             liveStream.classList.remove("cinema-mode", "exiting");
+             moreLinks.classList.remove("cinema-mode");
+             body.classList.remove("cinema-background");
+@@ -505,7 +468,7 @@
+ 
+         if (window.innerWidth <= 768) {
+           if (!document.fullscreenElement) {
+-            liveStream.requestFullscreen().catch((err) => {
++            playerContainer.requestFullscreen().catch((err) => {
+               console.error(`Fullscreen error: ${err.message}`);
+             });
+           } else {
+diff --git a/public/js/channelsmanager.js b/public/js/channelsmanager.js
+index 99426cd..eff6290 100755
+--- a/public/js/channelsmanager.js
++++ b/public/js/channelsmanager.js
+@@ -252,7 +252,7 @@
+             () => { loadChannels(true); }
+           );
+         } else {
+-          channelList.innerHTML = '<tr><td colspan="3">Unable to load channels. Please try again later.</td></tr>';
++          channelList.innerHTML = '<div class="empty-message">Unable to load channels. Please try again later.</div>';
+           errorMessage.textContent = 'Unable to load channels from the API. Please check your connection and try again.';
+           errorMessage.style.display = 'block';
+         }
+@@ -267,43 +267,35 @@
+ 
+       if (channels.length === 0) {
+         if (window.UXEnhancements) {
+-          window.UXEnhancements.EmptyState.showInTable(
++          window.UXEnhancements.EmptyState.showInContainer(
+             channelList,
+-            'No channels found. Try adjusting your search.',
+-            3
++            'No channels found. Try adjusting your search.'
+           );
+         } else {
+-          channelList.innerHTML = '<tr><td colspan="3">No channels found.</td></tr>';
++          channelList.innerHTML = '<div class="empty-message">No channels found.</div>';
+         }
+         return;
+       }
+ 
+       channels.forEach((channel) => {
+-        const row = document.createElement('tr');
+-        row.innerHTML = `
+-          <td>
+-            <div class="channel-name-with-flag">
+-              <span class="country-flag flag-icon">${window.getCountryFlag ? window.getCountryFlag(channel.country) : '🌍'}</span>
+-              ${channel.name}
+-            </div>
+-          </td>
+-          <td>
++        const card = document.createElement('div');
++        card.className = 'channel-card';
++        card.innerHTML = `
++          <div class="channel-card-header">
++            <span class="country-flag flag-icon">${window.getCountryFlag ? window.getCountryFlag(channel.country) : '🌍'}</span>
++            <span class="channel-name">${channel.name}</span>
++          </div>
++          <div class="channel-card-body">
+             <div class="channel-link-container">
+               <input type="text" class="channel-link-input" value="${channel.url}" readonly>
+               <button class="channel-link-copy channel-btn">Copy</button>
+             </div>
+-          </td>
+-          <td>
++          </div>
++          <div class="channel-card-footer">
+             <button class="play-button channel-btn" onclick="loadStream('${channel.url}')"><i class="fas fa-play"></i> Play</button>
+-          </td>
++          </div>
+         `;
+-
+-        const labels = ['CHANNEL NAME', 'CHANNEL LINK', 'STREAM LINK'];
+-        row.querySelectorAll('td').forEach((td, i) => {
+-          td.setAttribute('data-label', labels[i] || '');
+-        });
+-
+-        channelList.appendChild(row);
++        channelList.appendChild(card);
+       });
+ 
+       document.querySelectorAll('.channel-link-copy').forEach((button) => {
+diff --git a/public/js/sportsEventManager.js b/public/js/sportsEventManager.js
+index 678bfc3..33c3d77 100755
+--- a/public/js/sportsEventManager.js
++++ b/public/js/sportsEventManager.js
+@@ -590,7 +590,7 @@
+             () => { loadEvents(true); }
+           );
+         } else {
+-          eventList.innerHTML = '<tr><td colspan="5">Unable to load events. Please try again later.</td></tr>';
++          eventList.innerHTML = '<div class="empty-message">Unable to load events. Please try again later.</div>';
+           errorMessage.textContent = 'Unable to load events from the API. Please check your connection and try again.';
+           errorMessage.style.display = 'block';
+         }
+@@ -605,13 +605,12 @@
+ 
+       if (events.length === 0) {
+         if (window.UXEnhancements) {
+-          window.UXEnhancements.EmptyState.showInTable(
++          window.UXEnhancements.EmptyState.showInContainer(
+             eventList,
+-            'No events found. Try adjusting your filters.',
+-            4
++            'No events found. Try adjusting your filters.'
+           );
+         } else {
+-          eventList.innerHTML = '<tr><td colspan="4">No events found.</td></tr>';
++          eventList.innerHTML = '<div class="empty-message">No events found.</div>';
+         }
+         return;
+       }
+@@ -654,46 +653,53 @@
+         const matchFallback = event.match ? String(event.match).toUpperCase() : '';
+         const hasTeams = homeName && awayName;
+ 
+-        const row = document.createElement('tr');
+-        row.innerHTML = `
+-          <td class="date-time-cell">
+-            <div class="date-line"><i class="fas fa-calendar-alt"></i> ${formattedDate}</div>
+-            <div class="time-line"><i class="fas fa-clock"></i> ${time}</div>
+-          </td>
+-          <td class="sport-cell">
+-            <span class="sport-cell-content">
++        const card = document.createElement('div');
++        card.className = 'event-card';
++        card.innerHTML = `
++          <div class="event-card-header">
++            <div class="event-date-badge">
++              <span class="date-line"><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
++              <span class="time-line"><i class="fas fa-clock"></i> ${time}</span>
++            </div>
++            <div class="event-sport">
+               ${buildSportIconHtml(event)}
+               <span class="sport-text">${event.sport}</span>
+-            </span>
+-          </td>
+-          <td class="match-cell">
+-            <div class="match-logos">
+-              <span class="team-logo-slot">${homeLogo}</span>
+-              <span class="match-vs">VS</span>
+-              <span class="team-logo-slot">${awayLogo}</span>
+             </div>
+-            <div class="match-name${hasTeams ? '' : ' single'}">
++          </div>
++          <div class="event-card-body">
++            <div class="event-league-row">
++              ${tournamentLogo}
++              <div class="event-league-copy">
++                <span class="event-league-label">Tournament</span>
++                <span class="event-league-name">${event.tournament}</span>
++              </div>
++            </div>
++            <div class="event-match-layout${hasTeams ? '' : ' single'}">
+               ${hasTeams
+-                ? `<span class="team-name-text home">${homeName}</span><span class="team-name-text away">${awayName}</span>`
+-                : `<span class="team-name-text">${matchFallback}</span>`
++                ? `
++                  <div class="team-column home-team">
++                    <span class="team-logo-slot">${homeLogo}</span>
++                    <span class="team-name-text home">${homeName}</span>
++                  </div>
++                  <span class="match-vs">VS</span>
++                  <div class="team-column away-team">
++                    <span class="team-logo-slot">${awayLogo}</span>
++                    <span class="team-name-text away">${awayName}</span>
++                  </div>
++                `
++                : `<div class="match-name single"><span class="team-name-text">${matchFallback}</span></div>`
+               }
+             </div>
+-            <div class="match-tournament">
+-              ${tournamentLogo}
+-              <span class="tournament-text">${event.tournament}</span>
+-            </div>
+-          </td>
+-          <td>
+-            <div class="stream-buttons">
++          </div>
++          <div class="event-card-footer stream-buttons">
+               ${event.channels.map((channel) => {
+                 const flag = getCountryFlag(channel.country);
+                 const flagHtml = flag ? `<span class="flag-emoji">${flag}</span> ` : '';
+                 return `<button class="play-button stream-btn" onclick="loadStream('${channel.url}')" oncontextmenu="copyStreamLink(event, '${channel.url}')" data-stream-url="${channel.url}" data-tooltip="Right-click to copy">${flagHtml}Play</button>`;
+               }).join('')}
+-            </div>
+-          </td>
++          </div>
+         `;
+-        eventList.appendChild(row);
++        eventList.appendChild(card);
+       });
+     }
+ 
+diff --git a/public/js/themeToggle.js b/public/js/themeToggle.js
+index 658ed51..e3df316 100755
+--- a/public/js/themeToggle.js
++++ b/public/js/themeToggle.js
+@@ -45,10 +45,11 @@
+     document.documentElement.setAttribute('data-theme', newTheme);
+     localStorage.setItem('theme', newTheme);
+ 
+-    // Update aria-label
++    // Update button state
+     const themeToggle = document.getElementById('header-theme-toggle') || document.querySelector('.theme-toggle');
+     if (themeToggle) {
+-      themeToggle.setAttribute('aria-label', newTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
++      triggerThemeAnimation(themeToggle);
++      updateThemeButton(themeToggle, newTheme);
+     }
+ 
+     console.log('[Theme] Switched to:', newTheme);
+@@ -66,14 +67,35 @@
+       localStorage.setItem('theme', 'dark');
+     }
+ 
+-    // Update initial aria-label
++    // Update initial button state
+     const themeToggle = document.getElementById('header-theme-toggle') || document.querySelector('.theme-toggle');
+     if (themeToggle) {
+       const currentTheme = document.documentElement.getAttribute('data-theme');
+-      themeToggle.setAttribute('aria-label', currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
++      updateThemeButton(themeToggle, currentTheme);
+     }
+   }
+ 
++  function updateThemeButton(themeToggle, currentTheme) {
++    themeToggle.setAttribute('aria-label', currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
++
++    const icon = themeToggle.querySelector('.theme-icon');
++    if (!icon) return;
++
++    icon.classList.remove('fa-sun', 'fa-moon');
++    icon.classList.add(currentTheme === 'dark' ? 'fa-moon' : 'fa-sun');
++  }
++
++  function triggerThemeAnimation(themeToggle) {
++    themeToggle.classList.remove('animating');
++    // Force reflow so rapid clicks can replay the animation.
++    void themeToggle.offsetWidth;
++    themeToggle.classList.add('animating');
++
++    setTimeout(() => {
++      themeToggle.classList.remove('animating');
++    }, 300);
++  }
++
+   // ============================================
+   // INITIALIZATION
+   // ============================================
+diff --git a/public/js/uxEnhancements.js b/public/js/uxEnhancements.js
+index cb06c3b..9a59752 100755
+--- a/public/js/uxEnhancements.js
++++ b/public/js/uxEnhancements.js
+@@ -91,19 +91,16 @@
+     },
+ 
+     /**
+-     * Show empty state in table body
+-     * @param {HTMLElement} tbody 
+-     * @param {string} message 
+-     * @param {number} colspan 
++     * Show empty state in any container used by the page lists
++     * @param {HTMLElement} container
++     * @param {string} message
+      */
+-    showInTable(tbody, message, colspan = 4) {
+-      if (!tbody) return;
+-      tbody.innerHTML = `
+-        <tr class="empty-state-row">
+-          <td colspan="${colspan}">
+-            ${this.generate(message)}
+-          </td>
+-        </tr>
++    showInContainer(container, message) {
++      if (!container) return;
++      container.innerHTML = `
++        <div class="empty-message">
++          ${this.generate(message)}
++        </div>
+       `;
+     }
+   };
+@@ -304,6 +301,7 @@
+ 
+       const nav = document.createElement('nav');
+       nav.className = 'bottom-nav';
++      nav.setAttribute('aria-label', 'Bottom navigation');
+       nav.innerHTML = `
+         <a href="#" class="bottom-nav-item active" data-page="page-stream" onclick="navigateToWithBottomNav('page-stream', event)">
+           <i class="fas fa-play-circle"></i>
+@@ -390,9 +388,9 @@
+         });
+       }, { threshold: 0.1 });
+ 
+-      // Observe table rows and cards
++      // Observe dynamic cards and loading placeholders
+       const observeElements = () => {
+-        document.querySelectorAll('#event-table tbody tr, #channel-table tbody tr, .skeleton-card').forEach(el => {
++        document.querySelectorAll('.event-card, .channel-card, .skeleton-card, .empty-message').forEach(el => {
+           if (!el.classList.contains('animate-in')) {
+             observer.observe(el);
+           }

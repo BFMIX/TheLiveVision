@@ -493,6 +493,29 @@ body.cinema-background .footer {
   border: 4px solid var(--light-border);
 }
 
+
+[data-theme="light"] .player-empty-state {
+  color: #243041;
+  background:
+    radial-gradient(circle at center, rgba(33, 150, 243, 0.10), rgba(240, 244, 249, 0.92)),
+    linear-gradient(180deg, rgba(250, 252, 255, 0.92), rgba(229, 235, 243, 0.96));
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .player-empty-icon {
+  background: rgba(33, 150, 243, 0.08);
+  border-color: rgba(33, 150, 243, 0.22);
+  box-shadow: 0 12px 28px rgba(31, 41, 55, 0.12);
+}
+
+[data-theme="light"] .player-empty-title {
+  color: #1f4f7d;
+  text-shadow: none;
+}
+
+[data-theme="light"] .player-empty-subtitle {
+  color: #5f6b7b;
+}
 [data-theme="light"] #live-stream:hover {
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2),
               0 0 0 2px rgba(33, 150, 243, 0.4),
@@ -540,4 +563,14 @@ body.cinema-background .footer {
               0 50px 140px rgba(0, 0, 0, 0.8),
               inset 0 0 0 4px rgba(255, 215, 0, 0.75);
   border-color: rgba(255, 215, 0, 0.75);
+}
+
+[data-theme="light"] #live-stream:hover:not(.cinema-mode) {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.18),
+              0 0 0 2px rgba(33, 150, 243, 0.38),
+              0 0 54px rgba(33, 150, 243, 0.16),
+              0 50px 140px rgba(0, 0, 0, 0.12),
+              inset 0 0 0 4px rgba(33, 150, 243, 0.42);
+  border-color: rgba(33, 150, 243, 0.5);
 }

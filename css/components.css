@@ -50,7 +50,7 @@
   border: 2px solid var(--color-accent);
   color: var(--color-text-primary);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -134,23 +134,24 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 15px;
+  font-weight: 700;
 }
 
 .select-logo {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   display: block;
 }
 
 .select-emoji {
-  font-size: 24px;
+  font-size: 27px;
   line-height: 1;
 }
 
 .select-fallback {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;

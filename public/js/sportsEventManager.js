@@ -660,10 +660,37 @@
         'July', 'August', 'September', 'October', 'November', 'December'
       ];
 
+      function formatTournamentLines(name) {
+        const rawName = String(name || '').trim();
+        if (!rawName) {
+          return ['Competition', ''];
+        }
+
+        const commaParts = rawName.split(',').map((part) => part.trim()).filter(Boolean);
+        if (commaParts.length >= 2) {
+          return [commaParts[0], commaParts.slice(1).join(', ')];
+        }
+
+        const separatorMatch = rawName.match(/^(.*?)(\s[-–]\s.*)$/);
+        if (separatorMatch) {
+          return [separatorMatch[1].trim(), separatorMatch[2].replace(/^\s[-–]\s/, '').trim()];
+        }
+
+        const words = rawName.split(/\s+/);
+        if (words.length >= 4) {
+          const midpoint = Math.ceil(words.length / 2);
+          return [words.slice(0, midpoint).join(' '), words.slice(midpoint).join(' ')];
+        }
+
+        return [rawName, ''];
+      }
+
       function buildStreamButton(channel, index) {
         const flag = getCountryFlag(channel.country);
         const code = formatStreamCode(channel.country);
-        const flagHtml = flag ? `<span class="stream-flag" aria-hidden="true">${flag}</span>` : '';
+        const flagHtml = flag
+          ? `<span class="stream-flag" aria-hidden="true">${flag}</span>`
+          : `<span class="stream-flag stream-flag-fallback" aria-hidden="true"><i class="fas fa-globe"></i></span>`;
         const streamNumber = String(index + 1).padStart(2, '0');
 
         return `
@@ -720,6 +747,7 @@
         const awayName = event.away_team ? String(event.away_team).trim() : '';
         const matchFallback = event.match ? String(event.match).trim() : '';
         const hasTeams = homeName && awayName;
+        const [tournamentLineOne, tournamentLineTwo] = formatTournamentLines(event.tournament);
         const cardId = `event-card-${event.id || `${event.date}-${event.match}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
         const streamPanelId = `${cardId}-streams`;
         const hasStreams = Array.isArray(event.channels) && event.channels.length > 0;
@@ -756,7 +784,14 @@
                       <span class="team-logo-slot">${homeLogo}</span>
                       <span class="team-name-text home">${homeName}</span>
                     </div>
-                    <span class="match-vs">VS</span>
+                    <div class="match-center-league">
+                      <span class="match-center-glow" aria-hidden="true"></span>
+                      <span class="match-center-logo">${tournamentLogo}</span>
+                      <span class="match-center-name">
+                        <span class="match-center-line">${tournamentLineOne}</span>
+                        ${tournamentLineTwo ? `<span class="match-center-line">${tournamentLineTwo}</span>` : ''}
+                      </span>
+                    </div>
                     <div class="team-column away-team">
                       <span class="team-logo-slot">${awayLogo}</span>
                       <span class="team-name-text away">${awayName}</span>
@@ -764,12 +799,6 @@
                   `
                   : `<div class="match-name single"><span class="team-name-text">${matchFallback}</span></div>`
                 }
-              </div>
-              <div class="event-league-row">
-                ${tournamentLogo}
-                <div class="event-league-copy">
-                  <span class="event-league-name">${event.tournament}</span>
-                </div>
               </div>
             </div>
             <div class="event-stream-panel" id="${streamPanelId}" hidden>

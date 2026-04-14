@@ -350,16 +350,40 @@
 
 @media (max-width: 520px) {
   .channel-card-main {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(86px, 96px) minmax(86px, 96px);
+    gap: 8px;
+    align-items: center;
   }
 
   .channel-card-header {
     min-height: auto;
+    gap: 10px;
+  }
+
+  .channel-card .country-flag {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    flex-basis: 36px;
+  }
+
+  .channel-name {
+    font-size: 15px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
   }
 
   .channel-action-btn {
     width: 100%;
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    gap: 6px;
+  }
+
+  .channel-action-text {
+    white-space: nowrap;
   }
 }
 

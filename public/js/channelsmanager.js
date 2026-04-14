@@ -310,9 +310,8 @@
                 <div class="channel-preview-frame" aria-hidden="true">
                   <iframe
                     class="channel-preview-iframe"
-                    src="${channel.url}"
+                    data-src="${channel.url}"
                     title="${channel.name} preview"
-                    loading="lazy"
                     allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                     allowfullscreen
                     referrerpolicy="no-referrer"
@@ -327,12 +326,20 @@
         const previewButton = card.querySelector('.channel-action-preview');
         const playButton = card.querySelector('.channel-action-play');
         const previewPanel = card.querySelector('.channel-preview-panel');
+        const previewIframe = card.querySelector('.channel-preview-iframe');
 
-        if (previewButton && previewPanel) {
+        if (previewButton && previewPanel && previewIframe) {
           previewButton.addEventListener('click', () => {
             const isExpanded = card.classList.toggle('is-expanded');
             previewButton.setAttribute('aria-expanded', String(isExpanded));
             previewPanel.hidden = !isExpanded;
+            if (isExpanded) {
+              if (!previewIframe.src) {
+                previewIframe.src = previewIframe.dataset.src || '';
+              }
+            } else {
+              previewIframe.src = '';
+            }
             const label = previewButton.querySelector('.channel-action-text');
             if (label) label.textContent = isExpanded ? 'Close Preview' : 'Preview';
           });

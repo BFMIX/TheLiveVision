@@ -1992,23 +1992,24 @@ table tbody tr:hover::before {
   .bottom-nav {
     display: flex;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--color-bg-secondary);
-    border-top: 1px solid var(--color-accent);
-    padding: 8px 0;
-    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    left: 14px;
+    right: 14px;
+    background: linear-gradient(180deg, rgba(37, 37, 39, 0.96) 0%, rgba(28, 28, 30, 0.98) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.14);
+    border-radius: 18px;
+    padding: 8px 10px;
     z-index: 1000;
     justify-content: space-around;
     align-items: center;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
   }
 
   [data-theme="light"] .bottom-nav {
-    background: #FFFFFF;
-    border-top: 1px solid var(--light-border);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(244, 247, 251, 0.98) 100%);
+    border: 1px solid rgba(209, 213, 219, 0.95);
+    box-shadow: 0 12px 28px rgba(31, 41, 55, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.96);
   }
 
   .bottom-nav-item {
@@ -2017,16 +2018,16 @@ table tbody tr:hover::before {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: 8px 12px;
+    padding: 10px 12px;
     color: var(--color-text-secondary);
     text-decoration: none;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.3px;
     transition: all 0.2s ease;
-    border-radius: 8px;
-    min-width: 52px;
+    border-radius: 12px;
+    min-width: 60px;
   }
 
   .bottom-nav-item i {
@@ -2036,6 +2037,7 @@ table tbody tr:hover::before {
 
   .bottom-nav-item.active {
     color: var(--color-primary);
+    background: rgba(255, 215, 0, 0.08);
   }
 
   .bottom-nav-item.active i {
@@ -2044,6 +2046,7 @@ table tbody tr:hover::before {
 
   [data-theme="light"] .bottom-nav-item.active {
     color: var(--light-accent-blue-dark);
+    background: rgba(33, 150, 243, 0.08);
   }
 
   .bottom-nav-item:active {
