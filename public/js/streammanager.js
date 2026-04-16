@@ -4,13 +4,9 @@
 (function () {
   'use strict';
 
-  const API_BASE = window.API_BASE || 'https://beta.adstrim.ru';
-  const EMBED_BASE = window.EMBED_BASE || 'https://viewembed.ru';
+  var buildChannelUrl = window.SharedUtils.buildChannelUrl;
+  var API_BASE = window.API_BASE;
 
-  window.API_BASE = API_BASE;
-  window.EMBED_BASE = EMBED_BASE;
-
-  // Utils
   function isMobile() {
     return window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
   }
@@ -47,28 +43,6 @@
       container.classList.add("has-stream");
       placeholder.setAttribute("aria-hidden", "true");
     }
-  }
-
-  function normalizeChannelValue(value) {
-    if (!value) return '';
-    return String(value).trim();
-  }
-
-  function buildChannelUrl(value) {
-    const cleaned = normalizeChannelValue(value);
-    if (!cleaned) return '';
-    if (/^https?:\/\//i.test(cleaned)) {
-      if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
-        return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, '$1viewembed.ru');
-      }
-      return cleaned;
-    }
-    const path = cleaned.replace(/^\/+/, '');
-    if (path.toLowerCase().startsWith('channel/')) {
-      const slug = path.slice('channel/'.length);
-      return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
-    }
-    return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
   }
 
   // Global function to load stream - accessible from onclick handlers

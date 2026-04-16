@@ -16,48 +16,41 @@
   // ============================================
   const SkeletonLoader = {
     /**
-     * Generate skeleton HTML for a list/table
-     * @param {string} type - 'events' or 'channels'
-     * @param {number} count - Number of skeleton items
-     * @returns {string} HTML string
-     */
-    generate(type, count = 5) {
-      let html = '';
-      for (let i = 0; i < count; i++) {
-        if (type === 'events') {
-          html += `
-            <div class="skeleton-card skeleton-event">
-              <div class="skeleton-badge skeleton-animate"></div>
-              <div class="skeleton-line skeleton-date skeleton-animate"></div>
-              <div class="skeleton-line skeleton-title skeleton-animate"></div>
-              <div class="skeleton-line skeleton-subtitle skeleton-animate"></div>
-              <div class="skeleton-buttons">
-                <div class="skeleton-btn skeleton-animate"></div>
-                <div class="skeleton-btn skeleton-animate"></div>
-              </div>
-            </div>
-          `;
-        } else if (type === 'channels') {
-          html += `
-            <div class="skeleton-card skeleton-channel">
-              <div class="skeleton-flag skeleton-animate"></div>
-              <div class="skeleton-line skeleton-name skeleton-animate"></div>
-              <div class="skeleton-btn skeleton-animate"></div>
-            </div>
-          `;
-        }
-      }
-      return html;
-    },
-
-    /**
      * Show skeleton in a container
      * @param {HTMLElement} container 
      * @param {string} type 
      */
     show(container, type) {
       if (!container) return;
-      container.innerHTML = this.generate(type, isMobile() ? 4 : 6);
+      container.textContent = '';
+      const count = isMobile() ? 4 : 6;
+      for (let i = 0; i < count; i++) {
+        const card = document.createElement('div');
+        if (type === 'events') {
+          card.className = 'skeleton-card skeleton-event';
+          ['skeleton-badge', 'skeleton-line skeleton-date', 'skeleton-line skeleton-title', 'skeleton-line skeleton-subtitle'].forEach(function (cls) {
+            const div = document.createElement('div');
+            div.className = cls + ' skeleton-animate';
+            card.appendChild(div);
+          });
+          const btns = document.createElement('div');
+          btns.className = 'skeleton-buttons';
+          for (let j = 0; j < 2; j++) {
+            const btn = document.createElement('div');
+            btn.className = 'skeleton-btn skeleton-animate';
+            btns.appendChild(btn);
+          }
+          card.appendChild(btns);
+        } else if (type === 'channels') {
+          card.className = 'skeleton-card skeleton-channel';
+          ['skeleton-flag', 'skeleton-line skeleton-name', 'skeleton-btn'].forEach(function (cls) {
+            const div = document.createElement('div');
+            div.className = cls + ' skeleton-animate';
+            card.appendChild(div);
+          });
+        }
+        container.appendChild(card);
+      }
       container.classList.add('skeleton-container');
     },
 
@@ -76,32 +69,26 @@
   // ============================================
   const EmptyState = {
     /**
-     * Generate empty state HTML
-     * @param {string} message 
-     * @param {string} icon - FontAwesome icon class
-     * @returns {string} HTML string
-     */
-    generate(message, icon = 'fa-search') {
-      return `
-        <div class="empty-state">
-          <i class="fas ${icon}"></i>
-          <p>${message}</p>
-        </div>
-      `;
-    },
-
-    /**
      * Show empty state in any container used by the page lists
      * @param {HTMLElement} container
      * @param {string} message
+     * @param {string} icon - FontAwesome icon class
      */
-    showInContainer(container, message) {
+    showInContainer(container, message, icon) {
       if (!container) return;
-      container.innerHTML = `
-        <div class="empty-message">
-          ${this.generate(message)}
-        </div>
-      `;
+      container.textContent = '';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'empty-message';
+      const state = document.createElement('div');
+      state.className = 'empty-state';
+      const iconEl = document.createElement('i');
+      iconEl.className = 'fas ' + (icon || 'fa-search');
+      state.appendChild(iconEl);
+      const p = document.createElement('p');
+      p.textContent = message;
+      state.appendChild(p);
+      wrapper.appendChild(state);
+      container.appendChild(wrapper);
     }
   };
 
@@ -112,20 +99,29 @@
     /**
      * Show error with retry button
      * @param {HTMLElement} container - Error message container
-     * @param {string} message 
+     * @param {string} message
      * @param {Function} retryFn - Function to call on retry
      */
     show(container, message, retryFn) {
       if (!container) return;
-      container.innerHTML = `
-        <div class="error-state">
-          <i class="fas fa-exclamation-triangle"></i>
-          <p>${message}</p>
-          <button class="retry-btn" onclick="(${retryFn.toString()})()">
-            <i class="fas fa-redo"></i> Retry
-          </button>
-        </div>
-      `;
+      container.textContent = '';
+      const state = document.createElement('div');
+      state.className = 'error-state';
+      const icon = document.createElement('i');
+      icon.className = 'fas fa-exclamation-triangle';
+      state.appendChild(icon);
+      const p = document.createElement('p');
+      p.textContent = message;
+      state.appendChild(p);
+      const btn = document.createElement('button');
+      btn.className = 'retry-btn';
+      const redoIcon = document.createElement('i');
+      redoIcon.className = 'fas fa-redo';
+      btn.appendChild(redoIcon);
+      btn.appendChild(document.createTextNode(' Retry'));
+      btn.addEventListener('click', function () { retryFn(); });
+      state.appendChild(btn);
+      container.appendChild(state);
       container.style.display = 'block';
     },
 
@@ -164,8 +160,21 @@
       // Create pull indicator
       const indicator = document.createElement('div');
       indicator.className = 'pull-indicator';
-      indicator.innerHTML = '<i class="fas fa-arrow-down"></i> <span>Pull to refresh</span>';
+      indicator.appendChild(Sanitize.createIcon('fa-arrow-down'));
+      indicator.appendChild(document.createTextNode(' '));
+      const indicatorText = document.createElement('span');
+      indicatorText.textContent = 'Pull to refresh';
+      indicator.appendChild(indicatorText);
       page.insertBefore(indicator, page.firstChild);
+
+      function updateIndicator(el, iconClass, text) {
+        el.textContent = '';
+        el.appendChild(Sanitize.createIcon(iconClass));
+        el.appendChild(document.createTextNode(' '));
+        var span = document.createElement('span');
+        span.textContent = text;
+        el.appendChild(span);
+      }
 
       const tableContainer = page.querySelector('.table-container');
       if (!tableContainer) return;
@@ -190,10 +199,10 @@
           indicator.style.opacity = Math.min(pullDistance / 60, 1);
           
           if (pullDistance > 60) {
-            indicator.innerHTML = '<i class="fas fa-sync-alt"></i> <span>Release to refresh</span>';
+            updateIndicator(indicator, 'fa-sync-alt', 'Release to refresh');
             indicator.classList.add('ready');
           } else {
-            indicator.innerHTML = '<i class="fas fa-arrow-down"></i> <span>Pull to refresh</span>';
+            updateIndicator(indicator, 'fa-arrow-down', 'Pull to refresh');
             indicator.classList.remove('ready');
           }
         }
@@ -207,7 +216,7 @@
 
         if (pullDistance > 60) {
           isRefreshing = true;
-          indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Refreshing...</span>';
+          updateIndicator(indicator, 'fa-spinner fa-spin', 'Refreshing...');
           indicator.classList.add('refreshing');
           // Keep indicator visible while refreshing
           indicator.style.transform = 'translateY(0)';
@@ -302,20 +311,28 @@
       const nav = document.createElement('nav');
       nav.className = 'bottom-nav';
       nav.setAttribute('aria-label', 'Bottom navigation');
-      nav.innerHTML = `
-        <a href="#" class="bottom-nav-item active" data-page="page-stream" onclick="navigateToWithBottomNav('page-stream', event)">
-          <i class="fas fa-play-circle"></i>
-          <span>Stream</span>
-        </a>
-        <a href="#" class="bottom-nav-item" data-page="page-football" onclick="navigateToWithBottomNav('page-football', event)">
-          <i class="fas fa-futbol"></i>
-          <span>Sports Events</span>
-        </a>
-        <a href="#" class="bottom-nav-item" data-page="page-channels" onclick="navigateToWithBottomNav('page-channels', event)">
-          <i class="fas fa-tv"></i>
-          <span>TV Channels</span>
-        </a>
-      `;
+
+      const navItems = [
+        { page: 'page-stream', icon: 'fa-play-circle', label: 'Stream', active: true },
+        { page: 'page-football', icon: 'fa-futbol', label: 'Sports Events', active: false },
+        { page: 'page-channels', icon: 'fa-tv', label: 'TV Channels', active: false }
+      ];
+
+      navItems.forEach(function (item) {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.className = 'bottom-nav-item' + (item.active ? ' active' : '');
+        a.dataset.page = item.page;
+        a.appendChild(Sanitize.createIcon(item.icon));
+        const span = document.createElement('span');
+        span.textContent = item.label;
+        a.appendChild(span);
+        a.addEventListener('click', function (event) {
+          window.navigateToWithBottomNav(item.page, event);
+        });
+        nav.appendChild(a);
+      });
+
       document.body.appendChild(nav);
 
       // Add body padding for bottom nav

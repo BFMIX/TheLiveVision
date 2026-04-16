@@ -125,7 +125,10 @@ class FavoritesManager {
     button.setAttribute('data-tooltip', 'Add to favorites');
     
     const isFav = this.isFavorite(item.url);
-    button.innerHTML = `<i class="fa${isFav ? 's' : 'r'} fa-heart"></i>`;
+    button.textContent = '';
+    const heartIcon = document.createElement('i');
+    heartIcon.className = (isFav ? 'fas' : 'far') + ' fa-heart';
+    button.appendChild(heartIcon);
     
     if (isFav) {
       button.classList.add('favorited');
@@ -177,19 +180,11 @@ class FavoritesManager {
   }
 
   showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'info'}-circle"></i> ${message}`;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 100);
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    window.SharedUtils.showToast(message, type);
   }
 
   showFavoritesPanel() {
+    const self = this;
     let panel = document.getElementById('favorites-panel');
     if (!panel) {
       panel = document.createElement('div');
@@ -199,40 +194,95 @@ class FavoritesManager {
     }
 
     const favorites = this.getAllFavorites();
-    
-    panel.innerHTML = `
-      <div class="favorites-header">
-        <h3><i class="fas fa-heart"></i> My Favorites (${favorites.length})</h3>
-        <button class="close-favorites" onclick="document.getElementById('favorites-panel').classList.remove('open')">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="favorites-list">
-        ${favorites.length === 0 ? 
-          '<div class="no-favorites"><i class="far fa-heart"></i><p>No favorites yet!<br>Click the heart icon to add favorites.</p></div>' :
-          favorites.map(fav => `
-            <div class="favorite-item">
-              <div class="favorite-info">
-                <i class="fas fa-${fav.type === 'event' ? 'futbol' : 'tv'}"></i>
-                <div>
-                  <div class="favorite-title">${fav.title}</div>
-                  <div class="favorite-meta">${fav.type === 'event' ? `${fav.sport} • ${fav.date}` : 'Channel'}</div>
-                </div>
-              </div>
-              <div class="favorite-actions">
-                <button class="play-button" style="min-width: 60px; padding: 6px 12px;" onclick="document.getElementById('stream-url').value='${fav.url}'; document.getElementById('load-stream').click(); document.getElementById('favorites-panel').classList.remove('open'); navigateTo('page-stream');">
-                  <i class="fas fa-play"></i>
-                </button>
-                <button class="favorite-remove" onclick="favoritesManager.removeFavorite('${fav.url}'); favoritesManager.showFavoritesPanel();">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          `).join('')
-        }
-      </div>
-    `;
+    panel.textContent = '';
 
+    // Header
+    const header = document.createElement('div');
+    header.className = 'favorites-header';
+    const h3 = document.createElement('h3');
+    const heartIcon = document.createElement('i');
+    heartIcon.className = 'fas fa-heart';
+    h3.appendChild(heartIcon);
+    h3.appendChild(document.createTextNode(' My Favorites (' + favorites.length + ')'));
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'close-favorites';
+    closeBtn.addEventListener('click', function () {
+      panel.classList.remove('open');
+    });
+    closeBtn.appendChild(Sanitize.createIcon('fa-times'));
+    header.appendChild(h3);
+    header.appendChild(closeBtn);
+    panel.appendChild(header);
+
+    // List
+    const list = document.createElement('div');
+    list.className = 'favorites-list';
+
+    if (favorites.length === 0) {
+      const noFav = document.createElement('div');
+      noFav.className = 'no-favorites';
+      const emptyHeart = document.createElement('i');
+      emptyHeart.className = 'far fa-heart';
+      noFav.appendChild(emptyHeart);
+      const p = document.createElement('p');
+      p.textContent = 'No favorites yet! Click the heart icon to add favorites.';
+      noFav.appendChild(p);
+      list.appendChild(noFav);
+    } else {
+      favorites.forEach(function (fav) {
+        const item = document.createElement('div');
+        item.className = 'favorite-item';
+
+        const info = document.createElement('div');
+        info.className = 'favorite-info';
+        const typeIcon = document.createElement('i');
+        typeIcon.className = 'fas fa-' + (fav.type === 'event' ? 'futbol' : 'tv');
+        info.appendChild(typeIcon);
+        const textWrap = document.createElement('div');
+        const titleEl = document.createElement('div');
+        titleEl.className = 'favorite-title';
+        titleEl.textContent = fav.title || '';
+        const metaEl = document.createElement('div');
+        metaEl.className = 'favorite-meta';
+        metaEl.textContent = fav.type === 'event' ? (fav.sport || '') + ' \u2022 ' + (fav.date || '') : 'Channel';
+        textWrap.appendChild(titleEl);
+        textWrap.appendChild(metaEl);
+        info.appendChild(textWrap);
+
+        const actions = document.createElement('div');
+        actions.className = 'favorite-actions';
+
+        const playBtn = document.createElement('button');
+        playBtn.className = 'play-button';
+        playBtn.style.minWidth = '60px';
+        playBtn.style.padding = '6px 12px';
+        playBtn.appendChild(Sanitize.createIcon('fa-play'));
+        playBtn.addEventListener('click', function () {
+          var urlInput = document.getElementById('stream-url');
+          if (urlInput) urlInput.value = Sanitize.sanitizeURL(fav.url);
+          var loadBtn = document.getElementById('load-stream');
+          if (loadBtn) loadBtn.click();
+          panel.classList.remove('open');
+          if (typeof window.navigateTo === 'function') window.navigateTo('page-stream');
+        });
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'favorite-remove';
+        removeBtn.appendChild(Sanitize.createIcon('fa-trash'));
+        removeBtn.addEventListener('click', function () {
+          self.removeFavorite(fav.url);
+          self.showFavoritesPanel();
+        });
+
+        actions.appendChild(playBtn);
+        actions.appendChild(removeBtn);
+        item.appendChild(info);
+        item.appendChild(actions);
+        list.appendChild(item);
+      });
+    }
+
+    panel.appendChild(list);
     panel.classList.add('open');
 
     // Close on overlay/outside click

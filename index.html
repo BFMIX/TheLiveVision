@@ -13,6 +13,41 @@
       content="Watch live sports streams, events, and channels in one place."
     />
 
+    <!-- Canonical -->
+    <link rel="canonical" href="https://thelivevision.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The Live Vision - Sports Streaming Hub" />
+    <meta property="og:description" content="Watch live sports streams, events, and channels in one place." />
+    <meta property="og:url" content="https://thelivevision.com/" />
+    <meta property="og:image" content="https://thelivevision.com/assets/icons/icon-512.png" />
+    <meta property="og:site_name" content="The Live Vision" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The Live Vision - Sports Streaming Hub" />
+    <meta name="twitter:description" content="Watch live sports streams, events, and channels in one place." />
+    <meta name="twitter:image" content="https://thelivevision.com/assets/icons/icon-512.png" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "The Live Vision",
+      "url": "https://thelivevision.com/",
+      "description": "Watch live sports streams, events, and channels in one place.",
+      "applicationCategory": "SportsApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
     <meta name="theme-color" content="#FFD700" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
@@ -106,6 +141,7 @@
   </head>
 
   <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header class="header">
       <nav class="nav-container" id="top-dock" aria-label="Primary navigation">
         <a href="#stream" class="header-logo">
@@ -123,12 +159,15 @@
         </a>
 
         <div class="tabs-container">
-          <div class="tabbed-menu">
+          <div class="tabbed-menu" role="tablist" aria-label="Main navigation">
             <a
               id="nav-stream"
               class="tab active"
               data-page="page-stream"
               href="#stream"
+              role="tab"
+              aria-selected="true"
+              aria-controls="page-stream"
               >STREAM</a
             >
             <a
@@ -136,6 +175,9 @@
               class="tab"
               data-page="page-football"
               href="#events"
+              role="tab"
+              aria-selected="false"
+              aria-controls="page-football"
               >SPORTS EVENTS</a
             >
             <a
@@ -143,6 +185,9 @@
               class="tab"
               data-page="page-channels"
               href="#channels"
+              role="tab"
+              aria-selected="false"
+              aria-controls="page-channels"
               >TV CHANNELS</a
             >
           </div>
@@ -161,6 +206,7 @@
               class="header-search-input"
               placeholder="Search events or channels..."
               autocomplete="off"
+              aria-label="Search events or channels"
             />
             <div id="header-search-results" class="header-search-results hidden"></div>
           </div>
@@ -176,16 +222,18 @@
       </nav>
     </header>
 
-    <main>
+    <main id="main-content">
       <!-- STREAM PAGE -->
       <section
         id="page-stream"
         class="page active"
         data-title="STREAM"
         data-hash="stream"
+        role="tabpanel"
+        aria-labelledby="nav-stream"
       >
         <div class="hero-section">
-          <video class="hero-video" autoplay muted loop playsinline>
+          <video class="hero-video" autoplay muted loop playsinline preload="none">
             <source
               src="https://assets.mixkit.co/videos/preview/mixkit-soccer-ball-on-a-field-4097-large.mp4"
               type="video/mp4"
@@ -214,6 +262,7 @@
                   placeholder="Paste URL or search for live events..."
                   value=""
                   autocomplete="off"
+                  aria-label="Stream URL or event search"
                 />
                 <div id="search-results" class="search-results hidden"></div>
               </div>
@@ -225,6 +274,7 @@
           <div class="player-container" id="player-container">
             <iframe
               id="live-stream"
+              title="Live stream player"
               width="100%"
               frameborder="0"
               allowfullscreen
@@ -256,6 +306,8 @@
         class="page hidden"
         data-title="SPORTS EVENTS"
         data-hash="events"
+        role="tabpanel"
+        aria-labelledby="nav-football"
       >
         <div class="hero-section">
           <div class="hero-content">
@@ -336,6 +388,7 @@
                 id="event-search"
                 class="input-field"
                 placeholder="Search for events..."
+                aria-label="Search events"
               />
             </div>
           </div>
@@ -350,6 +403,8 @@
         class="page hidden"
         data-title="TV CHANNELS"
         data-hash="channels"
+        role="tabpanel"
+        aria-labelledby="nav-channels"
       >
         <div class="hero-section">
           <div class="hero-content">
@@ -414,6 +469,7 @@
                 id="channel-search"
                 class="input-field"
                 placeholder="Search for channels..."
+                aria-label="Search channels"
               />
             </div>
           </div>
@@ -439,6 +495,9 @@
       </div>
     </footer>
 
+    <script src="js/vendor/dompurify.min.js?v=__BUILD_ID__"></script>
+    <script src="js/sanitize.js?v=__BUILD_ID__"></script>
+    <script src="js/sharedUtils.js?v=__BUILD_ID__"></script>
     <script src="js/navigation.js?v=__BUILD_ID__"></script>
     <script src="js/uxEnhancements.js?v=__BUILD_ID__"></script>
     <script src="js/themeToggle.js?v=__BUILD_ID__"></script>
@@ -473,8 +532,9 @@
           moreLinks.classList.add("cinema-mode");
           body.classList.add("cinema-background");
           streamInputBox.classList.add("cinema-mode");
-          cinemaButton.innerHTML =
-            '<i class="fas fa-compress"></i> EXIT CINEMA MODE';
+          cinemaButton.textContent = '';
+          cinemaButton.appendChild(Sanitize.createIcon('fa-compress'));
+          cinemaButton.appendChild(document.createTextNode(' EXIT CINEMA MODE'));
 
           setTimeout(() => {
             playerContainer.classList.remove("entering");
@@ -489,8 +549,9 @@
             moreLinks.classList.remove("cinema-mode");
             body.classList.remove("cinema-background");
             streamInputBox.classList.remove("cinema-mode");
-            cinemaButton.innerHTML =
-              '<i class="fas fa-expand"></i> CINEMA MODE';
+            cinemaButton.textContent = '';
+            cinemaButton.appendChild(Sanitize.createIcon('fa-expand'));
+            cinemaButton.appendChild(document.createTextNode(' CINEMA MODE'));
           }, 400);
         }
 

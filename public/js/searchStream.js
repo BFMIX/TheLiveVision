@@ -4,33 +4,7 @@
 (function () {
   'use strict';
 
-  const API_BASE = window.API_BASE || "https://beta.adstrim.ru";
-  const EMBED_BASE = window.EMBED_BASE || "https://viewembed.ru";
-
-  window.API_BASE = API_BASE;
-  window.EMBED_BASE = EMBED_BASE;
-
-  function normalizeChannelValue(value) {
-    if (!value) return "";
-    return String(value).trim();
-  }
-
-  function buildChannelUrl(value) {
-    const cleaned = normalizeChannelValue(value);
-    if (!cleaned) return "";
-    if (/^https?:\/\//i.test(cleaned)) {
-      if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
-        return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, "$1viewembed.ru");
-      }
-      return cleaned;
-    }
-    const path = cleaned.replace(/^\/+/, "");
-    if (path.toLowerCase().startsWith("channel/")) {
-      const slug = path.slice("channel/".length);
-      return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
-    }
-    return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
-  }
+  var buildChannelUrl = window.SharedUtils.buildChannelUrl;
 
   document.addEventListener("DOMContentLoaded", () => {
   const streamUrlInput = document.getElementById("stream-url");
@@ -147,36 +121,56 @@
   // Display search results - events only with sports icon
   function displayResults(results) {
     if (results.length === 0) {
-      searchResults.innerHTML = '<div class="search-no-results"><i class="fas fa-search"></i><br>No results found</div>';
+      searchResults.textContent = '';
+      const noResults = document.createElement('div');
+      noResults.className = 'search-no-results';
+      noResults.appendChild(Sanitize.createIcon('fa-search'));
+      noResults.appendChild(document.createElement('br'));
+      noResults.appendChild(document.createTextNode('No results found'));
+      searchResults.appendChild(noResults);
       searchResults.classList.remove('hidden');
       return;
     }
 
-    searchResults.innerHTML = results.map((item, index) => `
-      <div class="search-result-item" data-index="${index}" data-url="${item.url}">
-        <i class="fas fa-futbol search-result-icon"></i>
-        <div class="search-result-info">
-          <div class="search-result-title">${item.title}</div>
-          <div class="search-result-meta">${item.meta}</div>
-        </div>
-        <i class="fas fa-play"></i>
-      </div>
-    `).join('');
+    searchResults.textContent = '';
+    results.forEach(function (item, index) {
+      const row = document.createElement('div');
+      row.className = 'search-result-item';
+      row.dataset.index = index;
+      row.dataset.url = Sanitize.sanitizeURL(item.url);
 
-    searchResults.classList.remove('hidden');
-    selectedIndex = -1;
+      const iconEl = Sanitize.createIcon('fa-futbol');
+      iconEl.classList.add('search-result-icon');
+      row.appendChild(iconEl);
 
-    // Add click handlers
-    document.querySelectorAll('.search-result-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const url = item.getAttribute('data-url');
+      const info = document.createElement('div');
+      info.className = 'search-result-info';
+      const title = document.createElement('div');
+      title.className = 'search-result-title';
+      title.textContent = item.title;
+      const meta = document.createElement('div');
+      meta.className = 'search-result-meta';
+      meta.textContent = item.meta;
+      info.appendChild(title);
+      info.appendChild(meta);
+      row.appendChild(info);
+
+      row.appendChild(Sanitize.createIcon('fa-play'));
+
+      row.addEventListener('click', function () {
+        var url = this.dataset.url;
         if (url) {
           streamUrlInput.value = url;
           searchResults.classList.add('hidden');
           document.getElementById('load-stream').click();
         }
       });
+
+      searchResults.appendChild(row);
     });
+
+    searchResults.classList.remove('hidden');
+    selectedIndex = -1;
   }
 
   // Keyboard navigation
@@ -327,39 +321,9 @@
 (function () {
   'use strict';
 
-  const API_BASE = window.API_BASE || 'https://beta.adstrim.ru';
-  const EMBED_BASE = window.EMBED_BASE || 'https://viewembed.ru';
-
-  function normalizeChannelValue(value) {
-    if (!value) return '';
-    return String(value).trim();
-  }
-
-  function buildChannelUrl(value) {
-    const cleaned = normalizeChannelValue(value);
-    if (!cleaned) return '';
-    if (/^https?:\/\//i.test(cleaned)) {
-      if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
-        return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, '$1viewembed.ru');
-      }
-      return cleaned;
-    }
-    const path = cleaned.replace(/^\/+/, '');
-    if (path.toLowerCase().startsWith('channel/')) {
-      const slug = path.slice('channel/'.length);
-      return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
-    }
-    return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
-  }
-
-  function extractCountry(channelName) {
-    const match = String(channelName || '').match(/\[([^\]]+)\]$/);
-    return match ? match[1] : 'International';
-  }
-
-  function cleanChannelName(channelName) {
-    return String(channelName || '').replace(/\[[^\]]+\]$/, '').trim();
-  }
+  var buildChannelUrl = window.SharedUtils.buildChannelUrl;
+  var extractCountry = window.SharedUtils.extractCountry;
+  var cleanChannelName = window.SharedUtils.cleanChannelName;
 
   document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('header-global-search');
@@ -373,7 +337,11 @@
     let loaded = false;
 
     function renderEmpty(message) {
-      results.innerHTML = `<div class="header-search-empty">${message}</div>`;
+      results.textContent = '';
+      const el = document.createElement('div');
+      el.className = 'header-search-empty';
+      el.textContent = message;
+      results.appendChild(el);
       results.classList.remove('hidden');
     }
 
@@ -495,30 +463,43 @@
         return;
       }
 
-      results.innerHTML = list
-        .map(
-          (item, index) => `
-            <div class="header-search-result-item" data-index="${index}">
-              <span class="header-result-icon"><i class="fas ${item.icon}"></i></span>
-              <div class="header-result-copy">
-                <div class="header-result-title">${item.title}</div>
-                <div class="header-result-meta">${item.meta}</div>
-              </div>
-              <span class="header-result-type">${item.type}</span>
-            </div>
-          `,
-        )
-        .join('');
+      results.textContent = '';
+      list.forEach(function (item, index) {
+        const row = document.createElement('div');
+        row.className = 'header-search-result-item';
+        row.dataset.index = index;
+
+        const iconWrap = document.createElement('span');
+        iconWrap.className = 'header-result-icon';
+        iconWrap.appendChild(Sanitize.createIcon(item.icon));
+        row.appendChild(iconWrap);
+
+        const copy = document.createElement('div');
+        copy.className = 'header-result-copy';
+        const titleEl = document.createElement('div');
+        titleEl.className = 'header-result-title';
+        titleEl.textContent = item.title;
+        const metaEl = document.createElement('div');
+        metaEl.className = 'header-result-meta';
+        metaEl.textContent = item.meta;
+        copy.appendChild(titleEl);
+        copy.appendChild(metaEl);
+        row.appendChild(copy);
+
+        const typeEl = document.createElement('span');
+        typeEl.className = 'header-result-type';
+        typeEl.textContent = item.type;
+        row.appendChild(typeEl);
+
+        row.addEventListener('click', function () {
+          navigateToItem(item);
+        });
+
+        results.appendChild(row);
+      });
 
       selectedIndex = -1;
       results.classList.remove('hidden');
-
-      Array.from(results.querySelectorAll('.header-search-result-item')).forEach((node) => {
-        node.addEventListener('click', () => {
-          const item = list[Number(node.dataset.index)];
-          if (item) navigateToItem(item);
-        });
-      });
     }
 
     function search(query) {

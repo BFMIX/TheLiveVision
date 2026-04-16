@@ -31,7 +31,8 @@ class AdvancedFeatures {
     // Create PiP button
     const pipButton = document.createElement('button');
     pipButton.className = 'pip-button play-button';
-    pipButton.innerHTML = '<i class="fas fa-window-restore"></i> PIP';
+    pipButton.appendChild(Sanitize.createIcon('fa-window-restore'));
+    pipButton.appendChild(document.createTextNode(' PIP'));
     pipButton.style.minWidth = '80px';
     pipButton.style.padding = '8px 16px';
     pipButton.style.fontSize = '14px';
@@ -98,7 +99,8 @@ class AdvancedFeatures {
     // Create Cast button
     const castButton = document.createElement('button');
     castButton.className = 'cast-button play-button';
-    castButton.innerHTML = '<i class="fas fa-cast"></i> CAST';
+    castButton.appendChild(Sanitize.createIcon('fa-cast'));
+    castButton.appendChild(document.createTextNode(' CAST'));
     castButton.style.minWidth = '80px';
     castButton.style.padding = '8px 16px';
     castButton.style.fontSize = '14px';
@@ -319,16 +321,7 @@ class AdvancedFeatures {
   }
 
   showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'info'}-circle"></i> ${message}`;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 100);
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    window.SharedUtils.showToast(message, type);
   }
 }
 

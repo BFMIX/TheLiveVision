@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Live Vision - Offline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #1A1A1A;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 24px;
+    }
+    .offline-container { max-width: 420px; }
+    .offline-icon { font-size: 64px; margin-bottom: 24px; }
+    h1 { font-size: 24px; margin-bottom: 12px; color: #FFD700; }
+    p { font-size: 16px; color: #B0B0B0; margin-bottom: 24px; line-height: 1.5; }
+    button {
+      background: linear-gradient(135deg, #FFD700, #F6C744);
+      color: #1A1A1A;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    button:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">&#128268;</div>
+    <h1>You're Offline</h1>
+    <p>It looks like you've lost your internet connection. The Live Vision needs a network connection to stream live content.</p>
+    <button onclick="location.reload()">Try Again</button>
+  </div>
+</body>
+</html>

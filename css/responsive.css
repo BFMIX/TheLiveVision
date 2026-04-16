@@ -599,22 +599,6 @@
    MODERN ANIMATIONS & ENHANCEMENTS
    ============================================ */
 
-/* Smooth page transitions */
-.page {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Card hover effects */
 .stream-input-box {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -622,35 +606,6 @@
 
 .stream-input-box:hover {
   transform: translateY(-4px);
-}
-
-/* Button ripple effect */
-.play-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.play-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.play-button:active::after {
-  width: 300px;
-  height: 300px;
-}
-
-/* Disable ripple/dot effect on buttons */
-.play-button::after {
-  display: none;
 }
 
 /* Table row hover with slide effect */
@@ -679,7 +634,7 @@ table tbody tr:hover::before {
 }
 
 /* Skeleton loading animation for tables */
-@keyframes shimmer {
+@keyframes shimmer-bg {
   0% {
     background-position: -1000px 0;
   }
@@ -696,7 +651,7 @@ table tbody tr:hover::before {
     var(--color-bg-secondary) 100%
   );
   background-size: 1000px 100%;
-  animation: shimmer 2s infinite linear;
+  animation: shimmer-bg 2s infinite linear;
 }
 
 /* Floating animation for icons - ONE TIME on load */

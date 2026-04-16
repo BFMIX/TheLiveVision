@@ -15,7 +15,9 @@
 
   function setActiveNav(pageId) {
     document.querySelectorAll('.tab').forEach((link) => {
-      link.classList.toggle('active', link.dataset.page === pageId);
+      const isActive = link.dataset.page === pageId;
+      link.classList.toggle('active', isActive);
+      link.setAttribute('aria-selected', String(isActive));
     });
 
     document.querySelectorAll('.bottom-nav-item').forEach((item) => {

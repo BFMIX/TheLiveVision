@@ -7,9 +7,14 @@ const RUNTIME_CACHE_NAME = `sports-vision-runtime-${SW_VERSION}`;
 
 const STATIC_ASSET_PREFIXES = ['/js/', '/assets/', '/files/'];
 const STATIC_EXACT_PATHS = ['/manifest.json'];
+const OFFLINE_URL = '/offline.html';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(self.skipWaiting());
+  event.waitUntil(
+    caches.open(STATIC_CACHE_NAME)
+      .then((cache) => cache.add(OFFLINE_URL))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -44,7 +49,9 @@ self.addEventListener('fetch', (event) => {
   if (isServiceWorkerAsset(url.pathname)) return;
 
   if (isHtmlRequest(request, url.pathname)) {
-    event.respondWith(fetch(request, { cache: 'no-store' }));
+    event.respondWith(
+      fetch(request, { cache: 'no-store' }).catch(() => caches.match(OFFLINE_URL))
+    );
     return;
   }
 

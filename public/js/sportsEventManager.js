@@ -13,11 +13,11 @@
     const loadingIndicator = document.getElementById('sports-loading');
     const errorMessage = document.getElementById('sports-error');
 
-    const API_BASE = window.API_BASE || 'https://beta.adstrim.ru';
-    const EMBED_BASE = window.EMBED_BASE || 'https://viewembed.ru';
+    var buildChannelUrl = window.SharedUtils.buildChannelUrl;
+    var extractCountry = window.SharedUtils.extractCountry;
+    var getCountryFlag = window.getCountryFlag;
 
-    window.API_BASE = API_BASE;
-    window.EMBED_BASE = EMBED_BASE;
+    const API_BASE = window.API_BASE;
 
     let eventsData = [];
     let isLoading = false;
@@ -56,57 +56,6 @@
       if (name.includes('athletic') || name.includes('track') || name.includes('run')) return 'fa-person-running';
       if (name.includes('football') || name.includes('soccer') || name.includes('futbol')) return 'fa-futbol';
       return 'fa-futbol';
-    }
-
-    function normalizeChannelValue(value) {
-      if (!value) return '';
-      return String(value).trim();
-    }
-
-    function buildChannelUrl(value) {
-      const cleaned = normalizeChannelValue(value);
-      if (!cleaned) return '';
-      if (/^https?:\/\//i.test(cleaned)) {
-        if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
-          return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, '$1viewembed.ru');
-        }
-        return cleaned;
-      }
-      const path = cleaned.replace(/^\/+/, '');
-      if (path.toLowerCase().startsWith('channel/')) {
-        const slug = path.slice('channel/'.length);
-        return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
-      }
-      return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
-    }
-
-    function extractCountry(value) {
-      if (!value) return '';
-      const match = String(value).match(/\[([^\]]+)\]\s*$/);
-      return match ? match[1] : '';
-    }
-
-    function getCountryFlag(countryName) {
-      if (!countryName) return '';
-      const countryCode = String(countryName).toUpperCase();
-      const countryFlags = {
-        'UK': '🇬🇧', 'USA': '🇺🇸', 'CANADA': '🇨🇦', 'FRANCE': '🇫🇷', 'SPAIN': '🇪🇸',
-        'GERMANY': '🇩🇪', 'ITALY': '🇮🇹', 'PORTUGAL': '🇵🇹', 'BRAZIL': '🇧🇷', 'ARGENTINA': '🇦🇷',
-        'MEXICO': '🇲🇽', 'TURKEY': '🇹🇷', 'NETHERLANDS': '🇳🇱', 'BELGIUM': '🇧🇪', 'POLAND': '🇵🇱',
-        'RUSSIA': '🇷🇺', 'GREECE': '🇬🇷', 'ROMANIA': '🇷🇴', 'BULGARIA': '🇧🇬', 'SERBIA': '🇷🇸',
-        'CROATIA': '🇭🇷', 'SWEDEN': '🇸🇪', 'NORWAY': '🇳🇴', 'DENMARK': '🇩🇰', 'FINLAND': '🇫🇮',
-        'IRELAND': '🇮🇪', 'SCOTLAND': '🏴', 'WALES': '🏴', 'AUSTRALIA': '🇦🇺', 'JAPAN': '🇯🇵',
-        'KOREA': '🇰🇷', 'CHINA': '🇨🇳', 'INDIA': '🇮🇳', 'PAKISTAN': '🇵🇰', 'UAE': '🇦🇪',
-        'SAUDI ARABIA': '🇸🇦', 'QATAR': '🇶🇦', 'EGYPT': '🇪🇬', 'SOUTH AFRICA': '🇿🇦', 'NIGERIA': '🇳🇬',
-        'ALGERIA': '🇩🇿', 'MOROCCO': '🇲🇦', 'TUNISIA': '🇹🇳', 'ISRAEL': '🇮🇱', 'CZECH': '🇨🇿',
-        'SLOVAKIA': '🇸🇰', 'HUNGARY': '🇭🇺', 'AUSTRIA': '🇦🇹', 'SWITZERLAND': '🇨🇭', 'ALBANIA': '🇦🇱',
-        'CHILE': '🇨🇱', 'COLOMBIA': '🇨🇴', 'PERU': '🇵🇪', 'VENEZUELA': '🇻🇪',
-        'URUGUAY': '🇺🇾', 'ECUADOR': '🇪🇨', 'BOLIVIA': '🇧🇴', 'PARAGUAY': '🇵🇾', 'COSTA RICA': '🇨🇷',
-        'PANAMA': '🇵🇦', 'JAMAICA': '🇯🇲', 'HONDURAS': '🇭🇳', 'EL SALVADOR': '🇸🇻', 'GUATEMALA': '🇬🇹',
-        'INTERNATIONAL': '🌍', 'WORLD': '🌎', 'GLOBAL': '🌏'
-      };
-
-      return countryFlags[countryCode] || '';
     }
 
     function formatStreamCode(countryName) {
@@ -152,10 +101,10 @@
     function showCopyFeedback(button) {
       if (!button) return;
       const originalTooltip = button.getAttribute('data-tooltip') || '';
-      const originalHtml = button.dataset.copyHtml || '';
 
-      if (!originalHtml) {
-        button.dataset.copyHtml = button.innerHTML;
+      // Save original children if not already saved
+      if (!button._savedNodes) {
+        button._savedNodes = Array.from(button.childNodes).map(function (n) { return n.cloneNode(true); });
       }
 
       button.setAttribute('data-tooltip', 'Copied!');
@@ -169,8 +118,9 @@
         } else {
           button.removeAttribute('data-tooltip');
         }
-        if (button.dataset.copyHtml) {
-          button.innerHTML = button.dataset.copyHtml;
+        if (button._savedNodes) {
+          button.textContent = '';
+          button._savedNodes.forEach(function (n) { button.appendChild(n.cloneNode(true)); });
         }
         button.classList.remove('show-tooltip');
       }, 1400);
@@ -210,55 +160,80 @@
       return `${year}-${month}-${day}`;
     }
 
-    function buildLogoHtml(url, className, alt, fallbackIcon) {
+    function buildLogoEl(url, className, alt, fallbackIcon) {
       if (!url) {
-        return `<span class="logo-fallback ${className}-fallback"><i class="fas ${fallbackIcon}"></i></span>`;
+        const span = document.createElement('span');
+        span.className = `logo-fallback ${className}-fallback`;
+        span.appendChild(Sanitize.createIcon(fallbackIcon));
+        return span;
       }
 
-      return `
-        <span class="logo-wrap ${className}-wrap">
-          <img
-            src="${url}"
-            alt="${alt}"
-            class="${className}"
-            loading="lazy"
-            decoding="async"
-            width="40"
-            height="40"
-            onerror="this.classList.add('is-hidden'); this.nextElementSibling.classList.remove('is-hidden');"
-          />
-          <span class="logo-fallback ${className}-fallback is-hidden"><i class="fas ${fallbackIcon}"></i></span>
-        </span>
-      `;
+      const wrap = document.createElement('span');
+      wrap.className = `logo-wrap ${className}-wrap`;
+
+      const img = document.createElement('img');
+      img.src = Sanitize.sanitizeURL(url);
+      img.alt = alt;
+      img.className = className;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.width = 40;
+      img.height = 40;
+      img.addEventListener('error', function () {
+        this.classList.add('is-hidden');
+        this.nextElementSibling.classList.remove('is-hidden');
+      });
+
+      const fallback = document.createElement('span');
+      fallback.className = `logo-fallback ${className}-fallback is-hidden`;
+      fallback.appendChild(Sanitize.createIcon(fallbackIcon));
+
+      wrap.appendChild(img);
+      wrap.appendChild(fallback);
+      return wrap;
     }
 
-    function buildSportIconHtml(event) {
+    function buildSportIconEl(event) {
       const fallbackIcon = getSportFallbackIcon(event.sport);
       const sportLogo = event.sport_logo && isUrl(event.sport_logo) ? event.sport_logo : '';
 
       if (sportLogo) {
-        return `
-          <span class="sport-icon-wrap">
-            <img
-              src="${sportLogo}"
-              alt="${event.sport} logo"
-              class="sport-icon-img"
-              loading="lazy"
-              decoding="async"
-              width="22"
-              height="22"
-              onerror="this.classList.add('is-hidden'); this.nextElementSibling.classList.remove('is-hidden');"
-            />
-            <span class="sport-icon-fallback is-hidden"><i class="fas ${fallbackIcon}"></i></span>
-          </span>
-        `;
+        const wrap = document.createElement('span');
+        wrap.className = 'sport-icon-wrap';
+
+        const img = document.createElement('img');
+        img.src = Sanitize.sanitizeURL(sportLogo);
+        img.alt = (event.sport || '') + ' logo';
+        img.className = 'sport-icon-img';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.width = 22;
+        img.height = 22;
+        img.addEventListener('error', function () {
+          this.classList.add('is-hidden');
+          this.nextElementSibling.classList.remove('is-hidden');
+        });
+
+        const fallback = document.createElement('span');
+        fallback.className = 'sport-icon-fallback is-hidden';
+        fallback.appendChild(Sanitize.createIcon(fallbackIcon));
+
+        wrap.appendChild(img);
+        wrap.appendChild(fallback);
+        return wrap;
       }
 
       if (event.sport_emoji) {
-        return `<span class="sport-icon-emoji">${event.sport_emoji}</span>`;
+        const emoji = document.createElement('span');
+        emoji.className = 'sport-icon-emoji';
+        emoji.textContent = event.sport_emoji;
+        return emoji;
       }
 
-      return `<span class="sport-icon-fallback"><i class="fas ${fallbackIcon}"></i></span>`;
+      const fallback = document.createElement('span');
+      fallback.className = 'sport-icon-fallback';
+      fallback.appendChild(Sanitize.createIcon(fallbackIcon));
+      return fallback;
     }
 
     function buildSelectOptionHtml(option) {
@@ -285,7 +260,7 @@
           } else {
             const fallback = document.createElement('span');
             fallback.className = 'select-fallback';
-            fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+            fallback.appendChild(Sanitize.createIcon(option.fallbackIcon));
             item.prepend(fallback);
           }
         });
@@ -298,7 +273,7 @@
       } else {
         const fallback = document.createElement('span');
         fallback.className = 'select-fallback';
-        fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+        fallback.appendChild(Sanitize.createIcon(option.fallbackIcon));
         item.appendChild(fallback);
       }
 
@@ -362,10 +337,10 @@
       });
 
       function updateTrigger(option) {
-        triggerIcon.innerHTML = '';
+        triggerIcon.textContent = '';
         if (option.logoUrl) {
           const img = document.createElement('img');
-          img.src = option.logoUrl;
+          img.src = Sanitize.sanitizeURL(option.logoUrl);
           img.alt = '';
           img.className = 'select-logo';
           img.width = 26;
@@ -382,7 +357,7 @@
             } else {
               const fallback = document.createElement('span');
               fallback.className = 'select-fallback';
-              fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+              fallback.appendChild(Sanitize.createIcon(option.fallbackIcon));
               triggerIcon.appendChild(fallback);
             }
           });
@@ -395,7 +370,7 @@
         } else {
           const fallback = document.createElement('span');
           fallback.className = 'select-fallback';
-          fallback.innerHTML = `<i class="fas ${option.fallbackIcon}"></i>`;
+          fallback.appendChild(Sanitize.createIcon(option.fallbackIcon));
           triggerIcon.appendChild(fallback);
         }
         triggerText.textContent = option.label;
@@ -630,7 +605,11 @@
             () => { loadEvents(true); }
           );
         } else {
-          eventList.innerHTML = '<div class="empty-message">Unable to load events. Please try again later.</div>';
+          eventList.textContent = '';
+          const errMsg = document.createElement('div');
+          errMsg.className = 'empty-message';
+          errMsg.textContent = 'Unable to load events. Please try again later.';
+          eventList.appendChild(errMsg);
           errorMessage.textContent = 'Unable to load events from the API. Please check your connection and try again.';
           errorMessage.style.display = 'block';
         }
@@ -650,7 +629,11 @@
             'No events found. Try adjusting your filters.'
           );
         } else {
-          eventList.innerHTML = '<div class="empty-message">No events found.</div>';
+          eventList.textContent = '';
+          const noEventsMsg = document.createElement('div');
+          noEventsMsg.className = 'empty-message';
+          noEventsMsg.textContent = 'No events found.';
+          eventList.appendChild(noEventsMsg);
         }
         return;
       }
@@ -685,34 +668,59 @@
         return [rawName, ''];
       }
 
-      function buildStreamButton(channel, index) {
+      function buildStreamButtonEl(channel, index) {
         const flag = getCountryFlag(channel.country);
         const code = formatStreamCode(channel.country);
-        const flagHtml = flag
-          ? `<span class="stream-flag" aria-hidden="true">${flag}</span>`
-          : `<span class="stream-flag stream-flag-fallback" aria-hidden="true"><i class="fas fa-globe"></i></span>`;
         const streamNumber = String(index + 1).padStart(2, '0');
+        const safeUrl = Sanitize.sanitizeURL(channel.url);
 
-        return `
-          <button
-            class="stream-chip"
-            type="button"
-            onclick="loadStream('${channel.url}')"
-            oncontextmenu="copyStreamLink(event, '${channel.url}')"
-            data-stream-url="${channel.url}"
-            data-tooltip="Right-click to copy"
-          >
-            ${flagHtml}
-            <span class="stream-chip-meta">
-              <span class="stream-chip-index">Stream #${streamNumber}</span>
-              <span class="stream-chip-code">(${code})</span>
-            </span>
-            <span class="stream-chip-play">
-              <span class="stream-chip-icon" aria-hidden="true"><i class="fas fa-play"></i></span>
-              <span class="stream-chip-label">Play</span>
-            </span>
-          </button>
-        `;
+        const btn = document.createElement('button');
+        btn.className = 'stream-chip';
+        btn.type = 'button';
+        btn.dataset.streamUrl = safeUrl;
+        btn.setAttribute('data-tooltip', 'Right-click to copy');
+
+        // Flag
+        const flagSpan = document.createElement('span');
+        if (flag) {
+          flagSpan.className = 'stream-flag';
+          flagSpan.setAttribute('aria-hidden', 'true');
+          flagSpan.textContent = flag;
+        } else {
+          flagSpan.className = 'stream-flag stream-flag-fallback';
+          flagSpan.setAttribute('aria-hidden', 'true');
+          flagSpan.appendChild(Sanitize.createIcon('fa-globe'));
+        }
+        btn.appendChild(flagSpan);
+
+        // Meta
+        const meta = document.createElement('span');
+        meta.className = 'stream-chip-meta';
+        const idxSpan = document.createElement('span');
+        idxSpan.className = 'stream-chip-index';
+        idxSpan.textContent = 'Stream #' + streamNumber;
+        const codeSpan = document.createElement('span');
+        codeSpan.className = 'stream-chip-code';
+        codeSpan.textContent = '(' + code + ')';
+        meta.appendChild(idxSpan);
+        meta.appendChild(codeSpan);
+        btn.appendChild(meta);
+
+        // Play
+        const play = document.createElement('span');
+        play.className = 'stream-chip-play';
+        const playIcon = document.createElement('span');
+        playIcon.className = 'stream-chip-icon';
+        playIcon.setAttribute('aria-hidden', 'true');
+        playIcon.appendChild(Sanitize.createIcon('fa-play'));
+        const playLabel = document.createElement('span');
+        playLabel.className = 'stream-chip-label';
+        playLabel.textContent = 'Play';
+        play.appendChild(playIcon);
+        play.appendChild(playLabel);
+        btn.appendChild(play);
+
+        return btn;
       }
 
       events.forEach((event) => {
@@ -720,123 +728,203 @@
         const year = dateParts[0];
         const monthIndex = parseInt(dateParts[1], 10) - 1;
         const day = parseInt(dateParts[2], 10);
-        const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
+        const formattedDate = day + ' ' + monthNames[monthIndex] + ' ' + year;
 
         const dateObj = new Date(event.unix_timestamp * 1000);
         const time = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-        const homeLogo = buildLogoHtml(
-          event.home_team_logo,
-          'team-logo',
-          `${event.home_team || 'Home'} logo`,
-          'fa-shield'
-        );
-        const awayLogo = buildLogoHtml(
-          event.away_team_logo,
-          'team-logo',
-          `${event.away_team || 'Away'} logo`,
-          'fa-shield'
-        );
-        const tournamentLogo = buildLogoHtml(
-          event.tournament_logo,
-          'league-logo',
-          `${event.tournament} logo`,
-          'fa-trophy'
-        );
         const homeName = event.home_team ? String(event.home_team).trim() : '';
         const awayName = event.away_team ? String(event.away_team).trim() : '';
         const matchFallback = event.match ? String(event.match).trim() : '';
         const hasTeams = homeName && awayName;
         const [tournamentLineOne, tournamentLineTwo] = formatTournamentLines(event.tournament);
-        const cardId = `event-card-${event.id || `${event.date}-${event.match}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
-        const streamPanelId = `${cardId}-streams`;
+        const cardId = 'event-card-' + (event.id || (event.date + '-' + event.match).replace(/[^a-z0-9]+/gi, '-').toLowerCase());
+        const streamPanelId = cardId + '-streams';
         const hasStreams = Array.isArray(event.channels) && event.channels.length > 0;
 
+        // Build card with static structure, then populate dynamic parts via DOM
         const card = document.createElement('div');
         card.className = 'event-card';
         card.dataset.eventId = String(event.id || '');
-        card.innerHTML = `
-          <div class="event-card-shell">
-            <div class="event-card-header">
-              <div class="event-meta-cluster">
-                <div class="event-meta-stack">
-                  <div class="event-meta-item">
-                    <span class="event-meta-icon"><i class="fas fa-calendar-alt"></i></span>
-                    <span class="event-meta-text">${formattedDate}</span>
-                  </div>
-                  <div class="event-meta-item time-meta">
-                    <span class="event-meta-icon"><i class="fas fa-clock"></i></span>
-                    <span class="event-meta-text">${time}</span>
-                  </div>
-                </div>
-                <div class="event-meta-divider" aria-hidden="true"></div>
-                <div class="event-meta-item sport-meta">
-                  ${buildSportIconHtml(event)}
-                  <span class="event-meta-text">${event.sport}</span>
-                </div>
-              </div>
-            </div>
-            <div class="event-card-body">
-              <div class="event-match-layout${hasTeams ? '' : ' single'}">
-                ${hasTeams
-                  ? `
-                    <div class="team-column home-team">
-                      <span class="team-logo-slot">${homeLogo}</span>
-                      <span class="team-name-text home">${homeName}</span>
-                    </div>
-                    <div class="match-center-league">
-                      <span class="match-center-glow" aria-hidden="true"></span>
-                      <span class="match-center-logo">${tournamentLogo}</span>
-                      <span class="match-center-name">
-                        <span class="match-center-line">${tournamentLineOne}</span>
-                        ${tournamentLineTwo ? `<span class="match-center-line">${tournamentLineTwo}</span>` : ''}
-                      </span>
-                    </div>
-                    <div class="team-column away-team">
-                      <span class="team-logo-slot">${awayLogo}</span>
-                      <span class="team-name-text away">${awayName}</span>
-                    </div>
-                  `
-                  : `<div class="match-name single"><span class="team-name-text">${matchFallback}</span></div>`
-                }
-              </div>
-            </div>
-            <div class="event-stream-panel" id="${streamPanelId}" hidden>
-              <div class="event-stream-panel-inner">
-                <div class="event-stream-divider" aria-hidden="true">
-                  <span class="event-stream-divider-icon"><i class="fas fa-chevron-down"></i></span>
-                </div>
-                <div class="event-stream-grid">
-                  ${hasStreams ? event.channels.map((channel, index) => buildStreamButton(channel, index)).join('') : ''}
-                </div>
-              </div>
-            </div>
-            <div class="event-card-footer">
-              <button
-                class="event-stream-toggle"
-                type="button"
-                aria-expanded="false"
-                aria-controls="${streamPanelId}"
-                ${hasStreams ? '' : 'disabled'}
-              >
-                <span class="event-stream-toggle-text">${hasStreams ? 'Watch Available Streams' : 'No Streams Available'}</span>
-                <span class="event-stream-toggle-icon" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
-              </button>
-            </div>
-          </div>
-        `;
 
-        const toggle = card.querySelector('.event-stream-toggle');
-        const panel = card.querySelector('.event-stream-panel');
+        const shell = document.createElement('div');
+        shell.className = 'event-card-shell';
 
-        if (toggle && panel && hasStreams) {
-          toggle.addEventListener('click', () => {
-            const isExpanded = card.classList.toggle('is-expanded');
-            toggle.setAttribute('aria-expanded', String(isExpanded));
-            panel.hidden = !isExpanded;
+        // --- HEADER ---
+        const header = document.createElement('div');
+        header.className = 'event-card-header';
+        const metaCluster = document.createElement('div');
+        metaCluster.className = 'event-meta-cluster';
+
+        const metaStack = document.createElement('div');
+        metaStack.className = 'event-meta-stack';
+
+        // Date meta
+        const dateMeta = document.createElement('div');
+        dateMeta.className = 'event-meta-item';
+        const dateIcon = document.createElement('span');
+        dateIcon.className = 'event-meta-icon';
+        dateIcon.appendChild(Sanitize.createIcon('fa-calendar-alt'));
+        const dateText = document.createElement('span');
+        dateText.className = 'event-meta-text';
+        dateText.textContent = formattedDate;
+        dateMeta.appendChild(dateIcon);
+        dateMeta.appendChild(dateText);
+
+        // Time meta
+        const timeMeta = document.createElement('div');
+        timeMeta.className = 'event-meta-item time-meta';
+        const timeIcon = document.createElement('span');
+        timeIcon.className = 'event-meta-icon';
+        timeIcon.appendChild(Sanitize.createIcon('fa-clock'));
+        const timeText = document.createElement('span');
+        timeText.className = 'event-meta-text';
+        timeText.textContent = time;
+        timeMeta.appendChild(timeIcon);
+        timeMeta.appendChild(timeText);
+
+        metaStack.appendChild(dateMeta);
+        metaStack.appendChild(timeMeta);
+
+        const divider = document.createElement('div');
+        divider.className = 'event-meta-divider';
+        divider.setAttribute('aria-hidden', 'true');
+
+        // Sport meta
+        const sportMeta = document.createElement('div');
+        sportMeta.className = 'event-meta-item sport-meta';
+        sportMeta.appendChild(buildSportIconEl(event));
+        const sportText = document.createElement('span');
+        sportText.className = 'event-meta-text';
+        sportText.textContent = event.sport;
+        sportMeta.appendChild(sportText);
+
+        metaCluster.appendChild(metaStack);
+        metaCluster.appendChild(divider);
+        metaCluster.appendChild(sportMeta);
+        header.appendChild(metaCluster);
+
+        // --- BODY ---
+        const body = document.createElement('div');
+        body.className = 'event-card-body';
+        const matchLayout = document.createElement('div');
+        matchLayout.className = 'event-match-layout' + (hasTeams ? '' : ' single');
+
+        if (hasTeams) {
+          // Home team
+          const homeCol = document.createElement('div');
+          homeCol.className = 'team-column home-team';
+          const homeLogoSlot = document.createElement('span');
+          homeLogoSlot.className = 'team-logo-slot';
+          homeLogoSlot.appendChild(buildLogoEl(event.home_team_logo, 'team-logo', (homeName || 'Home') + ' logo', 'fa-shield'));
+          const homeNameEl = document.createElement('span');
+          homeNameEl.className = 'team-name-text home';
+          homeNameEl.textContent = homeName;
+          homeCol.appendChild(homeLogoSlot);
+          homeCol.appendChild(homeNameEl);
+
+          // Center league
+          const center = document.createElement('div');
+          center.className = 'match-center-league';
+          const glow = document.createElement('span');
+          glow.className = 'match-center-glow';
+          glow.setAttribute('aria-hidden', 'true');
+          const centerLogo = document.createElement('span');
+          centerLogo.className = 'match-center-logo';
+          centerLogo.appendChild(buildLogoEl(event.tournament_logo, 'league-logo', (event.tournament || '') + ' logo', 'fa-trophy'));
+          const centerName = document.createElement('span');
+          centerName.className = 'match-center-name';
+          const line1 = document.createElement('span');
+          line1.className = 'match-center-line';
+          line1.textContent = tournamentLineOne;
+          centerName.appendChild(line1);
+          if (tournamentLineTwo) {
+            const line2 = document.createElement('span');
+            line2.className = 'match-center-line';
+            line2.textContent = tournamentLineTwo;
+            centerName.appendChild(line2);
+          }
+          center.appendChild(glow);
+          center.appendChild(centerLogo);
+          center.appendChild(centerName);
+
+          // Away team
+          const awayCol = document.createElement('div');
+          awayCol.className = 'team-column away-team';
+          const awayLogoSlot = document.createElement('span');
+          awayLogoSlot.className = 'team-logo-slot';
+          awayLogoSlot.appendChild(buildLogoEl(event.away_team_logo, 'team-logo', (awayName || 'Away') + ' logo', 'fa-shield'));
+          const awayNameEl = document.createElement('span');
+          awayNameEl.className = 'team-name-text away';
+          awayNameEl.textContent = awayName;
+          awayCol.appendChild(awayLogoSlot);
+          awayCol.appendChild(awayNameEl);
+
+          matchLayout.appendChild(homeCol);
+          matchLayout.appendChild(center);
+          matchLayout.appendChild(awayCol);
+        } else {
+          const matchDiv = document.createElement('div');
+          matchDiv.className = 'match-name single';
+          const matchText = document.createElement('span');
+          matchText.className = 'team-name-text';
+          matchText.textContent = matchFallback;
+          matchDiv.appendChild(matchText);
+          matchLayout.appendChild(matchDiv);
+        }
+        body.appendChild(matchLayout);
+
+        // --- STREAM PANEL ---
+        const streamPanel = document.createElement('div');
+        streamPanel.className = 'event-stream-panel';
+        streamPanel.id = streamPanelId;
+        streamPanel.hidden = true;
+        const panelInner = document.createElement('div');
+        panelInner.className = 'event-stream-panel-inner';
+        const streamDivider = document.createElement('div');
+        streamDivider.className = 'event-stream-divider';
+        streamDivider.setAttribute('aria-hidden', 'true');
+        const dividerIcon = document.createElement('span');
+        dividerIcon.className = 'event-stream-divider-icon';
+        dividerIcon.appendChild(Sanitize.createIcon('fa-chevron-down'));
+        streamDivider.appendChild(dividerIcon);
+        const streamGrid = document.createElement('div');
+        streamGrid.className = 'event-stream-grid';
+        if (hasStreams) {
+          event.channels.forEach(function (channel, index) {
+            streamGrid.appendChild(buildStreamButtonEl(channel, index));
           });
         }
+        panelInner.appendChild(streamDivider);
+        panelInner.appendChild(streamGrid);
+        streamPanel.appendChild(panelInner);
 
+        // --- FOOTER ---
+        const footer = document.createElement('div');
+        footer.className = 'event-card-footer';
+        const toggle = document.createElement('button');
+        toggle.className = 'event-stream-toggle';
+        toggle.type = 'button';
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-controls', streamPanelId);
+        if (!hasStreams) toggle.disabled = true;
+        const toggleText = document.createElement('span');
+        toggleText.className = 'event-stream-toggle-text';
+        toggleText.textContent = hasStreams ? 'Watch Available Streams' : 'No Streams Available';
+        const toggleIcon = document.createElement('span');
+        toggleIcon.className = 'event-stream-toggle-icon';
+        toggleIcon.setAttribute('aria-hidden', 'true');
+        toggleIcon.appendChild(Sanitize.createIcon('fa-chevron-down'));
+        toggle.appendChild(toggleText);
+        toggle.appendChild(toggleIcon);
+        footer.appendChild(toggle);
+
+        // Assemble
+        shell.appendChild(header);
+        shell.appendChild(body);
+        shell.appendChild(streamPanel);
+        shell.appendChild(footer);
+        card.appendChild(shell);
         eventList.appendChild(card);
       });
     }
@@ -861,10 +949,48 @@
       displayEvents(filteredEvents);
     }
 
+    // Event delegation for stream chips and toggle buttons
+    eventList.addEventListener('click', function (e) {
+      const chip = e.target.closest('.stream-chip');
+      if (chip) {
+        const url = chip.dataset.streamUrl;
+        if (url && typeof window.loadStream === 'function') {
+          window.loadStream(url);
+        }
+        return;
+      }
+
+      const toggle = e.target.closest('.event-stream-toggle');
+      if (toggle && !toggle.disabled) {
+        const card = toggle.closest('.event-card');
+        const panelId = toggle.getAttribute('aria-controls');
+        const panel = panelId ? document.getElementById(panelId) : null;
+        if (card && panel) {
+          const isExpanded = card.classList.toggle('is-expanded');
+          toggle.setAttribute('aria-expanded', String(isExpanded));
+          panel.hidden = !isExpanded;
+        }
+      }
+    });
+
+    eventList.addEventListener('contextmenu', function (e) {
+      const chip = e.target.closest('.stream-chip');
+      if (chip) {
+        const url = chip.dataset.streamUrl;
+        if (url) copyStreamLink(e, url);
+      }
+    });
+
     if (sportFilter) sportFilter.addEventListener('change', filterEvents);
     if (leagueFilter) leagueFilter.addEventListener('change', filterEvents);
     if (tournamentFilter) tournamentFilter.addEventListener('change', filterEvents);
-    if (eventSearch) eventSearch.addEventListener('input', filterEvents);
+    if (eventSearch) {
+      let filterDebounce;
+      eventSearch.addEventListener('input', () => {
+        clearTimeout(filterDebounce);
+        filterDebounce = setTimeout(filterEvents, 250);
+      });
+    }
 
     if (window.UXEnhancements && window.UXEnhancements.isMobile()) {
       setTimeout(() => {

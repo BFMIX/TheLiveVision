@@ -24,5 +24,8 @@
     "last 2 versions",
     "not dead",
     "iOS >= 14"
-  ]
+  ],
+  "dependencies": {
+    "dompurify": "^3.4.0"
+  }
 }

@@ -16,6 +16,9 @@ body {
   --color-bg-dark: #1A1A1A;
   --color-bg-secondary: #252525;
   --color-bg-card: #2A2A2A;
+  --color-bg-primary: #1A1A1A;
+  --color-surface: #2A2A2A;
+  --color-border: #333333;
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #B0B0B0;
   --color-accent: #333333;
@@ -36,6 +39,9 @@ body {
   --color-bg-dark: #F5F7FA;
   --color-bg-secondary: #FFFFFF;
   --color-bg-card: #FAFBFC;
+  --color-bg-primary: #F5F7FA;
+  --color-surface: #FFFFFF;
+  --color-border: #D1D5DB;
   --color-text-primary: #1A1A1A;
   --color-text-secondary: #666666;
   --color-accent: #D1D5DB;
@@ -56,6 +62,9 @@ body {
   --color-bg-dark: #1A1A1A;
   --color-bg-secondary: #252525;
   --color-bg-card: #2A2A2A;
+  --color-bg-primary: #1A1A1A;
+  --color-surface: #2A2A2A;
+  --color-border: #333333;
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #B0B0B0;
   --color-accent: #333333;
@@ -64,6 +73,32 @@ body {
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --text-shadow-hero: none;
   --text-shadow-subtitle: none;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  color: var(--color-bg-dark);
+  padding: 12px 24px;
+  border-radius: 0 0 8px 8px;
+  font-weight: 700;
+  z-index: 10000;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus indicators */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 *,

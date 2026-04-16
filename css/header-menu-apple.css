@@ -84,9 +84,9 @@
   gap: 12px;
   padding: 0;
   border-radius: 999px;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 #top-dock .tabbed-menu .tab {
@@ -98,9 +98,9 @@
   font-size: 15px;
   letter-spacing: 0.7px;
   border-radius: 999px;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   color: var(--color-text-secondary);
   transition:
     color 220ms ease,
@@ -109,7 +109,7 @@
 }
 
 #top-dock .tabbed-menu .tab::after {
-  content: none !important;
+  content: none;
 }
 
 #top-dock .tabbed-menu .tab:hover,
@@ -117,16 +117,16 @@
   color: var(--color-text-primary);
   transform: translateY(-1px) scale(1.015);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   outline: none;
 }
 
 #top-dock .tabbed-menu .tab.active {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   color: var(--color-text-primary);
 }
 
@@ -149,12 +149,12 @@
 }
 
 #top-dock .tabbed-menu .tab:focus-visible {
-  box-shadow: none !important;
+  box-shadow: none;
   outline: none;
 }
 
 [data-theme="light"] #top-dock .tabbed-menu .tab:focus-visible {
-  box-shadow: none !important;
+  box-shadow: none;
   outline: none;
 }
 
@@ -165,7 +165,7 @@
   }
 
   body.cinema-background main {
-    padding-top: 0 !important;
+    padding-top: 0;
   }
 
   .header {

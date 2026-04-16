@@ -11,38 +11,16 @@
     const loadingIndicator = document.getElementById('channels-loading');
     const errorMessage = document.getElementById('channels-error');
 
-    const API_BASE = window.API_BASE || 'https://beta.adstrim.ru';
-    const EMBED_BASE = window.EMBED_BASE || 'https://viewembed.ru';
+    var buildChannelUrl = window.SharedUtils.buildChannelUrl;
+    var extractCountry = window.SharedUtils.extractCountry;
+    var cleanChannelName = window.SharedUtils.cleanChannelName;
 
-    window.API_BASE = API_BASE;
-    window.EMBED_BASE = EMBED_BASE;
+    const API_BASE = window.API_BASE;
 
     let channelsData = [];
     let isLoading = false;
 
     const flagCache = new Map();
-
-    function normalizeChannelValue(value) {
-      if (!value) return '';
-      return String(value).trim();
-    }
-
-    function buildChannelUrl(value) {
-      const cleaned = normalizeChannelValue(value);
-      if (!cleaned) return '';
-      if (/^https?:\/\//i.test(cleaned)) {
-        if (/^https?:\/\/beta\.adstrim\.ru/i.test(cleaned)) {
-          return cleaned.replace(/^(https?:\/\/)beta\.adstrim\.ru/i, '$1viewembed.ru');
-        }
-        return cleaned;
-      }
-      const path = cleaned.replace(/^\/+/, '');
-      if (path.toLowerCase().startsWith('channel/')) {
-        const slug = path.slice('channel/'.length);
-        return `${EMBED_BASE}/channel/${encodeURIComponent(slug)}`;
-      }
-      return `${EMBED_BASE}/channel/${encodeURIComponent(path)}`;
-    }
 
     function getFlag(countryName) {
       if (!countryName) return '🌍';
@@ -51,15 +29,6 @@
       const flag = window.getCountryFlag ? window.getCountryFlag(countryName) : '🌍';
       flagCache.set(countryName, flag);
       return flag;
-    }
-
-    function extractCountry(channelName) {
-      const match = channelName.match(/\[([^\]]+)\]$/);
-      return match ? match[1] : 'International';
-    }
-
-    function cleanChannelName(channelName) {
-      return channelName.replace(/\[[^\]]+\]$/, '').trim();
     }
 
     function buildFlagOption(option) {
@@ -75,7 +44,7 @@
       } else {
         const fallback = document.createElement('span');
         fallback.className = 'select-fallback';
-        fallback.innerHTML = '<i class="fas fa-globe"></i>';
+        fallback.appendChild(Sanitize.createIcon('fa-globe'));
         item.appendChild(fallback);
       }
 
@@ -139,7 +108,7 @@
       });
 
       function updateTrigger(option) {
-        triggerIcon.innerHTML = '';
+        triggerIcon.textContent = '';
         if (option.flag) {
           const flagSpan = document.createElement('span');
           flagSpan.className = 'select-emoji';
@@ -148,7 +117,7 @@
         } else {
           const fallback = document.createElement('span');
           fallback.className = 'select-fallback';
-          fallback.innerHTML = '<i class="fas fa-globe"></i>';
+          fallback.appendChild(Sanitize.createIcon('fa-globe'));
           triggerIcon.appendChild(fallback);
         }
         triggerText.textContent = option.label;
@@ -252,7 +221,11 @@
             () => { loadChannels(true); }
           );
         } else {
-          channelList.innerHTML = '<div class="empty-message">Unable to load channels. Please try again later.</div>';
+          channelList.textContent = '';
+          const errDiv = document.createElement('div');
+          errDiv.className = 'empty-message';
+          errDiv.textContent = 'Unable to load channels. Please try again later.';
+          channelList.appendChild(errDiv);
           errorMessage.textContent = 'Unable to load channels from the API. Please check your connection and try again.';
           errorMessage.style.display = 'block';
         }
@@ -272,86 +245,125 @@
             'No channels found. Try adjusting your search.'
           );
         } else {
-          channelList.innerHTML = '<div class="empty-message">No channels found.</div>';
+          channelList.textContent = '';
+          const noChMsg = document.createElement('div');
+          noChMsg.className = 'empty-message';
+          noChMsg.textContent = 'No channels found.';
+          channelList.appendChild(noChMsg);
         }
         return;
       }
 
       channels.forEach((channel, index) => {
-        const cardId = `channel-card-${index}`;
-        const previewId = `${cardId}-preview`;
+        const cardId = 'channel-card-' + index;
+        const previewId = cardId + '-preview';
+        const safeUrl = Sanitize.sanitizeURL(channel.url);
+
         const card = document.createElement('div');
         card.className = 'channel-card';
-        card.innerHTML = `
-          <div class="channel-card-shell">
-            <div class="channel-card-main">
-              <div class="channel-card-header">
-                <span class="country-flag flag-icon">${window.getCountryFlag ? window.getCountryFlag(channel.country) : '🌍'}</span>
-                <span class="channel-name">${channel.name}</span>
-              </div>
-              <div class="channel-card-actions">
-                <button
-                  class="channel-action-btn channel-action-preview"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="${previewId}"
-                >
-                  <span class="channel-action-text">Preview</span>
-                  <span class="channel-action-icon" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
-                </button>
-                <button class="channel-action-btn channel-action-play" type="button">
-                  <span class="channel-action-icon" aria-hidden="true"><i class="fas fa-play"></i></span>
-                  <span class="channel-action-text">Play</span>
-                </button>
-              </div>
-            </div>
-            <div class="channel-card-body">
-              <div class="channel-preview-panel" id="${previewId}" hidden>
-                <div class="channel-preview-frame" aria-hidden="true">
-                  <iframe
-                    class="channel-preview-iframe"
-                    data-src="${channel.url}"
-                    title="${channel.name} preview"
-                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                    allowfullscreen
-                    referrerpolicy="no-referrer"
-                  ></iframe>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
+
+        const shell = document.createElement('div');
+        shell.className = 'channel-card-shell';
+
+        // Main
+        const main = document.createElement('div');
+        main.className = 'channel-card-main';
+
+        // Header
+        const headerEl = document.createElement('div');
+        headerEl.className = 'channel-card-header';
+        const flagSpan = document.createElement('span');
+        flagSpan.className = 'country-flag flag-icon';
+        flagSpan.textContent = window.getCountryFlag ? window.getCountryFlag(channel.country) : '\u{1F30D}';
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'channel-name';
+        nameSpan.textContent = channel.name;
+        headerEl.appendChild(flagSpan);
+        headerEl.appendChild(nameSpan);
+
+        // Actions
+        const actions = document.createElement('div');
+        actions.className = 'channel-card-actions';
+
+        const previewButton = document.createElement('button');
+        previewButton.className = 'channel-action-btn channel-action-preview';
+        previewButton.type = 'button';
+        previewButton.setAttribute('aria-expanded', 'false');
+        previewButton.setAttribute('aria-controls', previewId);
+        const previewText = document.createElement('span');
+        previewText.className = 'channel-action-text';
+        previewText.textContent = 'Preview';
+        const previewIcon = document.createElement('span');
+        previewIcon.className = 'channel-action-icon';
+        previewIcon.setAttribute('aria-hidden', 'true');
+        previewIcon.appendChild(Sanitize.createIcon('fa-chevron-down'));
+        previewButton.appendChild(previewText);
+        previewButton.appendChild(previewIcon);
+
+        const playButton = document.createElement('button');
+        playButton.className = 'channel-action-btn channel-action-play';
+        playButton.type = 'button';
+        const playIcon = document.createElement('span');
+        playIcon.className = 'channel-action-icon';
+        playIcon.setAttribute('aria-hidden', 'true');
+        playIcon.appendChild(Sanitize.createIcon('fa-play'));
+        const playText = document.createElement('span');
+        playText.className = 'channel-action-text';
+        playText.textContent = 'Play';
+        playButton.appendChild(playIcon);
+        playButton.appendChild(playText);
+
+        actions.appendChild(previewButton);
+        actions.appendChild(playButton);
+        main.appendChild(headerEl);
+        main.appendChild(actions);
+
+        // Body with preview panel
+        const bodyEl = document.createElement('div');
+        bodyEl.className = 'channel-card-body';
+        const previewPanel = document.createElement('div');
+        previewPanel.className = 'channel-preview-panel';
+        previewPanel.id = previewId;
+        previewPanel.hidden = true;
+        const previewFrame = document.createElement('div');
+        previewFrame.className = 'channel-preview-frame';
+        previewFrame.setAttribute('aria-hidden', 'true');
+        const iframe = document.createElement('iframe');
+        iframe.className = 'channel-preview-iframe';
+        iframe.dataset.src = safeUrl;
+        iframe.title = (channel.name || '') + ' preview';
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = 'no-referrer';
+        previewFrame.appendChild(iframe);
+        previewPanel.appendChild(previewFrame);
+        bodyEl.appendChild(previewPanel);
+
+        shell.appendChild(main);
+        shell.appendChild(bodyEl);
+        card.appendChild(shell);
         channelList.appendChild(card);
 
-        const previewButton = card.querySelector('.channel-action-preview');
-        const playButton = card.querySelector('.channel-action-play');
-        const previewPanel = card.querySelector('.channel-preview-panel');
-        const previewIframe = card.querySelector('.channel-preview-iframe');
-
-        if (previewButton && previewPanel && previewIframe) {
-          previewButton.addEventListener('click', () => {
-            const isExpanded = card.classList.toggle('is-expanded');
-            previewButton.setAttribute('aria-expanded', String(isExpanded));
-            previewPanel.hidden = !isExpanded;
-            if (isExpanded) {
-              if (!previewIframe.src) {
-                previewIframe.src = previewIframe.dataset.src || '';
-              }
-            } else {
-              previewIframe.src = '';
+        // Event listeners
+        previewButton.addEventListener('click', function () {
+          const isExpanded = card.classList.toggle('is-expanded');
+          previewButton.setAttribute('aria-expanded', String(isExpanded));
+          previewPanel.hidden = !isExpanded;
+          if (isExpanded) {
+            if (!iframe.src) {
+              iframe.src = iframe.dataset.src || '';
             }
-            const label = previewButton.querySelector('.channel-action-text');
-            if (label) label.textContent = isExpanded ? 'Close Preview' : 'Preview';
-          });
-        }
+          } else {
+            iframe.src = '';
+          }
+          previewText.textContent = isExpanded ? 'Close Preview' : 'Preview';
+        });
 
-        if (playButton) {
-          playButton.addEventListener('click', () => {
-            if (typeof window.loadStream === 'function') {
-              window.loadStream(channel.url);
-            }
-          });
-        }
+        playButton.addEventListener('click', function () {
+          if (typeof window.loadStream === 'function') {
+            window.loadStream(safeUrl);
+          }
+        });
       });
     }
 
@@ -370,7 +382,13 @@
     }
 
     if (countryFilter) countryFilter.addEventListener('change', filterChannels);
-    if (channelSearch) channelSearch.addEventListener('input', filterChannels);
+    if (channelSearch) {
+      let filterDebounce;
+      channelSearch.addEventListener('input', () => {
+        clearTimeout(filterDebounce);
+        filterDebounce = setTimeout(filterChannels, 250);
+      });
+    }
 
     if (window.UXEnhancements && window.UXEnhancements.isMobile()) {
       setTimeout(() => {

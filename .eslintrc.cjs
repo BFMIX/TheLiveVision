@@ -10,7 +10,13 @@ module.exports = {
   extends: ['eslint:recommended'],
   globals: {
     navigateTo: 'readonly',
+    Sanitize: 'readonly',
+    DOMPurify: 'readonly',
+    SharedUtils: 'readonly',
+    API_BASE: 'readonly',
+    EMBED_BASE: 'readonly',
   },
+  ignorePatterns: ['**/vendor/**', 'dist/**'],
   rules: {
     'no-undef': 'error',
     'no-redeclare': 'error',
